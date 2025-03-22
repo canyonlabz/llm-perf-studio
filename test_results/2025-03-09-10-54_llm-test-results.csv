@@ -1,0 +1,11 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,SampleCount,ErrorCount,IdleTime,Connect
+1741575294766,24972,TC02_TS03_/api/generate,200,OK,Thread Group - LLM APIs 1-1,text,true,,3398,2374,1,1,http://localhost:11434/api/generate,24971,1,0,0,2
+1741575324823,9755,TC02_TS03_/api/generate,200,OK,Thread Group - LLM APIs 1-1,text,true,,3251,2149,1,1,http://localhost:11434/api/generate,9755,1,0,0,0
+1741575339610,13439,TC02_TS03_/api/generate,200,OK,Thread Group - LLM APIs 1-1,text,true,,3909,2527,1,1,http://localhost:11434/api/generate,13439,1,0,0,0
+1741575358081,9452,TC02_TS03_/api/generate,200,OK,Thread Group - LLM APIs 1-1,text,true,,3527,2640,1,1,http://localhost:11434/api/generate,9452,1,0,0,2
+1741575372568,10818,TC02_TS03_/api/generate,200,OK,Thread Group - LLM APIs 1-1,text,true,,3620,2571,1,1,http://localhost:11434/api/generate,10818,1,0,0,0
+1741575388416,19460,TC02_TS03_/api/generate,200,OK,Thread Group - LLM APIs 1-1,text,true,,4762,2611,1,1,http://localhost:11434/api/generate,19460,1,0,0,0
+1741575412910,10527,TC02_TS03_/api/generate,200,OK,Thread Group - LLM APIs 1-1,text,true,,3666,2602,1,1,http://localhost:11434/api/generate,10527,1,0,0,0
+1741575428468,10494,TC02_TS03_/api/generate,200,OK,Thread Group - LLM APIs 1-1,text,true,,3533,2313,1,1,http://localhost:11434/api/generate,10494,1,0,0,2
+1741575444004,9090,TC02_TS03_/api/generate,200,OK,Thread Group - LLM APIs 1-1,text,true,,3345,2429,1,1,http://localhost:11434/api/generate,9090,1,0,0,0
+1741575458130,10584,TC02_TS03_/api/generate,200,OK,Thread Group - LLM APIs 1-1,text,true,,3698,2667,1,1,http://localhost:11434/api/generate,10584,1,0,0,0

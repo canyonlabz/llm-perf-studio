@@ -1,0 +1,442 @@
+[
+    {
+        "question_number": "1",
+        "question": "Which of the following statements provides the BEST example of the 'AI Effect'?",
+        "options": {
+            "a": "People lose their jobs as AI-based systems perform their roles cheaper and better",
+            "b": "Competitive computer games lose popularity as AI-based systems always win",
+            "c": "Rule-based expert systems for medical diagnosis are no longer considered to be AI",
+            "d": "People believe AI will take over the world, as shown in films"
+        },
+        "correct_answer": "c",
+        "explanation": {
+            "a": "Is not correct. People in many occupations may lose their jobs to AI-based systems, but this is simply progress, not the 'AI Effect'.",
+            "b": "Is not correct. For some computer games, AI-based systems can outplay humans, but there is little evidence of a drop-off in the popularity of such games.",
+            "c": "Is correct. The 'AI Effect' is defined as the change in the definition of AI as technology advances. Rule-based systems for medical diagnosis were popular examples of AI in the 1970s and 1980s but are often not considered AI today.",
+            "d": "Is not correct. The gullibility of cinema goers believing killer robots will take over the world is not the 'AI Effect'."
+        },
+        "metadata": {
+            "learning_objective": "AI-1.1.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "2",
+        "question": "Which of the following options is NOT a technology used to implement AI?",
+        "options": {
+            "a": "Support vector machine",
+            "b": "Decision tree",
+            "c": "Evolutionary reasoning",
+            "d": "Bayesian optimization"
+        },
+        "correct_answer": "c",
+        "explanation": {
+            "a": "Is not correct. Support vector machines are a form of machine learning.",
+            "b": "Is not correct. Decision trees are a form of machine learning.",
+            "c": "Is correct. There is no such AI technology as evolutionary reasoning. Such a term is occasionally used in discussions related to biological evolution-based rules were considered AI a few decades ago.",
+            "d": "Is not correct. Bayesian optimization is a form of machine learning."
+        },
+        "metadata": {
+            "learning_objective": "AI-1.4.1",
+            "k_level": "K1",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "3",
+        "question": "Which of the following statements about the hardware used to implement AI-based systems is MOST likely to be CORRECT?",
+        "options": {
+            "a": "The processors used to train a mobile recommendation system must be the same as the processors on the mobile phone",
+            "b": "Graphical processing units (GPUs) are a reasonable choice to implement an AI-based computer vision system",
+            "c": "Deep learning systems need to be trained, evaluated, and tested using AI-specific chips",
+            "d": "It is always best to choose processors with more bits to achieve sufficient accuracy for AI-based systems"
+        },
+        "correct_answer": "b",
+        "explanation": {
+            "a": "Is not correct. The two activities of training a ML model and inference from that model are quite different so there is normally no reason that they should be performed on the same processors.",
+            "b": "Is correct. GPUs are designed for the parallel processing of images using thousands of cores, which is close to what is required for an AI-based computer vision system that would most likely be implemented as a neural network.",
+            "c": "Is not correct. It is still possible to train, evaluate and test a simple deep-learning system on a PC with limited GPU support – so specific chips for AI are not needed, but they would be far faster.",
+            "d": "Is not correct. Many AI-based systems are not focused on exact calculations, but rather on probabilistic determinations and so the accuracy of processors with many bits is often unnecessary."
+        },
+        "metadata": {
+            "learning_objective": "AI-1.6.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "4",
+        "question": "There are a number of good quality pre-trained models available in the market and you want to use one of them for an image-based classifier. You have decided to ask the provider of the model about the data used for training the model and its format. Which of the following statements is the BEST example of a risk that you are trying to mitigate by asking these questions?",
+        "options": {
+            "a": "Bad classification accuracy of the pre-trained models",
+            "b": "Differences in the data used to train the model and the operational data",
+            "c": "Performance efficiency issues of the pre-trained model",
+            "d": "Lack of explainability of the pre-trained model compared to that of a model trained by you"
+        },
+        "correct_answer": "b",
+        "explanation": {
+            "a": "Is not correct. The question mentions the good quality of the pre-trained model, so this risk should be negligible.",
+            "b": "Is correct. The data used to train the model should be similar to the data used for making the predictions.",
+            "c": "Is not correct. Performance does not appear to be an issue in this situation.",
+            "d": "Is not correct. Explainability does not appear to be an issue in this situation, nor can it be achieved by looking at the training data and its format."
+        },
+        "metadata": {
+            "learning_objective": "AI-1.8.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "5",
+        "question": "Which of the following statements is MOST likely to be specifying a requirement for autonomy in an AI-based system?",
+        "options": {
+            "a": "The system shall maintain a safe distance to other vehicles until the brake or accelerator is pushed by the driver",
+            "b": "The system shall learn the preferred style of response to emails by remotely monitoring the email traffic",
+            "c": "The system shall compare its predictions of house prices with actual selling prices to determine if it needs to be retrained",
+            "d": "It shall be possible to modify the system’s behavior to work with different types of users in less than a day"
+        },
+        "correct_answer": "a",
+        "explanation": {
+            "a": "Is correct. This requirement defines the human interventions that define the end of the system working autonomously.",
+            "b": "Is not correct. This requirement is specifying a required function for how the system shall perform self-learning.",
+            "c": "Is not correct. This requirement is specifying how the system will manage concept drift, in this case most likely caused by the house market changing.",
+            "d": "Is not correct. This is specifying an adaptability requirement – the maximum time it should take to make a change to the system."
+        },
+        "metadata": {
+            "learning_objective": "AI-2.2.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "6",
+        "question": "Which of the following statements about bias in AI-based systems is NOT correct?",
+        "options": {
+            "a": "Bias may be caused by users of a book recommendation system making choices that deliberately cause the system to make poor suggestions",
+            "b": "Bias may be caused in the employee age of death prediction system by collecting the training data from a dataset of patients who are all retired",
+            "c": "Bias may be caused in the creditworthiness system by using training data obtained from those who own and use a credit card",
+            "d": "Bias may be caused in the navigation system by using a route planning algorithm that is too complex to be explained to typical users"
+        },
+        "correct_answer": "d",
+        "explanation": {
+            "a": "Is not correct. Bias can be caused by users deliberately poisoning the self-learning of an AI-based system.",
+            "b": "Is not correct. Bias can be caused when the training data does not correctly match those who the system will be applied to. For instance, employees will typically be younger than retired patients.",
+            "c": "Is not correct. Bias can be caused when the training data does not correctly match those who the system will be applied to. For instance, most people using credit cards are already considered creditworthy, which is a typical example of sample bias.",
+            "d": "Is correct. If the algorithm cannot be explained, then it lacks explainability, but that does not mean it is biased nor unbiased."
+        },
+        "metadata": {
+            "learning_objective": "AI-2.4.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "7",
+        "question": "Which of the following is MOST likely to be an example of reward hacking?",
+        "options": {
+            "a": "The programmer’s assistant tool optimizes the code to provide reduced response times, while still ensuring that functional requirements are met",
+            "b": "An anesthetic supply device with a goal of keeping patients stable during surgery supplies too many doses and patients do not wake up as quickly as expected",
+            "c": "The third-party development organization paid their AI programmers based on the number of lines of code they write",
+            "d": "A type of AI used to play competitive computer games against humans that is focused on getting the highest score"
+        },
+        "correct_answer": "b",
+        "explanation": {
+            "a": "Is not correct. It appears that the tool is achieving its two goals with there being no detrimental effects, so this is unlikely to be ‘reward hacking’.",
+            "b": "Is correct. This could be ‘reward hacking’ if the system achieves one goal to the detriment of others, in this case the need for patients to wake up.",
+            "c": "Is not correct. Reward hacking is not a form of paying AI developers.",
+            "d": "Is not correct. Some game-playing AI-based systems are driven by a reward function, but this is not known as ‘reward hacking’."
+        },
+        "metadata": {
+            "learning_objective": "AI-2.6.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "8",
+        "question": "Given the following attributes for an AI-based system (I-V): I. Probabilistic, II. Explicable, III. Unfair, IV. Non-deterministic, V. Deterministic. Which list of attributes below is likely to cause the MOST difficulties if the system is to be used as part of a safety-related system?",
+        "options": {
+            "a": "I, IV",
+            "b": "II, IV",
+            "c": "II, III, V",
+            "d": "I, III, V"
+        },
+        "correct_answer": "a",
+        "explanation": {
+            "a": "Is correct. Considering the given attributes: I. Probabilistic – a definite problem for safety-related systems as this causes non-determinism; IV. Non-deterministic - a definite problem for safety-related systems",
+            "b": "Is not correct.",
+            "c": "Is not correct.",
+            "d": "Is not correct."
+        },
+        "metadata": {
+            "learning_objective": "AI-2.8.1",
+            "k_level": "K1",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "9",
+        "question": "Which of the following statements BEST describes classification and regression as part of supervised learning?",
+        "options": {
+            "a": "Regression is checking that the ML model test results do not change when the same test data is executed",
+            "b": "Classification is the grouping of unlabeled data into separate classes",
+            "c": "Classification is the labelling of the data for training the ML model",
+            "d": "Regression is predicting the number of classes that are output by the ML model"
+        },
+        "correct_answer": "b",
+        "explanation": {
+            "a": "Is not correct. Regression in the context of supervised learning is generally when the ML model outputs a numeric result.",
+            "b": "Is correct. Classification is when input data to a ML model is classified into one of a few predefined classes.",
+            "c": "Is not correct. Training data needs to be labelled for training in supervised learning, but this activity is not known as classification. It is simply labelling.",
+            "d": "Is not correct. Regression is when the output from the ML model is numeric, but the output is not a number of classes."
+        },
+        "metadata": {
+            "learning_objective": "AI-3.1.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "10",
+        "question": "Which of the following options BEST describes an example of reinforcement learning?",
+        "options": {
+            "a": "The mobile game app updates its feedback, response timing and the number of user options it provides based on how much the players spend",
+            "b": "The language translation app searches the internet to find text provided in multiple languages to improve its translation function",
+            "c": "The factory quality control system uses video cameras and audio analysis to identify manufactured items that are faulty based on monitoring a human quality control operative",
+            "d": "The software component test prediction system uses a range of quality measures to identify which components are likely to contain the most defects"
+        },
+        "correct_answer": "a",
+        "explanation": {
+            "a": "Is correct. The amount spent can be considered the reward function for this system, with the system changing its behavior to increase the amount spent.",
+            "b": "Is not correct. The app is using text in what can be considered a source language and a ‘correct’ translation of this source. Therefore, it is relying on a form of supervised learning with no reward function mentioned.",
+            "c": "Is not correct. The system is using the human quality control operative as a form of ‘gold’ standard and so is relying on a form of supervised learning.",
+            "d": "Is not correct. There is no suggestion that any reward function is used, instead it is most likely that the prediction system bases its determination of defects on past experience. Therefore, it is probably also relying on a supervised learning system."
+        },
+        "metadata": {
+            "learning_objective": "AI-3.1.3",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "11",
+        "question": "You have been asked for your opinion on the ML approach to be used for a new system that is part of the traffic management for a SMART city. The idea is that the new system will control the traffic lights in the city to ensure traffic flows easily through and around the city. Which of the following approaches do you expect MOST likely to succeed?",
+        "options": {
+            "a": "Unsupervised learning that is based on identifying clusters around the city where the traffic density is higher than average",
+            "b": "A supervised learning regression solution based on thousands of journeys labelled with both journey length and duration",
+            "c": "Reinforcement learning that is based on a reward function that penalizes solutions that result in higher levels of traffic congestion",
+            "d": "A supervised learning classification solution that is based on drivers and passengers submitting their favorite routes for traversing the city"
+        },
+        "correct_answer": "c",
+        "explanation": {
+            "a": "Is not correct. It should be possible for the unsupervised learning system to identify areas that are congested, but this alone will not provide the solution.",
+            "b": "Is not correct. A regression solution is unlikely to provide us with what we want as the predicted speed of individual journeys will not provide an overall solution to citywide congestion.",
+            "c": "Is correct. A continually improving reinforcement learning system with a reward function based on lower levels of congestion as a measure of success is valid for this type of system.",
+            "d": "Is not correct. This solution is dependent on volunteers submitting subjective opinions that will most likely result in a solution that changes back and forth as the system adopts favorite routes that then become congested."
+        },
+        "metadata": {
+            "learning_objective": "AI-3.3.1",
+            "k_level": "K3",
+            "points": 2
+        }
+    },
+    {
+        "question_number": "12",
+        "question": "When performing testing of a trained model, an ML engineer found that the model was highly accurate when evaluated with validation data but that it performed poorly with independent test data. Which of the following options is MOST likely to cause this situation?",
+        "options": {
+            "a": "Underfitting",
+            "b": "Concept drift",
+            "c": "Overfitting",
+            "d": "Poor acceptance criteria"
+        },
+        "correct_answer": "c",
+        "explanation": {
+            "a": "Is not correct. The model performs well on validation data, so it is not a case of underfitting.",
+            "b": "Is not correct. Concept drift refers to changes after the model training and validation stage.",
+            "c": "Is correct. The bad performance on test data and good on validation data suggests overfitting.",
+            "d": "Is not correct. Poor acceptance criteria should be consistent with different sets of data, so are unlikely to lead to a difference between the test results with validation data and independent test data."
+        },
+        "metadata": {
+            "learning_objective": "AI-3.5.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "13",
+        "question": "Which of the following is an example of a challenge that is likely to be encountered in the course of developing and testing an ML solution?",
+        "options": {
+            "a": "Data anonymization operations typically require knowledge of various ML algorithms",
+            "b": "The data used might be unstructured data",
+            "c": "A large percentage of the budget gets spent just in data preparation",
+            "d": "The data pipeline scalability is a challenge when training the model"
+        },
+        "correct_answer": "c",
+        "explanation": {
+            "a": "Is not correct. Data anonymization operations do not require knowledge of ML algorithms.",
+            "b": "Is not correct. Unstructured data is not a challenge. Images, audio, free-flowing text are all examples of unstructured data.",
+            "c": "Is correct. Up to 36% of ML workflow effort may be spent in data preparation.",
+            "d": "Is not correct. Scalability typically is a requirement at deployment, rather than when training."
+        },
+        "metadata": {
+            "learning_objective": "AI-4.1.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "14",
+        "question": "The data scientist has complained that the model cannot be trained with one particular algorithm, although other algorithms work with the same training data. Which of the following options is the MOST likely reason for this?",
+        "options": {
+            "a": "Wrong data",
+            "b": "Missing data",
+            "c": "Badly labelled data",
+            "d": "Insufficient data"
+        },
+        "correct_answer": "d",
+        "explanation": {
+            "a": "Is not correct. Since models based on some learning algorithms can be trained with the data but not one particular algorithm, it indicates that the data is correct.",
+            "b": "Is not correct. Since models based on some learning algorithms can be trained with the data but not one particular algorithm, it indicates that there is no missing data.",
+            "c": "Is not correct. Since models based on some learning algorithms can be trained with the data but not one particular algorithm, it indicates that the data is correctly labelled.",
+            "d": "Is correct. Since models based on some learning algorithms can be trained with the data. However, if it does not work for one particular algorithm, it is MOST likely to be that the quantity of the data that is not sufficient for that particular algorithm."
+        },
+        "metadata": {
+            "learning_objective": "AI-4.3.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "15",
+        "question": "DataSure is a start-up with a product that promises to improve the quality of ML models. DataSure claim that this improvement comes from checking if the data has been labeled correctly. Which of the following defects is MOST likely to have been prevented by using this product?",
+        "options": {
+            "a": "The model will have security vulnerabilities",
+            "b": "The model will have poor accuracy",
+            "c": "The model will not fulfill its intended function",
+            "d": "The model will produce biased outputs"
+        },
+        "correct_answer": "b",
+        "explanation": {
+            "a": "Is not correct. Data privacy and security issues are not being handled. Hence the product is not going to prevent security issues.",
+            "b": "Is correct. Mislabeled data results in reduced accuracy of the ML model.",
+            "c": "Is not correct. A model not being fit for purpose arises from incorrect or unfair data, not mislabeled data.",
+            "d": "Is not correct. A biased model results from incomplete data, unbalanced data, unfair data, data lacking diversity, or duplicate data, rather than from mislabeled data."
+        },
+        "metadata": {
+            "learning_objective": "AI-4.4.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "16",
+        "question": "An ML engineer, upon finding insufficient training data, is rotating labeled images to create additional training data. Which of the following approaches to labeling is being applied in this above example?",
+        "options": {
+            "a": "Crowdsourcing",
+            "b": "Augmentation",
+            "c": "AI-based labeling",
+            "d": "Outsourcing"
+        },
+        "correct_answer": "b",
+        "explanation": {
+            "a": "Is not correct. Crowdsourcing is when you use a large number of people to provide some work. In this case only one person is performing the task.",
+            "b": "Is correct. Augmentation is being performed here by transforming existing labelled data.",
+            "c": "Is not correct. AI is not being used for labeling of the data.",
+            "d": "Is not correct. The ML engineer has not outsourced the task to a third party."
+        },
+        "metadata": {
+            "learning_objective": "AI-4.5.1",
+            "k_level": "K1",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "20",
+        "question": "Which of the following options BEST describes a deep neural net?",
+        "options": {
+            "a": "It is comprised of a hierarchical structure of neurons with the lowest (deepest) neurons making most of the decisions",
+            "b": "It is comprised of connected neurons where each neuron has an associated bias and each connection has an associated weight",
+            "c": "It is made up several layers with each layer (except input and output layers) connected to each other layer and errors are propagated backwards through the network",
+            "d": "It is made up of layers of neurons, each of which generates an activation value based on the other neurons in the same layer"
+        },
+        "correct_answer": "b",
+        "explanation": {
+            "a": "Is not correct. A neural network does not have a hierarchical structure.",
+            "b": "Is correct. As with the human brain, an artificial neural network is comprised of connected neurons. To perform its calculation of an activation value, each neuron is assigned a bias and each connection is assigned a weight.",
+            "c": "Is not correct. A neural network is made up of several layers and errors are propagated backwards through the network, but the layers of a neural network are only connected to the next layers (not each other layer).",
+            "d": "Is not correct. A neural network is made up of layers of neurons, but the activation value is based on the neurons in the preceding layer (not the same layer)."
+        },
+        "metadata": {
+            "learning_objective": "AI-6.1.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "21",
+        "question": "Which of the following statements CORRECTLY describes a test coverage measure for neural networks?",
+        "options": {
+            "a": "Value change coverage is based on individual neurons being seen to affect the overall output of the neural network",
+            "b": "Threshold coverage is based on neurons outputting an activation value greater than a pre-set value between zero and one",
+            "c": "Neuron coverage is a measure of the proportion of neurons that are activated at any time during the testing",
+            "d": "Sign change coverage measures the coverage of neurons that output both positive, negative and zero activation values"
+        },
+        "correct_answer": "b",
+        "explanation": {
+            "a": "Is not correct. Value change coverage is a measure of the proportion of neurons activated where their activation values differ by more than a preset change amount. It is not concerned with the overall output of the neural network.",
+            "b": "Is correct. Threshold coverage measures the proportion of neurons activated during testing with a value greater than a preset threshold value.",
+            "c": "Is not correct. All neurons are potentially ‘activated’ each time a neural network is ‘run’, however the values output by the neurons change, which is what is measured by neuron coverage (coverage achieved by a value greater than zero).",
+            "d": "Is not correct. Sign change coverage is a measure of the proportion of neurons activated with both positive and negative activation values, but not zero activation values."
+        },
+        "metadata": {
+            "learning_objective": "AI-6.2.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "22",
+        "question": "Which of the following requirements for an AI-based system is MOST likely to cause a significant challenge in testing?",
+        "options": {
+            "a": "The system shall be more accurate than the system it is replacing",
+            "b": "The AI component in the system shall have 100% accuracy",
+            "c": "A human operator should be able to override the system in 1 second",
+            "d": "The system shall mimic the human emotions of a typical game player"
+        },
+        "correct_answer": "d",
+        "explanation": {
+            "a": "Is not correct. This is a specific requirement with a test oracle, so should not usually cause a testing challenge.",
+            "b": "Is not correct. This may be a difficult requirement to achieve but should not create a testing challenge.",
+            "c": "Is not correct. This is a testable requirement.",
+            "d": "Is correct. This requirement is extremely complex to test without defining all human emotions and how the system might mimic them."
+        },
+        "metadata": {
+            "learning_objective": "AI-7.1.1",
+            "k_level": "K2",
+            "points": 1
+        }
+    },
+    {
+        "question_number": "23",
+        "question": "Which of the following is a factor associated with the test data that can make the testing of AI-based systems difficult?",
+        "options": {
+            "a": "Sourcing big data with high velocity",
+            "b": "Sourcing data from a single source",
+            "c": "Sourcing data separately from the data scientists",
+            "d": "Sourcing data from public websites"
+        },
+        "correct_answer": "a",
+        "explanation": {
+            "a": "Is correct. Sourcing data for AI systems that use large quantities of high-velocity data can be difficult.",
+            "b": "Is not correct. Sourcing consistent data from multiple sources can be difficult.",
+            "c": "Is not correct. Sourcing data separately is good practice as it prevents common failures with the data scientists.",
+            "d": "Is not correct. Sourcing data from public websites is straightforward."
+        },
+        "metadata": {
+            "learning_objective": "AI-7.3.1",
+            "k_level": "K1",
+            "points": 1
+        }
+    }
+]

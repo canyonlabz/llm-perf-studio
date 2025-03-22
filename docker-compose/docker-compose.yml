@@ -1,0 +1,60 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./data/ollama:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - appnet
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data/chromadb:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+    restart: unless-stopped
+    networks:
+      - appnet
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    depends_on:
+      - ollama
+      - chromadb
+    ports:
+      - "3000:8080"
+    volumes:
+      - ./data/open-webui:/app/backend/data
+    environment:
+      - DATA_DIR=/app/backend/data
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - CHROMA_HTTP_HOST=chromadb
+      - CHROMA_HTTP_PORT=8000
+      - CHROMA_TENANT=default_tenant
+      - VECTOR_DB=chroma
+      - RAG_EMBEDDING_ENGINE=ollama
+      - RAG_EMBEDDING_MODEL=nomic-embed-text
+      - RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE=True
+      - WEBUI_NAME=NeuroticGeek ChatBot
+      - CORS_ALLOW_ORIGIN=*
+    restart: unless-stopped
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  ollama:
+  open-webui:
+  chromadb:
