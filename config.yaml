@@ -1,0 +1,55 @@
+general:
+  model: "gpt-4o-mini"
+  log_level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+
+llm:
+  llm_model: "gpt-4o-mini"  # Model name
+  llm_temperature: 0        # Temperature for randomness in responses
+
+logging:
+  verbose_mode: False  # Enable verbose logging for debugging
+  log_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\tmp\\logs"  # Update with the actual path
+
+user_interface:
+  enable_ui: True  # Enable/disable the user interface (custom setting)
+  ui_port: 8501    # Port for the UI; adjust as needed
+  enable_chatbot: False  # Enable/disable the chatbot (custom setting)
+  enable_debug_button: False  # Enable/disable the debug button (custom setting)
+
+tasks:
+  tasks_input_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\tasks"  # Path with original task files
+  tasks_raw_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\tmp\\raw"  # Path for raw task files before formatting
+  tasks_formatted_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\tmp\\formatted"  # Path for formatted task files
+  test_mode: False  # Set to True for testing purposes. Uses generate_task_test() function in task_loader.py
+
+jmeter:
+  jmx_output_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\tmp\\generated"
+  jmeter_home: "C:\\opt\\apache-jmeter-llm-5.6.3"  # Update with the actual JMeter home path
+  jmeter_bin_path: "C:\\opt\\apache-jmeter-llm-5.6.3\\bin\\jmeter.bat"  # Update with the actual JMeter bin path
+  jmeter_results_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\tmp\\results"  # Path for JMeter results files
+
+browser-use:
+  browser_step_timeout: 60
+  think_time: 5       # Interaction time between browser steps (in seconds)
+  enable_recording: False  # Enable/disable recording (custom setting)
+  enable_trace: False  # Enable/disable trace recording (custom setting)
+  enable_conversation: False # Enable/disable conversation recording (custom setting)
+  save_recording_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\tmp\\recordings"  # Update with the actual path
+  trace_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\tmp\\trace"  # Update with the actual path
+  save_conversation_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\tmp\\conversation\\"  # Update with the actual path
+
+network_capture:
+  capture_api_requests: True          # Always true – critical for JMeter
+  capture_static_assets: False        # CSS, JS, PNG, JPG, etc.
+  capture_fonts: False                # WOFF, WOFF2, TTF, etc.
+  capture_third_party: True           # Google Fonts, CDN, Ads
+  capture_cookies: True               # Always true – critical for JMeter
+  capture_log_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\tmp\\logs" # Backend network log files (JSON or HAR format).
+  capture_domain: ""                  # Domain to capture network traffic from (e.g., example.com). Leave empty to capture all domains.
+
+browsermob-proxy:
+  bmp_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\browsermob-proxy\\bin\\browsermob-proxy"   # Update with the actual path
+  bmp_port: 8080                          # Default port; adjust as needed
+  enable_har_capture: True
+  har_capture_path: "C:\\Users\\Jason\\Repos\\_GitHub\\jmeter-ai-agents\\tmp\\har"  # Update with the actual path
+  har_capture_file: "capture.har"         # Default HAR file name; adjust as needed

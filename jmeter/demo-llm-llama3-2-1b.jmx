@@ -166,7 +166,7 @@ log.info(&quot;[INFO]:  Found a total of &quot; + count + &quot; questions and o
         </hashTree>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC01_Infomation APIs" enabled="false"/>
         <hashTree>
-          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC01_TS01_Version" enabled="true">
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC01_TS01_Version">
             <stringProp name="TestPlan.comments">Retrieve the Ollama version.</stringProp>
           </GenericController>
           <hashTree>
@@ -393,7 +393,7 @@ log.info(&quot;[INFO]:[Thread-${__threadNum}]:  embeddingLength=&quot; + vars.ge
           <stringProp name="TestPlan.comments">NOTE: The &quot;promptNum&quot; is defined in the User Defined Variables (Global).</stringProp>
         </ForeachController>
         <hashTree>
-          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS01_Get Prompt Data" enabled="true"/>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS01_Get Prompt Data"/>
           <hashTree>
             <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS01_Get Prompt Question &amp; Options">
               <stringProp name="scriptLanguage">groovy</stringProp>
@@ -446,7 +446,7 @@ vars.put(&quot;explanationD&quot;,explanationD)
 </stringProp>
             </JSR223Sampler>
             <hashTree>
-              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})">
                 <stringProp name="scriptLanguage">groovy</stringProp>
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>
@@ -459,7 +459,7 @@ prev.setIgnore()</stringProp>
           </hashTree>
           <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS02_Define Prompt Template"/>
           <hashTree>
-            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="TC02_TS02_If Controller (useRAG == false)" enabled="true">
+            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="TC02_TS02_If Controller (useRAG == false)">
               <stringProp name="IfController.condition">${__groovy( (&quot;${useRAG}&quot; == &quot;false&quot;) )}</stringProp>
               <boolProp name="IfController.evaluateAll">false</boolProp>
               <boolProp name="IfController.useExpression">true</boolProp>
@@ -683,7 +683,7 @@ prev.setIgnore()</stringProp>
               <boolProp name="IfController.useExpression">true</boolProp>
             </IfController>
             <hashTree>
-              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC02_TS03_/api/generate" enabled="true">
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC02_TS03_/api/generate">
                 <intProp name="HTTPSampler.concurrentPool">6</intProp>
                 <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
                 <stringProp name="HTTPSampler.port">${port}</stringProp>
@@ -1299,7 +1299,7 @@ try {
                   <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
                 </JSONPostProcessor>
                 <hashTree/>
-                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (KPI Token Calculations)" enabled="true">
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (KPI Token Calculations)">
                   <stringProp name="scriptLanguage">groovy</stringProp>
                   <stringProp name="parameters"></stringProp>
                   <stringProp name="filename"></stringProp>
@@ -1368,7 +1368,7 @@ vars.put(&quot;IS_CORRECT&quot;, (llmAnswer == correctAnswer) ? &quot;true&quot;
 </stringProp>
                 </JSR223PostProcessor>
                 <hashTree/>
-                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="true">
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)">
                   <stringProp name="scriptLanguage">groovy</stringProp>
                   <stringProp name="parameters"></stringProp>
                   <stringProp name="filename"></stringProp>
