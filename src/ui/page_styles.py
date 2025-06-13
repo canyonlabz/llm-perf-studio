@@ -42,6 +42,44 @@ def inject_page_header_styles():
         </style>
     """, unsafe_allow_html=True)
 
+# --- Chatbot Area Styles ---------------------------------------------------
+def inject_chatbot_area_styles():
+    """
+    Inject custom CSS styles for the chatbot area in the Streamlit app.
+    """
+    st.markdown("""
+        <style>
+        .chatbot-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .stChatInput {
+            border: 2px solid #c95000 !important;
+            border-radius: 6px !important;
+            background: #f8f6f2 !important;
+            margin-top: 0.5rem;
+        }
+        .st-key-clear_chat button {
+            border: 2px solid #c95000;
+            color: #c95000;
+            background: transparent;
+            border-radius: 24px;
+            padding: 8px 24px;
+            font-weight: bold;
+            font-size: 18px;
+            float: left;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .st-key-clear_chat button:hover {
+            background: #c95000;
+            color: #fff;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
 # --- Action Button Styles ---------------------------------------------------
 def inject_action_button_styles():
     """

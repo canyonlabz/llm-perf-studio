@@ -3,6 +3,9 @@ import streamlit.components.v1 as components
 from pathlib import Path
 import os
 
+# Importing custom styles for the chatbot area
+from src.ui.page_styles import inject_chatbot_area_styles
+# Import OpenAI client
 from openai import OpenAI
 
 # Initialize OpenAI client
@@ -19,38 +22,7 @@ def render_chatbot_area(llm_model="gpt-4o-mini"):
     Render the interactive chatbot area for performance testing assistance.
     """
     # Inject custom CSS for styling
-    st.markdown("""
-    <style>
-    .chatbot-title {
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-    .stChatInput {
-        border: 2px solid #c95000 !important;
-        border-radius: 6px !important;
-        background: #f8f6f2 !important;
-        margin-top: 0.5rem;
-    }
-    .st-key-clear_chat button {
-        border: 2px solid #c95000;
-        color: #c95000;
-        background: transparent;
-        border-radius: 24px;
-        padding: 8px 24px;
-        font-weight: bold;
-        font-size: 18px;
-        float: left;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        transition: background 0.2s, color 0.2s;
-    }
-    .st-key-clear_chat button:hover {
-        background: #c95000;
-        color: #fff;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    inject_chatbot_area_styles()  # Apply custom styles for the chatbot area
 
     # Centered column for the chatbot
     col_spacer_left, col_chat, col_spacer_right = st.columns([2, 6, 2])

@@ -3,9 +3,8 @@ import streamlit.components.v1 as components
 from pathlib import Path
 import os
 
-from src.ui.page_styles import (
-    inject_page_header_styles # Importing custom styles for the page header
-)
+# Importing custom styles for the page header
+from src.ui.page_styles import inject_page_header_styles 
 
 # -- Web Page Header Definitions -----------------------------------------------------------
 

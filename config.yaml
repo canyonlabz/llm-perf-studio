@@ -8,6 +8,12 @@ llm:
   llm_model: "gpt-4o-mini"  # Model name
   llm_temperature: 0        # Temperature for randomness in responses
 
+ollama:
+  ollama_model: "llama3.2:1b"  # Model name for Ollama
+  ollama_temperature: 0.7  # Temperature for randomness in responses
+  ollama_api_url: "http://localhost:11434"  # API URL for Ollama
+  ollama_api_key: ""  # API key for Ollama, if required
+
 logging:
   log_level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
   verbose_mode: False  # Enable verbose logging for debugging
