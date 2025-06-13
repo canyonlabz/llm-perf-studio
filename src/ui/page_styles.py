@@ -2,6 +2,46 @@
 
 import streamlit as st
 
+# --- Page Header Styles ---------------------------------------------------
+def inject_page_header_styles():
+    """
+    Inject custom CSS styles for the page header in the Streamlit app.
+    """
+    st.markdown("""
+        <style>
+        /* Targets the button with key 'exit_app' */
+        .st-key-exit_app button {
+            border: 2px solid #c95000;
+            color: #c95000;
+            background: transparent;
+            border-radius: 24px;
+            padding: 8px 24px;
+            font-weight: bold;
+            font-size: 18px;
+            float: right;
+            margin-top: 0px;
+            margin-bottom: 10px;
+            transition: background 0.2s, color 0.2s;
+            white-space: nowrap;  /* Prevent text wrapping */
+        }
+        .st-key-exit_app button:hover {
+            background: #c95000;
+            color: #fff;
+        }
+        .nav-link, .nav-link:link, .nav-link:visited, .nav-link:active {
+            text-decoration: none;
+            font-weight: bold;
+            color: black;
+            transition: color 0.2s;
+            padding: 0 10px;
+        }
+        .nav-link:hover {
+            color: #c95000; /* orange shade to match your buttons */
+            text-decoration: none;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
 # --- Action Button Styles ---------------------------------------------------
 def inject_action_button_styles():
     """
@@ -55,7 +95,7 @@ def inject_action_button_styles():
             border: none !important;
         }
         </style>
-        """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
 # --- The Agent Viewer (Agent Log Activity) Styles ---------------------------------------------------
 def inject_agent_viewer_styles():
@@ -64,86 +104,86 @@ def inject_agent_viewer_styles():
     """
     # Inject custom CSS for styling
     st.markdown("""
-    <style>
-    .agent-viewer-title {
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-    .agent-viewer-textarea {
-        border: 2px solid #ddd;
-        border-radius: 6px;
-        background: #f8f8f8;
-        font-family: monospace;
-        padding: 10px;
-        height: 100%;
-    }
-    .st-key-start_session button {
-        background-color: #2d5c7f !important; /* Darker blue */
-        color: #fff;
-        border: none;
-        border-radius: 24px;
-        padding: 10px 28px;
-        font-size: 1.1rem;
-        font-weight: bold;
-        float: right;
-        margin: 0 10px;
-        transition: background 0.2s, color 0.2s;
-        box-shadow: none;
-        outline: none;
-        white-space: nowrap;
-    }
-    .st-key-start_session button:hover {
-        background-color: #1a3a4d !important;   /* Darker blue */
-        color: #a3cae9; /* Lighter blue */
-        border: 2px solid #c95000;
-        cursor: pointer;
-    }
-    .st-key-start_session button:disabled {
-        background-color: #666666 !important;
-        color: #cccccc !important;
-        border: none !important;
-    }
-    .st-key-reset_session button {
-        background-color: #2d5c7f !important; /* Darker blue */
-        color: #fff;
-        border: none;
-        border-radius: 24px;
-        padding: 10px 28px;
-        font-size: 1.1rem;
-        font-weight: bold;
-        float: left;
-        margin: 0 10px;
-        transition: background 0.2s, color 0.2s;
-        box-shadow: none;
-        outline: none;
-        white-space: nowrap;
-    }
-    .st-key-reset_session button:hover {
-        background-color: #1a3a4d !important;   /* Darker blue */
-        color: #a3cae9; /* Lighter blue */
-        border: 2px solid #c95000;
-        cursor: pointer;
-    }
-    .st-key-debug_app button {
-        border: 2px solid #c95000;
-        color: #c95000;
-        background: transparent;
-        border-radius: 24px;
-        padding: 8px 24px;
-        font-weight: bold;
-        font-size: 18px;
-        float: left;
-        margin-top: 0px;
-        margin-bottom: 10px;
-        transition: background 0.2s, color 0.2s;
-        white-space: nowrap;  /* Prevent text wrapping */
-    }
-    .st-key-debug_app button:hover {
-        background: #c95000;
-        color: #fff;
-    }
-    </style>
+        <style>
+        .agent-viewer-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .agent-viewer-textarea {
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: #f8f8f8;
+            font-family: monospace;
+            padding: 10px;
+            height: 100%;
+        }
+        .st-key-start_session button {
+            background-color: #2d5c7f !important; /* Darker blue */
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            padding: 10px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            float: right;
+            margin: 0 10px;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: none;
+            outline: none;
+            white-space: nowrap;
+        }
+        .st-key-start_session button:hover {
+            background-color: #1a3a4d !important;   /* Darker blue */
+            color: #a3cae9; /* Lighter blue */
+            border: 2px solid #c95000;
+            cursor: pointer;
+        }
+        .st-key-start_session button:disabled {
+            background-color: #666666 !important;
+            color: #cccccc !important;
+            border: none !important;
+        }
+        .st-key-reset_session button {
+            background-color: #2d5c7f !important; /* Darker blue */
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            padding: 10px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            float: left;
+            margin: 0 10px;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: none;
+            outline: none;
+            white-space: nowrap;
+        }
+        .st-key-reset_session button:hover {
+            background-color: #1a3a4d !important;   /* Darker blue */
+            color: #a3cae9; /* Lighter blue */
+            border: 2px solid #c95000;
+            cursor: pointer;
+        }
+        .st-key-debug_app button {
+            border: 2px solid #c95000;
+            color: #c95000;
+            background: transparent;
+            border-radius: 24px;
+            padding: 8px 24px;
+            font-weight: bold;
+            font-size: 18px;
+            float: left;
+            margin-top: 0px;
+            margin-bottom: 10px;
+            transition: background 0.2s, color 0.2s;
+            white-space: nowrap;  /* Prevent text wrapping */
+        }
+        .st-key-debug_app button:hover {
+            background: #c95000;
+            color: #fff;
+        }
+        </style>
     """, unsafe_allow_html=True)
 
 # --- Smoke Test Styles ---------------------------------------------------

@@ -30,13 +30,13 @@ def render_page_title():
     """, unsafe_allow_html=True)
 
     # Main title (centered, bold)
-    st.markdown('<div class="centered-title">JMeter AI Agent Framework</div>', unsafe_allow_html=True)
+    st.markdown('<div class="centered-title">LLM Performance Testing Studio</div>', unsafe_allow_html=True)
 
     # Subtitle/description (centered)
     st.markdown(
         '<div class="centered-subtitle">'
-        'Experience the power of AI-driven performance testing with our user-friendly interface. '
-        'Build your scripts with ease and efficiency.'
+        'A unified interface for benchmarking Large Language Models.<br>'
+        'Upload RAG datasets, run automated JMeter tests, and analyze quality—all in one place.'
         '</div>',
         unsafe_allow_html=True
     )

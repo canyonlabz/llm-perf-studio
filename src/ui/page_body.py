@@ -5,16 +5,16 @@ from pathlib import Path
 import os, sys
 from datetime import datetime
 import pandas as pd
-from src.utils.agent_logs import add_agent_log
-from src.agents.ui_handlers import (
-    handle_upload_task,
-    handle_run_browser,
-    handle_generate_jmx,
-    handle_run_smoke_test,
-    handle_debug_test,
-    handle_start_session,
-    handle_reset_session
-)
+##from src.utils.agent_logs import add_agent_log
+#from src.agents.ui_handlers import (
+#    handle_upload_task,
+#    handle_run_browser,
+#    handle_generate_jmx,
+#    handle_run_smoke_test,
+#    handle_debug_test,
+#    handle_start_session,
+#    handle_reset_session
+#)
 from src.ui.page_styles import (
     inject_action_button_styles,
     inject_agent_viewer_styles,
@@ -62,7 +62,7 @@ def render_page_buttons():
     with col_left:
         # File uploader to select a task file
         upload_disabled = not st.session_state.session_started
-        uploaded_file = st.file_uploader("Choose a task file", type=["txt"], key="task_file_uploader", disabled=upload_disabled)
+        uploaded_file = st.file_uploader("Choose a file for RAG", type=["txt"], key="task_file_uploader", disabled=upload_disabled)
         
         # If a file is uploaded, store it in session state
         if uploaded_file is not None:
@@ -73,9 +73,10 @@ def render_page_buttons():
             not st.session_state.session_started or
             st.session_state.selected_task_file is None
         )
-        if st.button("Process Task File", key="upload_task", disabled=process_disabled):
+        if st.button("Process RAG File", key="upload_task", disabled=process_disabled):
             # Call the function to handle file upload
-            handle_upload_task(st.session_state.selected_task_file)
+            ##handle_upload_task(st.session_state.selected_task_file)
+            ...  # This is where you would handle the file upload logic
 
     with col2:
         # Only enabled once we have a formatted task file in state
@@ -87,7 +88,8 @@ def render_page_buttons():
         )
         if st.button("Run Browser Task", key="run_browser_task", disabled=run_disabled):
             # Call the function to handle browser task
-            handle_run_browser()
+            ##handle_run_browser()
+            ...
 
     with col3:
         json_path = st.session_state.get("jmeter_state", {}).get("json_path")
@@ -99,7 +101,8 @@ def render_page_buttons():
         )
         if st.button("Generate JMX File", key="generate_jmx_file", disabled=jmx_disabled):
             # Call the function to handle JMX file generation
-            handle_generate_jmx()
+            ##handle_generate_jmx()
+            ...
 
     with col4:
         jmx_path = st.session_state.get("jmeter_state", {}).get("jmx_path")
@@ -111,7 +114,8 @@ def render_page_buttons():
         )
         if st.button("Run Smoke Test", key="run_smoke_test", disabled=smoke_disabled):
             # Call the function to handle smoke test
-            handle_run_smoke_test()
+            ##handle_run_smoke_test()
+            ...
 
 def render_agent_viewer(ui_config):
     """
@@ -152,21 +156,24 @@ def render_agent_viewer(ui_config):
 
     with col_left:
         # Use a button to start the session
-        if st.button("🚀 Start Session", key="start_session", disabled=st.session_state.session_started, on_click=handle_start_session):
+        if st.button("🚀 Start Session", key="start_session", disabled=st.session_state.session_started):
             # Call the function to handle start session
-            handle_start_session()
+            ##handle_start_session()
+            ...  # This is where you would handle the session start logic
 
     with col_right:
         if st.button("🔄 New Session", key="reset_session"):
             # Call the function to handle reset session
-            handle_reset_session()
+            ##handle_reset_session()
+            ...            # Reset the session state
 
         if debug_mode:
             # Debug button with custom CSS class
             debug_clicked = st.button("🛠️ Debug App", key="debug_app")
             if debug_clicked:
                 # Call the function to handle debug test
-                handle_debug_test()
+                ##handle_debug_test()
+                ...  # This is where you would handle the debug test logic
 
 def render_hitl_area():
     # Example: Agent prompts for human input at a decision point
