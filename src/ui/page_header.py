@@ -22,15 +22,14 @@ def render_page_header():
         st.image("https://img.freepik.com/free-vector/floating-robot_78370-3669.jpg?t=st=1746392177~exp=1746395777~hmac=b087b344ffeaf82d1a5856d4cc4232c2742c20703b0b4f1bb571c580f0aff3b2&w=740", width=75) # Logo
     
     with col2:
-        st.markdown(
-            "<div style='display: flex; gap: 40px; align-items: center; margin-top: 0px;'>"
-            "<a href='#quickstart' class='nav-link'>Home</a>"
-            "<a href='#docs' class='nav-link'>JMeter</a>"
-            "<a href='#demo' class='nav-link'>DeepEval</a>"
-            "</div>",
-            unsafe_allow_html=True
-        ) # Navigation links
-
+        tab_col1, tab_col2, tab_col3, tab_col4 = st.columns([0.13, 0.14, 0.15, 0.58], border=False) # Define four columns for navigation tabs
+        with tab_col1:
+            st.page_link("pages/page_homepage.py", label="Home", icon="🏠")
+        with tab_col2:
+            st.page_link("pages/page_jmeter.py", label="JMeter", icon="📊")
+        with tab_col3:
+            st.page_link("pages/page_deepeval.py", label="DeepEval", icon="📈")
+        
     with col3:
         # Exit button with custom CSS class
         exit_clicked = st.button("🚪 Exit App", key="exit_app")

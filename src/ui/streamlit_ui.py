@@ -9,19 +9,7 @@ from pathlib import Path
 import os
 from src.utils.config import load_config  # Importing configuration loader
 
-# Initialize agent_logs FIRST before any other imports
-#if "agent_logs" not in st.session_state:
-#    st.session_state.agent_logs = []
-
-from src.ui.page_header import render_page_header  # Importing page header
-from src.ui.page_title import render_page_title  # Importing page body
-from src.ui.page_body import (
-    render_page_buttons,  # Importing page buttons
-#    render_agent_viewer,  # Importing agent automation viewer
-#    render_report_viewer  # Importing report viewer
-)
-from src.ui.page_chatbot_area import render_chatbot_area  # Importing interactive area
-#from src.utils.agent_logs import add_agent_log
+# --- Load Configuration -----------------------------------------------------
 
 # Load the full configuration from config.yaml
 module_config = load_config()
@@ -36,6 +24,15 @@ model = llm_config.get("llm_model", "gpt-4o-mini")  # Default to gpt-4o-mini if 
 # --- Render UI ---------------------------------------------------------------
 
 def render_ui():
+    """
+    Render the main UI for the LLM Performance Test Studio.
+    This function sets up the Streamlit page configuration, initializes the navigation,
+    and renders the header, title, chatbot area, and buttons.
+    """
+    # Set the page configuration for Streamlit
+    # This is the main entry point for the Streamlit app.
+    st.set_page_config(page_title="LLM Performance Test Studio", layout="wide")
+
     # Set the page configuration for Streamlit
     page_homepage = st.Page("pages/page_homepage.py", title="Home", icon="🏠")
     page_jmeter = st.Page("pages/page_jmeter.py", title="JMeter", icon="📊")
@@ -45,17 +42,7 @@ def render_ui():
         pages=[page_homepage, page_jmeter, page_deepeval],
         position=True,
     )
-    
-    st.set_page_config(page_title="LLM Performance Test Studio", layout="wide")
     pg.run()
-
-#    render_page_header()    # Render the page header
-#    render_page_title()     # Render the page body (title, subtitle, etc.)
-#    if general_config.get("enable_chatbot", False):
-#        render_chatbot_area(llm_model=model)  # Render the chatbot area
-#    render_page_buttons()  # Render the page buttons
-#    render_agent_viewer(ui_config)  # Render the agent automation viewer
-#    render_report_viewer()  # Render the report viewer
 
 # --- Main Function ---------------------------------------------------------
 

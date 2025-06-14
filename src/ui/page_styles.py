@@ -38,6 +38,71 @@ def inject_page_header_styles():
         .nav-link:hover {
             color: #c95000; /* orange shade to match your buttons */
             text-decoration: none;
+        } 
+        /* Main container for horizontal tabs */
+        div[data-testid="stVerticalBlockBorderWrapper"] {
+            display: flex !important;
+            gap: 0 !important;
+            padding-left: 2rem !important;
+        }
+        /* Individual tab styling */
+        .stPageLink a {
+            background: #f0e6d6 !important;     /* Light beige background */
+            border: 1px solid #d4c4a8 !important;   /* Light brown border */
+            border-radius: 8px 8px 0 0 !important;
+            margin: 0 -5px !important;
+            padding: 1rem 2rem !important;
+            position: relative !important;
+            z-index: 1 !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 2px 0 3px rgba(0,0,0,0.1) !important;
+        }
+        /* Active tab styling */
+        .stPageLink a[aria-current="page"] {
+            background: #fff9f0 !important; /* Lighter beige background for active tab */
+            z-index: 3 !important;
+            border-bottom-color: transparent !important;
+            box-shadow: 0 -3px 5px rgba(0,0,0,0.1) !important;
+        }
+        /* Hover effects */
+        .stPageLink a:not([aria-current="page"]):hover {
+            background: #f5e6c8 !important; /* Slightly darker beige on hover */
+            transform: translateY(-2px);
+        }
+        /* Folded corner effects */
+        .stPageLink a::before,
+        .stPageLink a::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            width: 15px;
+            height: 15px;
+            background: transparent;
+            z-index: 2;
+        }
+        .stPageLink a::before {
+            left: -15px;
+            border-bottom-right-radius: 10px;
+            box-shadow: 5px 0 0 0 #f0e6d6;
+        }
+        .stPageLink a::after {
+            right: -15px;
+            border-bottom-left-radius: 10px;
+            box-shadow: -5px 0 0 0 #f0e6d6;
+        }
+        /* Active tab corner correction */
+        .stPageLink a[aria-current="page"]::before {
+            box-shadow: 5px 0 0 0 #fff9f0;
+        }
+        .stPageLink a[aria-current="page"]::after {
+            box-shadow: -5px 0 0 0 #fff9f0;
+        }
+        /* Text and icon styling */
+        .stPageLink p {
+            color: #5a4a42 !important;  /* Dark brown text */
+            font-family: Verdana, Geneva, sans-serif !important;
+            font-weight: 600 !important;
+            margin: 0 !important;
         }
         </style>
     """, unsafe_allow_html=True)

@@ -25,8 +25,19 @@ def render_chatbot_area(llm_model="gpt-4o-mini"):
     inject_chatbot_area_styles()  # Apply custom styles for the chatbot area
 
     # Centered column for the chatbot
-    col_spacer_left, col_chat, col_spacer_right = st.columns([2, 6, 2])
+    col_left, col_chat, col_right = st.columns([2, 6, 2])
 
+    with col_left:
+        on = st.toggle(
+            "Test Mode",
+            value=False,
+            key="enable_llm_mode",
+            help="Toggle local LLM mode on or off.",)
+        if on:
+            st.markdown('<div class="chatbot-title">💬 LLM Mode Enabled</div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="chatbot-title">🧪 Test Mode Enabled</div>', unsafe_allow_html=True)
+        
     with col_chat:
         # --- Chatbot Section ---
         st.markdown('<div class="chatbot-title">🤖 Chatbot:</div>', unsafe_allow_html=True)
@@ -67,7 +78,7 @@ def render_chatbot_area(llm_model="gpt-4o-mini"):
                     with st.chat_message(message["role"]):
                         st.markdown(message["content"])
 
-    with col_spacer_right:
+    with col_right:
         st.button("🧹 Clear Chat", key="clear_chat", on_click=clear_chat)
 
 # --- Callback function to clear chat ---
