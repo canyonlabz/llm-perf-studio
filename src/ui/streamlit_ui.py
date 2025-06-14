@@ -36,12 +36,24 @@ model = llm_config.get("llm_model", "gpt-4o-mini")  # Default to gpt-4o-mini if 
 # --- Render UI ---------------------------------------------------------------
 
 def render_ui():
+    # Set the page configuration for Streamlit
+    page_homepage = st.Page("pages/page_homepage.py", title="Home", icon="🏠")
+    page_jmeter = st.Page("pages/page_jmeter.py", title="JMeter", icon="📊")
+    page_deepeval = st.Page("pages/page_deepeval.py", title="DeepEval", icon="📈")
+
+    pg = st.navigation(
+        pages=[page_homepage, page_jmeter, page_deepeval],
+        position=True,
+    )
+    
     st.set_page_config(page_title="LLM Performance Test Studio", layout="wide")
-    render_page_header()    # Render the page header
-    render_page_title()     # Render the page body (title, subtitle, etc.)
-    if general_config.get("enable_chatbot", False):
-        render_chatbot_area(llm_model=model)  # Render the chatbot area
-    render_page_buttons()  # Render the page buttons
+    pg.run()
+
+#    render_page_header()    # Render the page header
+#    render_page_title()     # Render the page body (title, subtitle, etc.)
+#    if general_config.get("enable_chatbot", False):
+#        render_chatbot_area(llm_model=model)  # Render the chatbot area
+#    render_page_buttons()  # Render the page buttons
 #    render_agent_viewer(ui_config)  # Render the agent automation viewer
 #    render_report_viewer()  # Render the report viewer
 

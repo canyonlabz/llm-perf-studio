@@ -36,7 +36,7 @@ model = llm_config.get("llm_model", "gpt-4o-mini")  # Default to gpt-4o-mini if 
 # --- Render UI ---------------------------------------------------------------
 
 def render_ui():
-    st.set_page_config(page_title="LLM Performance Test Studio", layout="wide")
+    #st.set_page_config(page_title="LLM Performance Test Studio", layout="wide")
     render_page_header()    # Render the page header
     render_page_title()     # Render the page body (title, subtitle, etc.)
     if general_config.get("enable_chatbot", False):
