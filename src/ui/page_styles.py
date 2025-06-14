@@ -45,10 +45,12 @@ def inject_page_header_styles():
             gap: 0 !important;
             padding-left: 2rem !important;
         }
-        /* Individual tab styling */
-        .stPageLink a {
-            background: #f0e6d6 !important;     /* Light beige background */
-            border: 1px solid #d4c4a8 !important;   /* Light brown border */
+        /* Base tab style */
+        a[data-testid="stPageLink-NavLink"] {
+            background: #f5f7fa !important;
+            border: 1px solid #b0b8c1 !important;
+            color: #333 !important;
+            text-decoration: none !important;
             border-radius: 8px 8px 0 0 !important;
             margin: 0 -5px !important;
             padding: 1rem 2rem !important;
@@ -57,21 +59,25 @@ def inject_page_header_styles():
             transition: all 0.3s ease !important;
             box-shadow: 2px 0 3px rgba(0,0,0,0.1) !important;
         }
-        /* Active tab styling */
-        .stPageLink a[aria-current="page"] {
-            background: #fff9f0 !important; /* Lighter beige background for active tab */
+        /* Active tab (current page) */
+        a[data-testid="stPageLink-NavLink"][aria-current="page"] {
+            background: #426cc4 !important; /* darker blue for current tab */
+            color: #fff !important;
+            border: 1px solid #2b4fa1 !important;
             z-index: 3 !important;
             border-bottom-color: transparent !important;
             box-shadow: 0 -3px 5px rgba(0,0,0,0.1) !important;
         }
-        /* Hover effects */
-        .stPageLink a:not([aria-current="page"]):hover {
-            background: #f5e6c8 !important; /* Slightly darker beige on hover */
+        /* Hover state (non-active only) */
+        a[data-testid="stPageLink-NavLink"]:not([aria-current="page"]):hover {
+            background: #d0e3ff !important;
+            border: 1px solid #1976d2;
+            box-shadow: 2px 0 3px rgba(0,0,0,0.2) !important;
             transform: translateY(-2px);
         }
-        /* Folded corner effects */
-        .stPageLink a::before,
-        .stPageLink a::after {
+        /* Folded corner base effect */
+        a[data-testid="stPageLink-NavLink"]::before,
+        a[data-testid="stPageLink-NavLink"]::after {
             content: '';
             position: absolute;
             bottom: -1px;
@@ -80,26 +86,26 @@ def inject_page_header_styles():
             background: transparent;
             z-index: 2;
         }
-        .stPageLink a::before {
+        /* Left corner */
+        a[data-testid="stPageLink-NavLink"]::before {
             left: -15px;
             border-bottom-right-radius: 10px;
-            box-shadow: 5px 0 0 0 #f0e6d6;
         }
-        .stPageLink a::after {
+        /* Right corner */
+        a[data-testid="stPageLink-NavLink"]::after {
             right: -15px;
             border-bottom-left-radius: 10px;
-            box-shadow: -5px 0 0 0 #f0e6d6;
         }
-        /* Active tab corner correction */
-        .stPageLink a[aria-current="page"]::before {
-            box-shadow: 5px 0 0 0 #fff9f0;
+        /* Active tab corner overrides */
+        a[data-testid="stPageLink-NavLink"][aria-current="page"]::before {
+            border-bottom-right-radius: 0;
         }
-        .stPageLink a[aria-current="page"]::after {
-            box-shadow: -5px 0 0 0 #fff9f0;
+        a[data-testid="stPageLink-NavLink"][aria-current="page"]::after {
+            border-bottom-left-radius: 0;
         }
-        /* Text and icon styling */
-        .stPageLink p {
-            color: #5a4a42 !important;  /* Dark brown text */
+        /* Text inside nav */
+        a[data-testid="stPageLink-NavLink"] p {
+            color: #2d5c7f !important;
             font-family: Verdana, Geneva, sans-serif !important;
             font-weight: 600 !important;
             margin: 0 !important;
