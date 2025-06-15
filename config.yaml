@@ -26,4 +26,5 @@ user_interface:
 jmeter:
   jmeter_home: "/opt/apache-jmeter-5.6.3"  # Update with the actual JMeter home path
   jmeter_bin_path: "/opt/apache-jmeter-5.6.3/bin/jmeter"  # Update with the actual JMeter bin path
+  jmeter_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/jmeter"  # Path for JMeter JMX files
   jmeter_results_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/tmp/results"  # Path for JMeter results files

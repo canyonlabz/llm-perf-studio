@@ -16,34 +16,37 @@ from src.utils.config import load_config  # Importing configuration loader
 from src.ui.page_header import render_page_header  # Importing page header
 from src.ui.page_title import render_page_title  # Importing page body
 from src.ui.page_body import (
-    render_page_buttons,  # Importing page buttons
+    render_jmeter_config,  # Importing JMeter configuration
+#    render_page_buttons,  # Importing page buttons
 #    render_agent_viewer,  # Importing agent automation viewer
 #    render_report_viewer  # Importing report viewer
 )
 from src.ui.page_chatbot_area import render_chatbot_area  # Importing interactive area
 #from src.utils.agent_logs import add_agent_log
 
+# --- Load Configuration -----------------------------------------------------
+# This module loads the configuration from config.yaml and sets up the LLM model.
+
 # Load the full configuration from config.yaml
 module_config = load_config()
 general_config = module_config.get("general", {})
 # Load specific configurations for LLM and UI
-llm_config = module_config.get("llm", {})
+jmeter_config = module_config.get("jmeter", {})
 ui_config = module_config.get("user_interface", {})
 
-# Define the LLM model to use.
-model = llm_config.get("llm_model", "gpt-4o-mini")  # Default to gpt-4o-mini if not specified in config
+jmeter_path = jmeter_config.get("jmeter_path", "jmeter")  # Default to 'jmeter' if not specified in config
 
 # --- Render UI ---------------------------------------------------------------
 
 def render_ui():
-    #st.set_page_config(page_title="LLM Performance Test Studio", layout="wide")
+    """
+    Render the main UI for the JMeter configuration page.
+    This function sets up the Streamlit page configuration, initializes the navigation,
+    and renders the header, title, and JMeter configuration.
+    """
+    # Set the page configuration for Streamlit
     render_page_header()    # Render the page header
-    render_page_title()     # Render the page body (title, subtitle, etc.)
-    if general_config.get("enable_chatbot", False):
-        render_chatbot_area(llm_model=model)  # Render the chatbot area
-    render_page_buttons()  # Render the page buttons
-#    render_agent_viewer(ui_config)  # Render the agent automation viewer
-#    render_report_viewer()  # Render the report viewer
+    render_jmeter_config(jmeter_path)  # Render the JMeter configuration
 
 # --- Main Function ---------------------------------------------------------
 

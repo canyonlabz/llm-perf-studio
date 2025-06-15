@@ -20,7 +20,12 @@ from src.ui.page_styles import (
     inject_agent_viewer_styles,
     inject_report_viewer_styles
 )
-from src.ui.page_utils import format_duration, format_datetime
+from src.ui.page_utils import (
+    format_duration, 
+    format_datetime,
+    file_selector
+)
+# --- Initialize Session State ------------------------------------------------
 
 # Initialize session state
 if "session_started" not in st.session_state:
@@ -32,21 +37,24 @@ if "agent_logs" not in st.session_state:
 if "jmeter_state" not in st.session_state:
     # Mirror the same shape your pipeline expects
     st.session_state.jmeter_state = {
-        "task_text": "",
-        "formatted_tasks": [],
-        "formatted_file_path": "",  # <-- Ensure this is blank!
-        "json_path": "",
-        "json_valid": False,
         "jmx_path": "",
         "jmx_valid": False,
+        "vusers": None,
+        "ramp_up": None,
+        "duration": None,
+        "iterations": None,
         "smoke_test_results": {},
         "jmeter_jtl_path": "",
         "jmeter_log_path": "",
         "run_counts": {},
     }
-# Initialize the selected task file in session state if not already present
-if "selected_task_file" not in st.session_state:
-    st.session_state.selected_task_file = None
+# Initialize the selected RAG file in session state if not already present
+if "selected_rag_file" not in st.session_state:
+    st.session_state.selected_rag_file = None
+
+# Initialize the selected JMeter JMX file in session state if not already present
+if "selected_jmx_file" not in st.session_state:
+    st.session_state.selected_jmx_file = None
 
 # --- Render UI ---------------------------------------------------------------
 
@@ -117,6 +125,82 @@ def render_page_buttons():
             ##handle_run_smoke_test()
             ...
 
+def render_jmeter_area():
+    """
+    Render the JMeter page that displays JMeter-related functionalities.
+    """
+    # Inject custom styles for JMeter page
+    inject_action_button_styles()  # Inject custom styles for action buttons
+
+    # Centered column for the JMeter page
+    col_left, col_jmeter, col_right = st.columns([2, 6, 2], border=True)  # Define three columns with specified widths and borders
+
+    with col_jmeter:
+        # Create the JMeter section
+        st.markdown('<div class="jmeter-title">📊 JMeter Performance Testing</div>', unsafe_allow_html=True)
+
+        # Render the buttons for JMeter actions
+        
+def render_jmeter_config(jmeter_path):
+    """
+    Render the JMeter configurations for the webpage.
+    """
+    # Use 6 columns: spacers + 4 button columns + spacers
+    col1, col2, col3, col4, col5 = st.columns([0.20, 0.20, 0.20, 0.20, 0.20], border=True) # Define six columns with specified widths and borders
+
+    with col1:
+        jmx_value = st.session_state.selected_jmx_file if "selected_jmx_file" in st.session_state else None
+        # Display the selected JMX file path
+        if jmx_value:
+            jmx_filename = jmx_value
+            st.info(f"Selected JMX file: {jmx_filename}")
+        else:
+            # File selector to select a JMX file
+            jmx_filename = file_selector(jmeter_path)   # Call the file selector function to get the JMX file path
+        
+        # If a file is uploaded, store it in session state
+        if jmx_filename is not None:
+            st.session_state.selected_jmx_file = jmx_filename
+
+    with col2:
+        vusers_value = st.session_state.jmeter_state.get("vusers", None)
+        # Number input for virtual users
+        vusers = st.number_input(
+            "Number of Virtual Users", key="vusers_input", value=vusers_value, step=1, min_value=None, format="%d", placeholder="Enter number..."
+        )
+        st.write("Virtual Users: ", vusers)
+
+    with col3:
+        ramp_up_value = st.session_state.jmeter_state.get("ramp_up", None)
+        # Number input for ramp-up period
+        ramp_up = st.number_input(
+            "Ramp-Up Period (seconds)", key="ramp_up_input", value=ramp_up_value, step=1, min_value=None, format="%d", placeholder="Enter seconds..."
+        )
+        st.write("Ramp-Up Period (sec): ", ramp_up)
+
+    with col4:
+        duration_value = st.session_state.jmeter_state.get("duration", None)
+        # Number input for test duration
+        duration = st.number_input(
+            "Test Duration (seconds)", key="duration_input", value=duration_value, step=1, min_value=None, format="%d", placeholder="Enter seconds..."
+        )
+        st.write("Test Duration (sec): ", duration)
+
+    with col5:
+        iterations_value = st.session_state.jmeter_state.get("iterations", None)
+        # Number input for number of iterations
+        iterations = st.number_input(
+            "Number of Iterations", key="iterations_input", value=iterations_value, step=1, min_value=None, format="%d", placeholder="Enter iterations..."
+        )
+        st.write("Number of Iterations: ", iterations)
+
+    # If a file is uploaded, store it in session state
+    if jmx_filename is not None:
+        st.session_state.jmeter_state["jmx_path"] = jmx_filename
+        st.session_state.jmeter_state["vusers"] = vusers
+        st.session_state.jmeter_state["ramp_up"] = ramp_up
+        st.session_state.jmeter_state["duration"] = duration
+
 def render_agent_viewer(ui_config):
     """
     Render the Agent Automation Viewer area that displays agent logs and activities.
@@ -152,8 +236,6 @@ def render_agent_viewer(ui_config):
             else:
                 st.info("No agent activity yet. Click on an action button to start.")
 
-        render_hitl_area()  # Render the Human-in-the-loop area
-
     with col_left:
         # Use a button to start the session
         if st.button("🚀 Start Session", key="start_session", disabled=st.session_state.session_started):
@@ -174,25 +256,6 @@ def render_agent_viewer(ui_config):
                 # Call the function to handle debug test
                 ##handle_debug_test()
                 ...  # This is where you would handle the debug test logic
-
-def render_hitl_area():
-    # Example: Agent prompts for human input at a decision point
-    if "hitl_prompt" not in st.session_state:
-        st.session_state.hitl_prompt = None
-    if "hitl_response" not in st.session_state:
-        st.session_state.hitl_response = None
-
-    # Example: Agent needs human input
-    if st.session_state.hitl_prompt:
-        st.markdown(f"**Agent:** {st.session_state.hitl_prompt}")
-        hitl_input = st.text_input("Your response:", key="hitl_input")
-        if st.button("Submit Response"):
-            st.session_state.hitl_response = hitl_input
-            # Pass this response back to your agent workflow here
-            st.session_state.hitl_prompt = None  # Clear prompt after response
-            st.success("Your input has been submitted to the agent.")
-    else:
-        st.info("No agent question at the moment. The agent will ask for your input when needed.")
 
 def render_report_viewer():
     """

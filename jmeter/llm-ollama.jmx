@@ -1,0 +1,1833 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan - Ollama LLM">
+      <stringProp name="TestPlan.comments">Test plan designed for performance testing large language models using Ollama LLM framework.</stringProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+    </TestPlan>
+    <hashTree>
+      <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie Manager">
+        <collectionProp name="CookieManager.cookies"/>
+        <boolProp name="CookieManager.clearEachIteration">true</boolProp>
+        <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
+      </CookieManager>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables (Global)">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="timestamp" elementType="Argument">
+            <stringProp name="Argument.name">timestamp</stringProp>
+            <stringProp name="Argument.value">${__time(yyyy-MM-dd-hh-mm,)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="thinkTime" elementType="Argument">
+            <stringProp name="Argument.name">thinkTime</stringProp>
+            <stringProp name="Argument.value">5000</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="scriptPath" elementType="Argument">
+            <stringProp name="Argument.name">scriptPath</stringProp>
+            <stringProp name="Argument.value">${__BeanShell(import org.apache.jmeter.services.FileServer; FileServer.getFileServer().getBaseDir();)}${__BeanShell(File.separator,)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Absolute path of where the JMeter script is located.</stringProp>
+          </elementProp>
+          <elementProp name="useRAG" elementType="Argument">
+            <stringProp name="Argument.name">useRAG</stringProp>
+            <stringProp name="Argument.value">true</stringProp>
+            <stringProp name="Argument.desc">Determines whether the prompt template should use RAG techniques or not (default is false).</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="promptNum" elementType="Argument">
+            <stringProp name="Argument.name">promptNum</stringProp>
+            <stringProp name="Argument.value">2</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">The number of prompts to send to the LLM (Max = 20). Based upon the JSON input file.</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
+      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config (Environment)">
+        <stringProp name="delimiter">,</stringProp>
+        <stringProp name="fileEncoding"></stringProp>
+        <stringProp name="filename">testdata_csv/environment.csv</stringProp>
+        <boolProp name="ignoreFirstLine">true</boolProp>
+        <boolProp name="quotedData">false</boolProp>
+        <boolProp name="recycle">true</boolProp>
+        <stringProp name="shareMode">shareMode.all</stringProp>
+        <boolProp name="stopThread">false</boolProp>
+        <stringProp name="variableNames">hostname,port</stringProp>
+      </CSVDataSet>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group - LLM APIs">
+        <stringProp name="TestPlan.comments">NOTE:  Thread Loop Count will continue to loop over the number of prompts you set in the &quot;Global&quot; User Defined Variables which is set by the variable &quot;promptNum&quot;.</stringProp>
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <longProp name="ThreadGroup.duration">0</longProp>
+        <longProp name="ThreadGroup.delay">0</longProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController">
+          <stringProp name="LoopController.loops">10</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="false">
+          <boolProp name="displayJMeterProperties">false</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="TC00_Load Prompt Data"/>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC00_TS01_Import JSON Prompt Data">
+            <stringProp name="HTTPSampler.protocol">file</stringProp>
+            <stringProp name="HTTPSampler.path">${jsonFilename}</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (questionOptions)">
+              <stringProp name="JSONPostProcessor.referenceNames">questionOptions</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$[*][&apos;question&apos;,&apos;options&apos;,&apos;correct_answer&apos;,&apos;question_number&apos;,&apos;explanation&apos;]</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
+              <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+            </JSONPostProcessor>
+            <hashTree/>
+            <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor (${__samplerName()})">
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="script">// Define the folowing
+def threadName = ctx.getThread().getThreadName()
+
+// Define our JSON filename and full path.
+def jsonFilename = vars.get(&quot;scriptPath&quot;) + &quot;testdata_json/ISTQB_Final_Questions_Answers.json&quot;
+
+// Check for back slashes in case running on Windows.
+if (jsonFilename ==~ /.*\\\\.*/) {
+	jsonFilename = jsonFilename.replace(&quot;\\\\&quot;,&quot;/&quot;)
+	log.info(&quot;[INFO]:[&quot; + threadName + &quot;]: ${__samplerName()}:  jsonFilename=&quot; + jsonFilename)
+	vars.put(&quot;jsonFilename&quot;,jsonFilename)
+}
+else {
+	log.info(&quot;[WARNING]:[&quot; + threadName + &quot;]: ${__samplerName()}:  No Regex Match!&quot;)
+	vars.put(&quot;jsonFilename&quot;,&quot;FILE_NOT_FOUND&quot;)
+}
+</stringProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
+            </JSR223PreProcessor>
+            <hashTree/>
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})">
+              <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="script">import groovy.json.JsonSlurper
+
+// Don&apos;t report this Sampler in the results.
+prev.setIgnore()
+
+// Define the folowing
+def threadName = prev.getThreadName()
+int count = vars.get(&quot;questionOptions_matchNr&quot;) as Integer
+
+log.debug(&quot;[DEBUG]:  ---- ISTQB Questions and Answer Options ----&quot;)
+
+for (int i = 1; i &lt;= count; i++) {
+    def rawJson = vars.get(&quot;questionOptions_&quot; + i)
+    
+    if (rawJson) {
+        def parsedData = new JsonSlurper().parseText(rawJson)
+        def question = parsedData.question
+        def options = parsedData.options
+
+        log.debug(&quot;[DEBUG]:  Q&quot; + i + &quot;: &quot; + question)
+        options.each { key, value -&gt; 
+            log.debug(&quot;[DEBUG]:  ${key.toUpperCase()}) ${value}&quot;)
+        }
+    }
+}
+
+log.debug(&quot;[DEBUG]:  ---- End of Questions ----&quot;)
+log.info(&quot;[INFO]:  Found a total of &quot; + count + &quot; questions and option choices (A, B, C, D).&quot;)
+</stringProp>
+            </JSR223PostProcessor>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC01_Infomation APIs" enabled="false"/>
+        <hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC01_TS01_Version">
+            <stringProp name="TestPlan.comments">Retrieve the Ollama version.</stringProp>
+          </GenericController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC01_TS01_/api/version" enabled="true">
+              <intProp name="HTTPSampler.concurrentPool">6</intProp>
+              <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
+              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.protocol">http</stringProp>
+              <stringProp name="HTTPSampler.path">/api/version</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Accept</stringProp>
+                    <stringProp name="Header.value">*/*</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Accept-Encoding</stringProp>
+                    <stringProp name="Header.value">gzip, deflate, br</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Connection</stringProp>
+                    <stringProp name="Header.value">keep-alive</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (version)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">version</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$..version</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">log.info(&quot;[INFO]:[Thread-${__threadNum}]:  Version=&quot; + vars.get(&quot;version&quot;))</stringProp>
+              </JSR223PostProcessor>
+              <hashTree/>
+            </hashTree>
+            <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
+              <intProp name="ActionProcessor.action">1</intProp>
+              <intProp name="ActionProcessor.target">0</intProp>
+              <stringProp name="ActionProcessor.duration">${thinkTime}</stringProp>
+            </TestAction>
+            <hashTree/>
+          </hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC01_TS02_Tags" enabled="true">
+            <stringProp name="TestPlan.comments">List models that are available locally, or on the remote system where Ollama is running.</stringProp>
+          </GenericController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC01_TS02_/api/tags" enabled="true">
+              <intProp name="HTTPSampler.concurrentPool">6</intProp>
+              <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
+              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.protocol">http</stringProp>
+              <stringProp name="HTTPSampler.path">/api/tags</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Accept</stringProp>
+                    <stringProp name="Header.value">*/*</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Accept-Encoding</stringProp>
+                    <stringProp name="Header.value">gzip, deflate, br</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Connection</stringProp>
+                    <stringProp name="Header.value">keep-alive</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (modelNames)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">modelNames</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$.models[*].name</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (llamaModel)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">llamaModel</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$..models[?(@.name =~ /.*llama.*/i)].name</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">int count = vars.get(&quot;modelNames_matchNr&quot;) as Integer
+
+log.info(&quot;[INFO]:[Thread-${__threadNum}]:  ---- List of Model Names ----&quot;)
+for (int i = 1; i &lt;= count; i++) {
+    def modelName = vars.get(&quot;modelNames_&quot; + i)
+    log.info(&quot;[INFO]:[Thread-${__threadNum}]:  Model &quot; + i + &quot;: &quot; + modelName)
+}
+log.info(&quot;[INFO]:[Thread-${__threadNum}]:  ---- End of Model List ----&quot;)
+log.info(&quot;[INFO]:[Thread-${__threadNum}]:  Model Selected=&quot; + vars.get(&quot;llamaModel&quot;))
+</stringProp>
+              </JSR223PostProcessor>
+              <hashTree/>
+            </hashTree>
+            <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
+              <intProp name="ActionProcessor.action">1</intProp>
+              <intProp name="ActionProcessor.target">0</intProp>
+              <stringProp name="ActionProcessor.duration">${thinkTime}</stringProp>
+            </TestAction>
+            <hashTree/>
+          </hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC01_TS03_Show" enabled="true">
+            <stringProp name="TestPlan.comments">Show information about a model including details, modelfile, template, parameters, license, system prompt.</stringProp>
+          </GenericController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC01_TS02_/api/show" enabled="true">
+              <intProp name="HTTPSampler.concurrentPool">6</intProp>
+              <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
+              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.protocol">http</stringProp>
+              <stringProp name="HTTPSampler.path">/api/show</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+  &quot;model&quot;: &quot;${llamaModel}&quot;&#xd;
+}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Accept</stringProp>
+                    <stringProp name="Header.value">*/*</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Accept-Encoding</stringProp>
+                    <stringProp name="Header.value">gzip, deflate, br</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Connection</stringProp>
+                    <stringProp name="Header.value">keep-alive</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (parameterSize)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">parameterSize</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$.details.parameter_size</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (contextLength)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">contextLength</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$[&quot;model_info&quot;][&quot;llama.context_length&quot;]</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (embeddingLength)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">embeddingLength</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$[&quot;model_info&quot;][&quot;llama.embedding_length&quot;]</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">log.info(&quot;[INFO]:[Thread-${__threadNum}]:  parameterSize=&quot; + vars.get(&quot;parameterSize&quot;))
+log.info(&quot;[INFO]:[Thread-${__threadNum}]:  contextLength=&quot; + vars.get(&quot;contextLength&quot;))
+log.info(&quot;[INFO]:[Thread-${__threadNum}]:  embeddingLength=&quot; + vars.get(&quot;embeddingLength&quot;))</stringProp>
+              </JSR223PostProcessor>
+              <hashTree/>
+            </hashTree>
+            <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
+              <intProp name="ActionProcessor.action">1</intProp>
+              <intProp name="ActionProcessor.target">0</intProp>
+              <stringProp name="ActionProcessor.duration">${thinkTime}</stringProp>
+            </TestAction>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <ForeachController guiclass="ForeachControlPanel" testclass="ForeachController" testname="TC02_ForEach Controller (questionOptions)">
+          <stringProp name="ForeachController.inputVal">questionOptions</stringProp>
+          <stringProp name="ForeachController.returnVal">promptData</stringProp>
+          <boolProp name="ForeachController.useSeparator">true</boolProp>
+          <stringProp name="ForeachController.startIndex">0</stringProp>
+          <stringProp name="ForeachController.endIndex">${promptNum}</stringProp>
+          <stringProp name="TestPlan.comments">NOTE: The &quot;promptNum&quot; is defined in the User Defined Variables (Global).</stringProp>
+        </ForeachController>
+        <hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS01_Get Prompt Data"/>
+          <hashTree>
+            <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS01_Get Prompt Question &amp; Options">
+              <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">false</stringProp>
+              <stringProp name="script">import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+
+// Define the folowing
+def threadName = ctx.getThread().getThreadName()
+def jsonStr = /${promptData}/
+def slurper = new JsonSlurper()
+def item = slurper.parseText(jsonStr)
+
+log.debug(&quot;[DEBUG]:  question number [&quot; + item.question_number + &quot;] = &quot; + item.question)
+log.debug(&quot;[DEBUG]:  optionA  = &quot; + item.options.a)
+log.debug(&quot;[DEBUG]:  optionB  = &quot; + item.options.b)
+log.debug(&quot;[DEBUG]:  optionC  = &quot; + item.options.c)
+log.debug(&quot;[DEBUG]:  optionD  = &quot; + item.options.d)
+log.debug(&quot;[DEBUG]:  correctAnswer = &quot; + item.correct_answer)
+log.debug(&quot;[DEBUG]:  explanationA = &quot; + item.explanation.a)
+log.debug(&quot;[DEBUG]:  explanationB = &quot; + item.explanation.b)
+log.debug(&quot;[DEBUG]:  explanationC = &quot; + item.explanation.c)
+log.debug(&quot;[DEBUG]:  explanationD = &quot; + item.explanation.d)
+
+def question_number = item.question_number.toString()
+def question = item.question.toString()
+def optionA = item.options.a.toString()
+def optionB = item.options.b.toString()
+def optionC = item.options.c.toString()
+def optionD = item.options.d.toString()
+def correctAnswer = item.correct_answer.toString()
+def explanationA = item.explanation.a.toString()
+def explanationB = item.explanation.b.toString()
+def explanationC = item.explanation.c.toString()
+def explanationD = item.explanation.d.toString()
+
+vars.put(&quot;question_number&quot;,question_number)
+vars.put(&quot;question&quot;,question)
+vars.put(&quot;optionA&quot;,optionA)
+vars.put(&quot;optionB&quot;,optionB)
+vars.put(&quot;optionC&quot;,optionC)
+vars.put(&quot;optionD&quot;,optionD)
+vars.put(&quot;correctAnswer&quot;,correctAnswer)
+vars.put(&quot;explanationA&quot;,explanationA)
+vars.put(&quot;explanationB&quot;,explanationB)
+vars.put(&quot;explanationC&quot;,explanationC)
+vars.put(&quot;explanationD&quot;,explanationD)
+</stringProp>
+            </JSR223Sampler>
+            <hashTree>
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">// Don&apos;t report this Sampler in the results.
+prev.setIgnore()</stringProp>
+              </JSR223PostProcessor>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS02_Define Prompt Template"/>
+          <hashTree>
+            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="TC02_TS02_If Controller (useRAG == false)">
+              <stringProp name="IfController.condition">${__groovy( (&quot;${useRAG}&quot; == &quot;false&quot;) )}</stringProp>
+              <boolProp name="IfController.evaluateAll">false</boolProp>
+              <boolProp name="IfController.useExpression">true</boolProp>
+            </IfController>
+            <hashTree>
+              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS02_Define Prompt Template">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">false</stringProp>
+                <stringProp name="script">import org.apache.commons.lang3.StringEscapeUtils
+
+def promptTemplate = &apos;&apos;&apos;You are an expert in software testing. Answer the following multiple-choice question using only your current knowledge—do not search the internet or use external data. Read the question and the four options carefully, and then respond with only one letter (A, B, C, or D) corresponding to the best answer. Do not include any explanation or extra text—your response should be only the letter.
+
+Question:
+${question}
+
+Options:
+A) ${optionA}
+B) ${optionB}
+C) ${optionC}
+D) ${optionD}
+
+Please respond with only the letter that represents your answer.&apos;&apos;&apos;
+
+// Properly escape the string for JSON
+String escapedPrompt = StringEscapeUtils.escapeJson(promptTemplate)
+
+log.info(&quot;[DEBUG]: escapedPrompt = &quot; + escapedPrompt)
+
+vars.put(&quot;promptTemplate&quot;, escapedPrompt)</stringProp>
+              </JSR223Sampler>
+              <hashTree>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">// Don&apos;t report this Sampler in the results.
+prev.setIgnore()</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+              </hashTree>
+            </hashTree>
+            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="TC02_TS02_If Controller (useRAG == true)">
+              <stringProp name="IfController.condition">${__groovy( (&quot;${useRAG}&quot; == &quot;true&quot;) )}</stringProp>
+              <boolProp name="IfController.evaluateAll">false</boolProp>
+              <boolProp name="IfController.useExpression">true</boolProp>
+            </IfController>
+            <hashTree>
+              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS02_Define RAG Prompt Template" enabled="false">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">import org.apache.commons.lang3.StringEscapeUtils
+
+def promptTemplate = &apos;&apos;&apos;You are an expert in software testing. Answer the following multiple-choice question using both your internal knowledge and any relevant external knowledge available in your data sources. You have access to uploaded documents, embeddings, and indexed data for reference. Prioritize retrieved knowledge over general knowledge when answering.
+
+Before responding, follow these steps:
+1. Retrieve relevant information from your available knowledge base.
+2. Cross-check your retrieved knowledge with your internal knowledge.
+3. Select the best answer based on both sources.
+
+Your response must follow these rules:
+- Answer using only one letter (A, B, C, or D).
+- Do not provide an explanation or extra text—your response should only be the letter.
+- If no relevant external knowledge is found, rely only on your internal knowledge.
+
+Question:
+${question}
+
+Options:
+A) ${optionA}
+B) ${optionB}
+C) ${optionC}
+D) ${optionD}
+
+Please respond with only the letter that represents your answer.&apos;&apos;&apos;
+
+// Properly escape the string for JSON
+String escapedPrompt = StringEscapeUtils.escapeJson(promptTemplate)
+
+log.info(&quot;[DEBUG]: escapedPrompt = &quot; + escapedPrompt)
+
+vars.put(&quot;promptTemplate&quot;, escapedPrompt)</stringProp>
+              </JSR223Sampler>
+              <hashTree>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">// Don&apos;t report this Sampler in the results.
+prev.setIgnore()</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+              </hashTree>
+              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS02_Define RAG Prompt Template" enabled="false">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">import org.apache.commons.lang3.StringEscapeUtils
+
+def promptTemplate = &apos;&apos;&apos;You are an expert in software testing with access to external knowledge sources, including uploaded documents, embeddings, and indexed data. Your task is to answer the following multiple-choice question, **always prioritizing retrieved knowledge over internal knowledge**.
+
+### **Steps Before Answering:**
+1. **Retrieve relevant information** from your external knowledge base.
+2. **Check if external retrieval was successful**:
+   - If relevant information was retrieved, mark `&quot;retrieval_status: SUCCESS&quot;`.
+   - If nothing relevant was retrieved, mark `&quot;retrieval_status: FAILED&quot;` and rely on internal knowledge.
+3. **Cross-check retrieved knowledge** with your internal knowledge.
+4. **Select the best answer based on both sources.**
+
+### **Response Format:**
+Your response must be a **JSON object** in the following format:
+{
+  &quot;retrieval_status&quot;: &quot;SUCCESS&quot; | &quot;FAILED&quot;,
+  &quot;answer&quot;: &quot;A&quot; | &quot;B&quot; | &quot;C&quot; | &quot;D&quot;
+}
+
+Question:
+${question}
+
+Options:
+A) ${optionA}
+B) ${optionB}
+C) ${optionC}
+D) ${optionD}
+
+Please return only the JSON response.&apos;&apos;&apos;
+
+// Properly escape the string for JSON
+String escapedPrompt = StringEscapeUtils.escapeJson(promptTemplate)
+
+log.info(&quot;[DEBUG]: escapedPrompt = &quot; + escapedPrompt)
+
+vars.put(&quot;promptTemplate&quot;, escapedPrompt)</stringProp>
+              </JSR223Sampler>
+              <hashTree>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">// Don&apos;t report this Sampler in the results.
+prev.setIgnore()</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+              </hashTree>
+              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS02_Define RAG Prompt Template">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">false</stringProp>
+                <stringProp name="script">import org.apache.commons.lang3.StringEscapeUtils
+
+def promptTemplate = &apos;&apos;&apos;You are an expert in software testing with access to external knowledge sources, including uploaded documents, embeddings, and indexed data. Your task is to answer the following multiple-choice question by prioritizing external (retrieved) knowledge over your internal knowledge.
+
+Before providing your final answer, please do the following:
+1. Retrieve the top three documents or excerpts from your external knowledge base that are most relevant to the question.
+2. List and briefly summarize (in one sentence each) the key points from these retrieved sources.
+3. Based on the retrieved context and your internal expertise, select the best answer from the options below.
+
+Your final response **must** be a fully valid JSON object. Ensure that the JSON object:
+- Starts with `{` and ends with `}`.
+- Contains **all required keys**: `&quot;retrieval_status&quot;`, `&quot;retrieved_context&quot;`, and `&quot;answer&quot;`.
+- Does **not** include any text outside the JSON object.
+- Use a **single uppercase letter (A, B, C, or D)** for `&quot;answer&quot;`, with no additional formatting.
+
+Example Response:
+{
+  &quot;retrieval_status&quot;: &quot;SUCCESS&quot;,
+  &quot;retrieved_context&quot;: [
+    &quot;Summary of document 1&quot;,
+    &quot;Summary of document 2&quot;,
+    &quot;Summary of document 3&quot;
+  ],
+  &quot;answer&quot;: &quot;C&quot;
+}
+
+If relevant external information is found, set &quot;retrieval_status&quot;: &quot;SUCCESS&quot;.
+If no relevant external information is found, set &quot;retrieval_status&quot;: &quot;FAILED&quot;, leave the &quot;retrieved_context&quot; array empty, and base your answer solely on your internal knowledge.
+
+Question: ${question}
+
+Options: 
+A) ${optionA} 
+B) ${optionB} 
+C) ${optionC}
+D) ${optionD}
+
+Please strictly follow this format in your response.&apos;&apos;&apos;
+
+// Properly escape the string for JSON
+String escapedPrompt = StringEscapeUtils.escapeJson(promptTemplate)
+
+log.info(&quot;[DEBUG]: escapedPrompt = &quot; + escapedPrompt)
+
+vars.put(&quot;promptTemplate&quot;, escapedPrompt)</stringProp>
+              </JSR223Sampler>
+              <hashTree>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">// Don&apos;t report this Sampler in the results.
+prev.setIgnore()</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+              </hashTree>
+            </hashTree>
+          </hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS03_Generate" enabled="true"/>
+          <hashTree>
+            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller (useRAG == false)" enabled="true">
+              <stringProp name="IfController.condition">${__groovy( (&quot;${useRAG}&quot; == &quot;false&quot;) )}</stringProp>
+              <boolProp name="IfController.evaluateAll">false</boolProp>
+              <boolProp name="IfController.useExpression">true</boolProp>
+            </IfController>
+            <hashTree>
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC02_TS03_/api/generate">
+                <intProp name="HTTPSampler.concurrentPool">6</intProp>
+                <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
+                <stringProp name="HTTPSampler.port">${port}</stringProp>
+                <stringProp name="HTTPSampler.protocol">http</stringProp>
+                <stringProp name="HTTPSampler.path">/api/generate</stringProp>
+                <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                <stringProp name="HTTPSampler.method">POST</stringProp>
+                <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                  <collectionProp name="Arguments.arguments">
+                    <elementProp name="" elementType="HTTPArgument">
+                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                      <stringProp name="Argument.value">{&#xd;
+	&quot;model&quot;: &quot;llama3.2:1b&quot;,&#xd;
+	&quot;prompt&quot;: &quot;${promptTemplate}&quot;,&#xd;
+	&quot;stream&quot;: false&#xd;
+}</stringProp>
+                      <stringProp name="Argument.metadata">=</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </elementProp>
+              </HTTPSamplerProxy>
+              <hashTree>
+                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager" enabled="true">
+                  <collectionProp name="HeaderManager.headers">
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Accept</stringProp>
+                      <stringProp name="Header.value">*/*</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Accept-Encoding</stringProp>
+                      <stringProp name="Header.value">gzip, deflate, br</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Connection</stringProp>
+                      <stringProp name="Header.value">keep-alive</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Content-Type</stringProp>
+                      <stringProp name="Header.value">application/json</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </HeaderManager>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (total_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">total_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.total_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (load_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">load_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.load_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (prompt_eval_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">prompt_eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.prompt_eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (eval_count)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">eval_count</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.eval_count</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (eval_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (llm_answer)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">llm_answer</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.response</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (KPI Token Calculations)" enabled="true">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">// Convert values from JMeter JSON Extractors
+def totalDurationNano = vars.get(&quot;total_duration&quot;) as long		// Total request duration (nanoseconds)
+def loadDurationNano = vars.get(&quot;load_duration&quot;) as long		// Model loading duration (nanoseconds)
+def promptEvalNano = vars.get(&quot;prompt_eval_duration&quot;) as long	// Prompt evaluation duration (nanoseconds)
+def evalCount = vars.get(&quot;eval_count&quot;) as long				// Number of generated tokens
+def evalDurationNano = vars.get(&quot;eval_duration&quot;) as long		// Token generation duration (nanoseconds)
+
+// Convert durations from nanoseconds to milliseconds
+def totalDurationMs = totalDurationNano / 1e6
+def loadDurationMs = loadDurationNano / 1e6
+def promptEvalMs = promptEvalNano / 1e6
+def evalDurationMs = evalDurationNano / 1e6
+
+// Calculate KPIs
+def ttftMs = loadDurationMs + promptEvalMs							// Time to First Token
+def tps = evalCount &gt; 0 ? (evalCount / (totalDurationNano / 1e9)) : 0		// Tokens per second
+def tpot = evalCount &gt; 0 ? ((totalDurationMs - ttftMs) / evalCount) : 0	// Time per output token
+
+// Log KPIs
+log.info(&quot;[INFO]:  TTFT (ms): ${ttftMs}&quot;)
+log.info(&quot;[INFO]:  TPS (tokens/sec): ${tps}&quot;)
+log.info(&quot;[INFO]:  TPOT (ms/token): ${tpot}&quot;)
+
+// Store KPIs as JMeter variables for later use
+vars.put(&quot;TTFT&quot;, ttftMs.toString())
+vars.put(&quot;TPS&quot;, tps.toString())
+vars.put(&quot;TPOT&quot;, tpot.toString())
+</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (DeepEval LLM Correctness)" enabled="false">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script"></stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="false">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">import groovy.json.JsonOutput
+
+// Get LLM answer
+def llmAnswer = vars.get(&quot;llm_answer&quot;)  
+log.info(&quot;LLM Response: ${llm_answer}&quot;)
+
+// Validate the LLM answer against correct answer.
+def correctAnswer = vars.get(&quot;correctAnswer&quot;)
+if (llmAnswer == correctAnswer) {
+    log.info(&quot;✅ LLM Answer is CORRECT!&quot;)
+} else {
+    log.warn(&quot;❌ LLM Answer is INCORRECT! Expected: ${correctAnswer.toUpperCase()}, Got: ${llm_answer}&quot;)
+}
+
+// Save validation result as a JMeter variable
+vars.put(&quot;IS_CORRECT&quot;, (llmAnswer == correctAnswer) ? &quot;true&quot; : &quot;false&quot;)
+
+
+</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="true">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">import groovy.json.JsonOutput
+
+// Extract variables
+def scriptPath = vars.get(&quot;scriptPath&quot;)			// Full path of the JMeter script location
+def questionNumber = vars.get(&quot;question_number&quot;)	// Question number
+def question = vars.get(&quot;question&quot;)			// Question
+def prompt = vars.get(&quot;promptTemplate&quot;)			// Input prompt
+def llmResponse = vars.get(&quot;llm_answer&quot;)?.toLowerCase()  		// Normalize to lowercase
+def correctAnswer = vars.get(&quot;correctAnswer&quot;)?.toLowerCase()	// Correct answer (A, B, C, or D)
+def isCorrect = (llmResponse == correctAnswer)	// Validation result
+
+// Validate the LLM answer against correct answer.
+log.info(&quot;[INFO]:  Question Number [&quot; + questionNumber + &quot;]:  &quot; + question)
+log.info(&quot;[INFO]:  LLM Response [&quot; + questionNumber + &quot;]:  &quot; + llmResponse.toUpperCase())
+if (llmResponse == correctAnswer) {
+    log.info(&quot;[INFO]:  ✅ LLM Answer is CORRECT!&quot;)
+} else {
+    log.warn(&quot;[INFO]:  ❌ LLM Answer is INCORRECT! Expected: ${correctAnswer.toUpperCase()}, Got: ${llmResponse.toUpperCase()}&quot;)
+}
+
+// Create a map of results
+def result = [
+    question_number: questionNumber,
+    prompt: prompt,
+    question: question,
+    llm_response: llmResponse,
+    correct_answer: correctAnswer,
+    is_correct: isCorrect
+]
+
+// Define our file path string
+def filePath = scriptPath + &quot;test_results&quot; + File.separator + &quot;${timestamp}_llm_responses.json&quot;
+log.debug(&quot;[DEBUG]: filePath=&quot; + filePath)
+
+// Check for back slashes in case running on Windows.
+if (filePath ==~ /.*\\\\.*/) {
+    filePath = filePath.replace(&quot;\\\\&quot;,&quot;/&quot;)
+    log.debug(&quot;[INFO]: ${__samplerName()}:  filePath=&quot; + filePath)
+} else {
+    log.debug(&quot;[INFO]: ${__samplerName()}:  No Regex Match!&quot;)
+}
+
+// Create a File object from the file path
+def resultsFile = new File(filePath)
+
+// Append result to file with error handling
+try {
+    resultsFile &lt;&lt; JsonOutput.toJson(result) + &quot;\n&quot;
+    log.info(&quot;[INFO]:  Results successfully written to file: &quot; + resultsFile.getAbsolutePath())
+} catch (Exception e) {
+    log.error(&quot;[ERROR]:  Failed to write results to file!&quot;, e)
+}
+</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+              </hashTree>
+            </hashTree>
+            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller (useRAG == true)" enabled="true">
+              <stringProp name="IfController.condition">${__groovy( (&quot;${useRAG}&quot; == &quot;true&quot;) )}</stringProp>
+              <boolProp name="IfController.evaluateAll">false</boolProp>
+              <boolProp name="IfController.useExpression">true</boolProp>
+            </IfController>
+            <hashTree>
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC02_TS03_/api/generate" enabled="false">
+                <intProp name="HTTPSampler.concurrentPool">6</intProp>
+                <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
+                <stringProp name="HTTPSampler.port">${port}</stringProp>
+                <stringProp name="HTTPSampler.protocol">http</stringProp>
+                <stringProp name="HTTPSampler.path">/api/generate</stringProp>
+                <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                <stringProp name="HTTPSampler.method">POST</stringProp>
+                <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                  <collectionProp name="Arguments.arguments">
+                    <elementProp name="" elementType="HTTPArgument">
+                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                      <stringProp name="Argument.value">{&#xd;
+	&quot;model&quot;: &quot;llama3.2:1b&quot;,&#xd;
+	&quot;prompt&quot;: &quot;${promptTemplate}&quot;,&#xd;
+	&quot;stream&quot;: false&#xd;
+}</stringProp>
+                      <stringProp name="Argument.metadata">=</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </elementProp>
+              </HTTPSamplerProxy>
+              <hashTree>
+                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager" enabled="true">
+                  <collectionProp name="HeaderManager.headers">
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Accept</stringProp>
+                      <stringProp name="Header.value">*/*</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Accept-Encoding</stringProp>
+                      <stringProp name="Header.value">gzip, deflate, br</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Connection</stringProp>
+                      <stringProp name="Header.value">keep-alive</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Content-Type</stringProp>
+                      <stringProp name="Header.value">application/json</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </HeaderManager>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (total_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">total_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.total_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (load_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">load_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.load_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (prompt_eval_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">prompt_eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.prompt_eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (eval_count)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">eval_count</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.eval_count</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (eval_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (llm_answer)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">llm_answer</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.response</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (KPI Token Calculations)" enabled="true">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">// Convert values from JMeter JSON Extractors
+def totalDurationNano = vars.get(&quot;total_duration&quot;) as long		// Total request duration (nanoseconds)
+def loadDurationNano = vars.get(&quot;load_duration&quot;) as long		// Model loading duration (nanoseconds)
+def promptEvalNano = vars.get(&quot;prompt_eval_duration&quot;) as long	// Prompt evaluation duration (nanoseconds)
+def evalCount = vars.get(&quot;eval_count&quot;) as long				// Number of generated tokens
+def evalDurationNano = vars.get(&quot;eval_duration&quot;) as long		// Token generation duration (nanoseconds)
+
+// Convert durations from nanoseconds to milliseconds
+def totalDurationMs = totalDurationNano / 1e6
+def loadDurationMs = loadDurationNano / 1e6
+def promptEvalMs = promptEvalNano / 1e6
+def evalDurationMs = evalDurationNano / 1e6
+
+// Calculate KPIs
+def ttftMs = loadDurationMs + promptEvalMs							// Time to First Token
+def tps = evalCount &gt; 0 ? (evalCount / (totalDurationNano / 1e9)) : 0		// Tokens per second
+def tpot = evalCount &gt; 0 ? ((totalDurationMs - ttftMs) / evalCount) : 0	// Time per output token
+
+// Log KPIs
+log.info(&quot;[INFO]:  TTFT (ms): ${ttftMs}&quot;)
+log.info(&quot;[INFO]:  TPS (tokens/sec): ${tps}&quot;)
+log.info(&quot;[INFO]:  TPOT (ms/token): ${tpot}&quot;)
+
+// Store KPIs as JMeter variables for later use
+vars.put(&quot;TTFT&quot;, ttftMs.toString())
+vars.put(&quot;TPS&quot;, tps.toString())
+vars.put(&quot;TPOT&quot;, tpot.toString())
+</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (DeepEval LLM Correctness)" enabled="false">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script"></stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="false">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">import groovy.json.JsonOutput
+
+// Get LLM answer
+def llmAnswer = vars.get(&quot;llm_answer&quot;)  
+log.info(&quot;LLM Response: ${llm_answer}&quot;)
+
+// Validate the LLM answer against correct answer.
+def correctAnswer = vars.get(&quot;correctAnswer&quot;)
+if (llmAnswer == correctAnswer) {
+    log.info(&quot;✅ LLM Answer is CORRECT!&quot;)
+} else {
+    log.warn(&quot;❌ LLM Answer is INCORRECT! Expected: ${correctAnswer.toUpperCase()}, Got: ${llm_answer}&quot;)
+}
+
+// Save validation result as a JMeter variable
+vars.put(&quot;IS_CORRECT&quot;, (llmAnswer == correctAnswer) ? &quot;true&quot; : &quot;false&quot;)
+
+
+</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="true">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+
+// Extract variables
+def scriptPath = vars.get(&quot;scriptPath&quot;)			// Full path of the JMeter script location
+def questionNumber = vars.get(&quot;question_number&quot;)	// Question number
+def question = vars.get(&quot;question&quot;)			// Question
+def prompt = vars.get(&quot;promptTemplate&quot;)			// Input prompt
+def correctAnswer = vars.get(&quot;correctAnswer&quot;)?.toUpperCase()	// Correct answer (A, B, C, or D)
+def llmRawResponse = vars.get(&quot;llm_answer&quot;)?.trim() ?: &quot;{}&quot;		// Extracted JSON string from API
+def retrievalStatus = &quot;UNKNOWN&quot;
+def llmResponse = &quot;UNKNOWN&quot;					// Default value if extraction fails
+def explanationA = vars.get(&quot;explanationA&quot;)
+def explanationB = vars.get(&quot;explanationB&quot;)
+def explanationC = vars.get(&quot;explanationC&quot;)
+def explanationD = vars.get(&quot;explanationD&quot;)
+
+// Remove triple backticks if present
+if (llmRawResponse.startsWith(&quot;```json&quot;)) {
+    llmRawResponse = llmRawResponse.replaceFirst(/^```json\s*/, &quot;&quot;).replaceFirst(/\s*```$/, &quot;&quot;)
+}
+
+// Fix incorrect single quotes inside retrieved_context
+if (llmRawResponse.contains(&quot;&apos;{&quot;) || llmRawResponse.contains(&quot;}&apos;&quot;)) {
+    llmRawResponse = llmRawResponse.replaceAll(/&apos;\{/, &quot;{&quot;).replaceAll(/\}&apos;/, &quot;}&quot;)
+}
+
+// Ensure JSON is well-formed (fix missing quotes around &quot;answer&quot;)
+if (llmRawResponse.contains(&apos;&quot;answer&quot;: &apos;) &amp;&amp; !llmRawResponse.contains(&apos;&quot;answer&quot;: &quot;&apos;)) {
+    llmRawResponse = llmRawResponse.replaceAll(/&quot;answer&quot;:\s*([A-D])/, &apos;&quot;answer&quot;: &quot;$1&quot;&apos;)
+}
+
+// Check for missing closing curly brace at the end
+if (!llmRawResponse.endsWith(&quot;}&quot;)) {
+    log.warn(&quot;[WARN]: Detected incomplete JSON response. Attempting to auto-fix.&quot;)
+    llmRawResponse += &quot; }&quot; // Append closing brace to fix truncation
+}
+
+// Attempt to parse extracted `llm_answer` JSON
+try {
+    def jsonResponse = new JsonSlurper().parseText(llmRawResponse)
+    llmResponse = jsonResponse?.answer?.toString()?.trim()?.toUpperCase() ?: &quot;UNKNOWN&quot;
+
+    // Fix LaTeX-style formatting (e.g., $\boxed{C}$ → C)
+    llmResponse = llmResponse.replaceAll(/\$\\boxed\{([A-D])\}\$/, &apos;$1&apos;)
+
+    // Extract `retrieval_status`
+    retrievalStatus = jsonResponse?.retrieval_status?.toString()?.trim()?.toUpperCase() ?: &quot;UNKNOWN&quot;
+
+    // Fix improperly formatted `retrieved_context`
+    if (jsonResponse?.retrieved_context instanceof List) {
+        jsonResponse.retrieved_context = jsonResponse.retrieved_context.collect { ctx -&gt;
+            ctx = ctx.toString().trim()
+            if (ctx.startsWith(&quot;{&quot;) &amp;&amp; ctx.endsWith(&quot;}&quot;)) {
+                try {
+                    def parsedCtx = new JsonSlurper().parseText(ctx) // Attempt parsing as JSON
+                    return parsedCtx.values().join(&quot; &quot;) // Extract actual content
+                } catch (Exception ignored) {
+                    return ctx // Fallback to raw string
+                }
+            }
+            return ctx // Keep as-is if not wrapped in braces
+        }
+    }
+} catch (Exception e) {
+    log.error(&quot;[ERROR]: Failed to parse LLM JSON response. Attempting regex extraction.&quot;, e)
+
+    // Regex fallback: Extract retrieval_status (SUCCESS or FAILED)
+    def match = llmRawResponse =~ /&quot;retrieval_status&quot;\s*:\s*&quot;(\w+)&quot;/
+    if (match) {
+        retrievalStatus = match[0][1].toUpperCase()
+    }
+
+    // Regex fallback: Extract answer (handle missing quotes around answer)
+    match = llmRawResponse =~ /&quot;answer&quot;\s*:\s*&quot;(\w)&quot;/   // Match &quot;answer&quot;: &quot;B&quot;
+    if (!match) {
+        match = llmRawResponse =~ /&quot;answer&quot;\s*:\s*(\w)/  // Match &quot;answer&quot;: B (without quotes)
+    }
+    
+    if (match) {
+        llmResponse = match[0][1].toUpperCase()
+    } else {
+        llmResponse = &quot;UNKNOWN&quot;  // Mark as unknown if extraction fails
+    }
+
+    // Fix LaTeX-style formatting again in case regex extraction was used
+    llmResponse = llmResponse.replaceAll(/\$\\boxed\{([A-D])\}\$/, &apos;$1&apos;)
+}
+
+// Validate LLM answer against correct answer
+def isCorrect = (llmResponse == correctAnswer)
+
+// Validate the LLM answer against correct answer.
+log.info(&quot;[INFO]:  Question Number [&quot; + questionNumber + &quot;]:  &quot; + question)
+log.info(&quot;[INFO]:  LLM Response [&quot; + questionNumber + &quot;]:  &quot; + llmResponse.toUpperCase())
+log.info(&quot;[INFO]:  Retrieval Status: &quot; + retrievalStatus)
+
+if (llmResponse == correctAnswer) {
+    log.info(&quot;[INFO]:  ✅ LLM Answer is CORRECT!&quot;)
+} else {
+    log.warn(&quot;[INFO]:  ❌ LLM Answer is INCORRECT! Expected: ${correctAnswer.toUpperCase()}, Got: ${llmResponse.toUpperCase()}&quot;)
+}
+
+// Create a map of results
+def result = [
+    question_number: questionNumber,
+    retrieval_status: retrievalStatus,
+    prompt: prompt,
+    question: question,
+    llm_response: llmResponse,
+    correct_answer: correctAnswer,
+    is_correct: isCorrect
+]
+
+// Define our file path string
+def filePath = scriptPath + &quot;test_results&quot; + File.separator + &quot;jmeter_results_${timestamp}.json&quot;
+log.debug(&quot;[DEBUG]: filePath=&quot; + filePath)
+
+// Check for back slashes in case running on Windows.
+if (filePath ==~ /.*\\\\.*/) {
+    filePath = filePath.replace(&quot;\\\\&quot;,&quot;/&quot;)
+    log.debug(&quot;[INFO]: ${__samplerName()}:  filePath=&quot; + filePath)
+} else {
+    log.debug(&quot;[INFO]: ${__samplerName()}:  No Regex Match!&quot;)
+}
+
+// Create a File object from the file path
+def resultsFile = new File(filePath)
+
+// Append result to file with error handling
+try {
+    resultsFile &lt;&lt; JsonOutput.toJson(result) + &quot;\n&quot;
+    log.info(&quot;[INFO]:  Results successfully written to file: &quot; + resultsFile.getAbsolutePath())
+} catch (Exception e) {
+    log.error(&quot;[ERROR]:  Failed to write results to file!&quot;, e)
+}
+</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+              </hashTree>
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC02_TS03_/api/generate">
+                <intProp name="HTTPSampler.concurrentPool">6</intProp>
+                <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
+                <stringProp name="HTTPSampler.port">${port}</stringProp>
+                <stringProp name="HTTPSampler.protocol">http</stringProp>
+                <stringProp name="HTTPSampler.path">/api/generate</stringProp>
+                <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                <stringProp name="HTTPSampler.method">POST</stringProp>
+                <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                  <collectionProp name="Arguments.arguments">
+                    <elementProp name="" elementType="HTTPArgument">
+                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                      <stringProp name="Argument.value">{&#xd;
+	&quot;model&quot;: &quot;llama3.2:1b&quot;,&#xd;
+	&quot;prompt&quot;: &quot;${promptTemplate}&quot;,&#xd;
+	&quot;format&quot;: &quot;json&quot;,&#xd;
+	&quot;stream&quot;: false&#xd;
+}</stringProp>
+                      <stringProp name="Argument.metadata">=</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </elementProp>
+              </HTTPSamplerProxy>
+              <hashTree>
+                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager" enabled="true">
+                  <collectionProp name="HeaderManager.headers">
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Accept</stringProp>
+                      <stringProp name="Header.value">*/*</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Accept-Encoding</stringProp>
+                      <stringProp name="Header.value">gzip, deflate, br</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Connection</stringProp>
+                      <stringProp name="Header.value">keep-alive</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">Content-Type</stringProp>
+                      <stringProp name="Header.value">application/json</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </HeaderManager>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (total_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">total_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.total_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (load_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">load_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.load_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (prompt_eval_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">prompt_eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.prompt_eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (eval_count)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">eval_count</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.eval_count</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (eval_duration)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.eval_duration</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (llm_answer)" enabled="true">
+                  <stringProp name="JSONPostProcessor.referenceNames">llm_answer</stringProp>
+                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.response</stringProp>
+                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+                </JSONPostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (KPI Token Calculations)">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">// Convert values from JMeter JSON Extractors
+def totalDurationNano = vars.get(&quot;total_duration&quot;) as long		// Total request duration (nanoseconds)
+def loadDurationNano = vars.get(&quot;load_duration&quot;) as long		// Model loading duration (nanoseconds)
+def promptEvalNano = vars.get(&quot;prompt_eval_duration&quot;) as long	// Prompt evaluation duration (nanoseconds)
+def evalCount = vars.get(&quot;eval_count&quot;) as long				// Number of generated tokens
+def evalDurationNano = vars.get(&quot;eval_duration&quot;) as long		// Token generation duration (nanoseconds)
+
+// Convert durations from nanoseconds to milliseconds
+def totalDurationMs = totalDurationNano / 1e6
+def loadDurationMs = loadDurationNano / 1e6
+def promptEvalMs = promptEvalNano / 1e6
+def evalDurationMs = evalDurationNano / 1e6
+
+// Calculate KPIs
+def ttftMs = loadDurationMs + promptEvalMs							// Time to First Token
+def tps = evalCount &gt; 0 ? (evalCount / (totalDurationNano / 1e9)) : 0		// Tokens per second
+def tpot = evalCount &gt; 0 ? ((totalDurationMs - ttftMs) / evalCount) : 0	// Time per output token
+
+// Log KPIs
+log.info(&quot;[INFO]:  TTFT (ms): ${ttftMs}&quot;)
+log.info(&quot;[INFO]:  TPS (tokens/sec): ${tps}&quot;)
+log.info(&quot;[INFO]:  TPOT (ms/token): ${tpot}&quot;)
+
+// Store KPIs as JMeter variables for later use
+vars.put(&quot;TTFT&quot;, ttftMs.toString())
+vars.put(&quot;TPS&quot;, tps.toString())
+vars.put(&quot;TPOT&quot;, tpot.toString())
+</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (DeepEval LLM Correctness)" enabled="false">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script"></stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="false">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">import groovy.json.JsonOutput
+
+// Get LLM answer
+def llmAnswer = vars.get(&quot;llm_answer&quot;)  
+log.info(&quot;LLM Response: ${llm_answer}&quot;)
+
+// Validate the LLM answer against correct answer.
+def correctAnswer = vars.get(&quot;correctAnswer&quot;)
+if (llmAnswer == correctAnswer) {
+    log.info(&quot;✅ LLM Answer is CORRECT!&quot;)
+} else {
+    log.warn(&quot;❌ LLM Answer is INCORRECT! Expected: ${correctAnswer.toUpperCase()}, Got: ${llm_answer}&quot;)
+}
+
+// Save validation result as a JMeter variable
+vars.put(&quot;IS_CORRECT&quot;, (llmAnswer == correctAnswer) ? &quot;true&quot; : &quot;false&quot;)
+
+
+</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+
+// Extract variables
+def scriptPath = vars.get(&quot;scriptPath&quot;)			// Full path of the JMeter script location
+def questionNumber = vars.get(&quot;question_number&quot;)	// Question number
+def question = vars.get(&quot;question&quot;)			// Question
+def prompt = vars.get(&quot;promptTemplate&quot;)			// Input prompt
+def correctAnswer = vars.get(&quot;correctAnswer&quot;)?.toUpperCase()	// Correct answer (A, B, C, or D)
+def llmRawResponse = vars.get(&quot;llm_answer&quot;)?.trim() ?: &quot;{}&quot;		// Extracted JSON string from API
+def retrievalStatus = &quot;UNKNOWN&quot;
+def llmResponse = &quot;UNKNOWN&quot;					// Default value if extraction fails
+def explanationA = vars.get(&quot;explanationA&quot;)
+def explanationB = vars.get(&quot;explanationB&quot;)
+def explanationC = vars.get(&quot;explanationC&quot;)
+def explanationD = vars.get(&quot;explanationD&quot;)
+
+// Remove triple backticks if present
+if (llmRawResponse.startsWith(&quot;```json&quot;)) {
+    llmRawResponse = llmRawResponse.replaceFirst(/^```json\s*/, &quot;&quot;).replaceFirst(/\s*```$/, &quot;&quot;)
+}
+
+// Fix incorrect single quotes inside retrieved_context
+if (llmRawResponse.contains(&quot;&apos;{&quot;) || llmRawResponse.contains(&quot;}&apos;&quot;)) {
+    llmRawResponse = llmRawResponse.replaceAll(/&apos;\{/, &quot;{&quot;).replaceAll(/\}&apos;/, &quot;}&quot;)
+}
+
+// Ensure JSON is well-formed (fix missing quotes around &quot;answer&quot;)
+if (llmRawResponse.contains(&apos;&quot;answer&quot;: &apos;) &amp;&amp; !llmRawResponse.contains(&apos;&quot;answer&quot;: &quot;&apos;)) {
+    llmRawResponse = llmRawResponse.replaceAll(/&quot;answer&quot;:\s*([A-D])/, &apos;&quot;answer&quot;: &quot;$1&quot;&apos;)
+}
+
+// Check for missing closing curly brace at the end
+if (!llmRawResponse.endsWith(&quot;}&quot;)) {
+    log.warn(&quot;[WARN]: Detected incomplete JSON response. Attempting to auto-fix.&quot;)
+    llmRawResponse += &quot; }&quot; // Append closing brace to fix truncation
+}
+
+// Attempt to parse extracted `llm_answer` JSON
+try {
+    def jsonResponse = new JsonSlurper().parseText(llmRawResponse)
+    llmResponse = jsonResponse?.answer?.toString()?.trim()?.toUpperCase() ?: &quot;UNKNOWN&quot;
+
+    // Fix LaTeX-style formatting (e.g., $\boxed{C}$ → C)
+    llmResponse = llmResponse.replaceAll(/\$\\boxed\{([A-D])\}\$/, &apos;$1&apos;)
+
+    // Extract `retrieval_status`
+    retrievalStatus = jsonResponse?.retrieval_status?.toString()?.trim()?.toUpperCase() ?: &quot;UNKNOWN&quot;
+
+    // Fix improperly formatted `retrieved_context`
+    if (jsonResponse?.retrieved_context instanceof List) {
+        jsonResponse.retrieved_context = jsonResponse.retrieved_context.collect { ctx -&gt;
+            ctx = ctx.toString().trim()
+            if (ctx.startsWith(&quot;{&quot;) &amp;&amp; ctx.endsWith(&quot;}&quot;)) {
+                try {
+                    def parsedCtx = new JsonSlurper().parseText(ctx) // Attempt parsing as JSON
+                    return parsedCtx.values().join(&quot; &quot;) // Extract actual content
+                } catch (Exception ignored) {
+                    return ctx // Fallback to raw string
+                }
+            }
+            return ctx // Keep as-is if not wrapped in braces
+        }
+    }
+} catch (Exception e) {
+    log.error(&quot;[ERROR]: Failed to parse LLM JSON response. Attempting regex extraction.&quot;, e)
+
+    // Regex fallback: Extract retrieval_status (SUCCESS or FAILED)
+    def match = llmRawResponse =~ /&quot;retrieval_status&quot;\s*:\s*&quot;(\w+)&quot;/
+    if (match) {
+        retrievalStatus = match[0][1].toUpperCase()
+    }
+
+    // Regex fallback: Extract answer (handle missing quotes around answer)
+    match = llmRawResponse =~ /&quot;answer&quot;\s*:\s*&quot;(\w)&quot;/   // Match &quot;answer&quot;: &quot;B&quot;
+    if (!match) {
+        match = llmRawResponse =~ /&quot;answer&quot;\s*:\s*(\w)/  // Match &quot;answer&quot;: B (without quotes)
+    }
+    
+    if (match) {
+        llmResponse = match[0][1].toUpperCase()
+    } else {
+        llmResponse = &quot;UNKNOWN&quot;  // Mark as unknown if extraction fails
+    }
+
+    // Fix LaTeX-style formatting again in case regex extraction was used
+    llmResponse = llmResponse.replaceAll(/\$\\boxed\{([A-D])\}\$/, &apos;$1&apos;)
+}
+
+// Validate LLM answer against correct answer
+def isCorrect = (llmResponse == correctAnswer)
+
+// Validate the LLM answer against correct answer.
+log.info(&quot;[INFO]:  Question Number [&quot; + questionNumber + &quot;]:  &quot; + question)
+log.info(&quot;[INFO]:  LLM Response [&quot; + questionNumber + &quot;]:  &quot; + llmResponse.toUpperCase())
+log.info(&quot;[INFO]:  Retrieval Status: &quot; + retrievalStatus)
+
+if (llmResponse == correctAnswer) {
+    log.info(&quot;[INFO]:  ✅ LLM Answer is CORRECT!&quot;)
+} else {
+    log.warn(&quot;[INFO]:  ❌ LLM Answer is INCORRECT! Expected: ${correctAnswer.toUpperCase()}, Got: ${llmResponse.toUpperCase()}&quot;)
+}
+
+// Create a map of results
+def result = [
+    question_number: questionNumber,
+    retrieval_status: retrievalStatus,
+    prompt: prompt,
+    question: question,
+    llm_response: llmResponse,
+    correct_answer: correctAnswer,
+    is_correct: isCorrect
+]
+
+// Define our file path string
+def filePath = scriptPath + &quot;test_results&quot; + File.separator + &quot;${timestamp}_llm_responses.json&quot;
+log.debug(&quot;[DEBUG]: filePath=&quot; + filePath)
+
+// Check for back slashes in case running on Windows.
+if (filePath ==~ /.*\\\\.*/) {
+    filePath = filePath.replace(&quot;\\\\&quot;,&quot;/&quot;)
+    log.debug(&quot;[INFO]: ${__samplerName()}:  filePath=&quot; + filePath)
+} else {
+    log.debug(&quot;[INFO]: ${__samplerName()}:  No Regex Match!&quot;)
+}
+
+// Create a File object from the file path
+def resultsFile = new File(filePath)
+
+// Append result to file with error handling
+try {
+    resultsFile &lt;&lt; JsonOutput.toJson(result) + &quot;\n&quot;
+    log.info(&quot;[INFO]:  Results successfully written to file: &quot; + resultsFile.getAbsolutePath())
+} catch (Exception e) {
+    log.error(&quot;[ERROR]:  Failed to write results to file!&quot;, e)
+}
+</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+              </hashTree>
+            </hashTree>
+            <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
+              <intProp name="ActionProcessor.action">1</intProp>
+              <intProp name="ActionProcessor.target">0</intProp>
+              <stringProp name="ActionProcessor.duration">${thinkTime}</stringProp>
+            </TestAction>
+            <hashTree/>
+          </hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS04_Chat" enabled="false"/>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC02_TS04_/api/chat" enabled="true">
+              <intProp name="HTTPSampler.concurrentPool">6</intProp>
+              <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
+              <stringProp name="HTTPSampler.port">${port}</stringProp>
+              <stringProp name="HTTPSampler.protocol">http</stringProp>
+              <stringProp name="HTTPSampler.path">/api/chat</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+    &quot;model&quot;: &quot;llama3.2:1b&quot;,&#xd;
+    &quot;messages&quot;: [&#xd;
+        {&#xd;
+            &quot;role&quot;: &quot;user&quot;,&#xd;
+            &quot;content&quot;: &quot;${promptTemplate}&quot;&#xd;
+        }&#xd;
+    ],&#xd;
+    &quot;stream&quot;: false&#xd;
+}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Accept</stringProp>
+                    <stringProp name="Header.value">*/*</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Accept-Encoding</stringProp>
+                    <stringProp name="Header.value">gzip, deflate, br</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Connection</stringProp>
+                    <stringProp name="Header.value">keep-alive</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (total_duration)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">total_duration</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$.total_duration</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (load_duration)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">load_duration</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$.load_duration</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (prompt_eval_duration)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">prompt_eval_duration</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$.prompt_eval_duration</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (eval_count)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">eval_count</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$.eval_count</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (eval_duration)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">eval_duration</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$.eval_duration</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (llm_answer)" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">llm_answer</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$.message.content</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">// Convert values from JMeter JSON Extractors
+def totalDurationNano = vars.get(&quot;total_duration&quot;) as long		// Total request duration (nanoseconds)
+def loadDurationNano = vars.get(&quot;load_duration&quot;) as long		// Model loading duration (nanoseconds)
+def promptEvalNano = vars.get(&quot;prompt_eval_duration&quot;) as long	// Prompt evaluation duration (nanoseconds)
+def evalCount = vars.get(&quot;eval_count&quot;) as long				// Number of generated tokens
+def evalDurationNano = vars.get(&quot;eval_duration&quot;) as long		// Token generation duration (nanoseconds)
+
+// Convert durations from nanoseconds to milliseconds
+def totalDurationMs = totalDurationNano / 1e6
+def loadDurationMs = loadDurationNano / 1e6
+def promptEvalMs = promptEvalNano / 1e6
+def evalDurationMs = evalDurationNano / 1e6
+
+// Calculate KPIs
+def ttftMs = loadDurationMs + promptEvalMs							// Time to First Token
+def tps = evalCount &gt; 0 ? (evalCount / (totalDurationNano / 1e9)) : 0		// Tokens per second
+def tpot = evalCount &gt; 0 ? ((totalDurationMs - ttftMs) / evalCount) : 0	// Time per output token
+
+// Log KPIs
+log.info(&quot;[INFO]:  TTFT (ms): ${ttftMs}&quot;)
+log.info(&quot;[INFO]:  TPS (tokens/sec): ${tps}&quot;)
+log.info(&quot;[INFO]:  TPOT (ms/token): ${tpot}&quot;)
+
+// Store KPIs as JMeter variables for later use
+vars.put(&quot;TTFT&quot;, ttftMs.toString())
+vars.put(&quot;TPS&quot;, tps.toString())
+vars.put(&quot;TPOT&quot;, tpot.toString())
+</stringProp>
+              </JSR223PostProcessor>
+              <hashTree/>
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">// Get LLM answer
+def llmAnswer = vars.get(&quot;llm_answer&quot;)  
+log.info(&quot;LLM Response: ${llm_answer}&quot;)
+
+// Validate the LLM answer against correct answer.
+def correctAnswer = vars.get(&quot;correctAnswer&quot;)
+if (llmAnswer == correctAnswer) {
+    log.info(&quot;✅ LLM Answer is CORRECT!&quot;)
+} else {
+    log.warn(&quot;❌ LLM Answer is INCORRECT! Expected: ${correctAnswer.toUpperCase()}, Got: ${llm_answer}&quot;)
+}
+
+// Save validation result as a JMeter variable
+vars.put(&quot;IS_CORRECT&quot;, (llmAnswer == correctAnswer) ? &quot;true&quot; : &quot;false&quot;)
+</stringProp>
+              </JSR223PostProcessor>
+              <hashTree/>
+            </hashTree>
+            <TestAction guiclass="TestActionGui" testclass="TestAction" testname="Think Time" enabled="true">
+              <intProp name="ActionProcessor.action">1</intProp>
+              <intProp name="ActionProcessor.target">0</intProp>
+              <stringProp name="ActionProcessor.duration">${thinkTime}</stringProp>
+            </TestAction>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>false</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <sampleCount>true</sampleCount>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename">${scriptPath}/test_results/test_results_${timestamp}.jtl</stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

@@ -3,6 +3,7 @@ Module for utility functions related to UI pages.
 '''
 import os
 from datetime import datetime
+import streamlit as st
 
 # Function to format a duration into a human-readable string
 # Example: timedelta(minutes=5, seconds=30) -> "5 minutes, 30 seconds"
@@ -23,3 +24,20 @@ def format_datetime(dt):
     day_format = "%#d" if os.name == "nt" else "%-d"
     return dt.strftime(f"%B {day_format}, %Y %H:%M:%S UTC")
 
+# Function to select a file from a given folder path
+# This function lists all files with a .jmx extension in the specified folder
+def file_selector(folder_path='.'):
+    filenames = [f for f in os.listdir(folder_path) if f.lower().endswith('.jmx')]
+    selected_filename = st.selectbox(
+        'Select a JMeter JMX file', 
+        filenames,
+        index=None,  # No default selection
+        placeholder="Select a JMX file"
+    )
+    # If no files are found, return None
+    if not selected_filename:
+        st.warning("No JMX files selected.")
+        return None
+    # Return the full path of the selected file
+    st.info(f"Selected JMX file: {selected_filename}")
+    return os.path.join(folder_path, selected_filename) if filenames else None
