@@ -14,12 +14,7 @@ from src.utils.config import load_config  # Importing configuration loader
 # Load the full configuration from config.yaml
 module_config = load_config()
 general_config = module_config.get("general", {})
-# Load specific configurations for LLM and UI
-llm_config = module_config.get("llm", {})
 ui_config = module_config.get("user_interface", {})
-
-# Define the LLM model to use.
-model = llm_config.get("llm_model", "gpt-4o-mini")  # Default to gpt-4o-mini if not specified in config
 
 # --- Render UI ---------------------------------------------------------------
 

@@ -113,6 +113,31 @@ def inject_page_header_styles():
         </style>
     """, unsafe_allow_html=True)
 
+# --- Page Title Styles ---------------------------------------------------
+def inject_page_title_styles():
+    """
+    Inject custom CSS styles for the page title in the Streamlit app.
+    """
+    st.markdown("""
+        <style>
+        .centered-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 800;
+            font-family: 'Georgia', serif;
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .centered-subtitle {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #3d2b1f;
+            margin-bottom: 2rem;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
 # --- Chatbot Area Styles ---------------------------------------------------
 def inject_chatbot_area_styles():
     """
