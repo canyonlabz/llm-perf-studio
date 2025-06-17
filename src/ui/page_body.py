@@ -149,24 +149,20 @@ def render_jmeter_config(jmeter_path):
     col1, col2, col3, col4, col5 = st.columns([0.20, 0.20, 0.20, 0.20, 0.20], border=True) # Define six columns with specified widths and borders
 
     with col1:
-        jmx_value = st.session_state.selected_jmx_file if "selected_jmx_file" in st.session_state else None
-        # Display the selected JMX file path
-        if jmx_value:
-            jmx_filename = jmx_value
-            st.info(f"Selected JMX file: {jmx_filename}")
-        else:
-            # File selector to select a JMX file
-            jmx_filename = file_selector(jmeter_path)   # Call the file selector function to get the JMX file path
-        
-        # If a file is uploaded, store it in session state
-        if jmx_filename is not None:
-            st.session_state.selected_jmx_file = jmx_filename
+        jmx_filename = file_selector(jmeter_path)   # Call the file selector function to get the JMX file path
 
     with col2:
         vusers_value = st.session_state.jmeter_state.get("vusers", None)
         # Number input for virtual users
         vusers = st.number_input(
-            "Number of Virtual Users", key="vusers_input", value=vusers_value, step=1, min_value=None, format="%d", placeholder="Enter number..."
+            "Number of Virtual Users", 
+            key="vusers_input", 
+            value=vusers_value, 
+            step=1, 
+            min_value=None, 
+            format="%d",
+            help="Enter the number of virtual users for the JMeter test.", 
+            placeholder="Enter number..."
         )
         st.write("Virtual Users: ", vusers)
 
@@ -174,7 +170,14 @@ def render_jmeter_config(jmeter_path):
         ramp_up_value = st.session_state.jmeter_state.get("ramp_up", None)
         # Number input for ramp-up period
         ramp_up = st.number_input(
-            "Ramp-Up Period (seconds)", key="ramp_up_input", value=ramp_up_value, step=1, min_value=None, format="%d", placeholder="Enter seconds..."
+            "Ramp-Up Period (seconds)", 
+            key="ramp_up_input", 
+            value=ramp_up_value, 
+            step=1, 
+            min_value=None, 
+            format="%d",
+            help="Enter the ramp-up period in seconds for the JMeter test.", 
+            placeholder="Enter seconds..."
         )
         st.write("Ramp-Up Period (sec): ", ramp_up)
 
@@ -200,6 +203,7 @@ def render_jmeter_config(jmeter_path):
         st.session_state.jmeter_state["vusers"] = vusers
         st.session_state.jmeter_state["ramp_up"] = ramp_up
         st.session_state.jmeter_state["duration"] = duration
+        st.session_state.jmeter_state["iterations"] = iterations
 
 def render_agent_viewer(ui_config):
     """

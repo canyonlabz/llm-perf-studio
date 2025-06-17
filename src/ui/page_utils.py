@@ -27,17 +27,46 @@ def format_datetime(dt):
 # Function to select a file from a given folder path
 # This function lists all files with a .jmx extension in the specified folder
 def file_selector(folder_path='.'):
+    # Get list of JMX files
     filenames = [f for f in os.listdir(folder_path) if f.lower().endswith('.jmx')]
+    if not filenames:
+        st.warning("No JMX files found in the specified folder.")
+        return None
+
+    # Get current selection from session state or if not set set to None
+    if 'selected_jmx_file' not in st.session_state:
+        st.session_state.selected_jmx_file = None
+
+    # Set default index to the previously selected file if it exists in the list
+    default_index = None
+    if st.session_state.selected_jmx_file and st.session_state.selected_jmx_file in filenames:
+        default_index = filenames.index(st.session_state.selected_jmx_file)
+
+    # Create selectbox with persisted state
     selected_filename = st.selectbox(
         'Select a JMeter JMX file', 
         filenames,
-        index=None,  # No default selection
-        placeholder="Select a JMX file"
+        key='jmx_file_selector',  # Unique key for the selectbox
+        index=default_index,
+        help="Select a JMX file to load. If no files are found, please ensure you have JMX files in the specified folder.",
+        placeholder="Select a JMX file" if filenames else "No JMX files found"
     )
-    # If no files are found, return None
-    if not selected_filename:
-        st.warning("No JMX files selected.")
+
+    # Update session state when selection changes
+    if selected_filename and selected_filename != st.session_state.selected_jmx_file:
+        st.session_state.selected_jmx_file = selected_filename
+
+    if st.session_state.selected_jmx_file:
+        full_path = os.path.join(folder_path, st.session_state.selected_jmx_file)
+        st.session_state.jmeter_state.update({
+            "jmx_path": full_path,
+            "jmx_valid": os.path.exists(full_path)
+        })
+        st.info(f"Selected file: {selected_filename}")
+
+        # Return the full path of the selected file
+        return full_path
+    else:
+        st.warning("No JMX file selected.")
         return None
-    # Return the full path of the selected file
-    st.info(f"Selected JMX file: {selected_filename}")
-    return os.path.join(folder_path, selected_filename) if filenames else None
+
