@@ -133,14 +133,44 @@ def render_jmeter_area():
     inject_action_button_styles()  # Inject custom styles for action buttons
 
     # Centered column for the JMeter page
-    col_left, col_jmeter, col_right = st.columns([2, 6, 2], border=True)  # Define three columns with specified widths and borders
+    col_left, col_viewer, col_right = st.columns([2, 6, 2], border=True)  # Define three columns with specified widths and borders
 
-    with col_jmeter:
+    with col_viewer:
         # Create the JMeter section
-        st.markdown('<div class="jmeter-title">📊 JMeter Performance Testing</div>', unsafe_allow_html=True)
+        st.markdown('<div class="jmeter-viewer-title">📊 JMeter Performance Test Viewer</div>', unsafe_allow_html=True)
 
-        # Render the buttons for JMeter actions
+        # Create a container with fixed height for real-time logs
+        jmeter_container = st.container(height=300, border=True)
         
+        # Display all JMeter logs inside the container
+        with jmeter_container:
+            # Join all log entries with newlines
+            if st.session_state.agent_logs:
+                log_text = "\n".join(st.session_state.agent_logs) if st.session_state.agent_logs else ""
+                st.text_area(
+                    label="JMeter Activity Logs", 
+                    value=log_text, 
+                    height=280, 
+                    key="jmeter_viewer_text", 
+                    disabled=True,
+                    label_visibility="collapsed"  # Hides the label visually but keeps it for accessibility
+                )
+            else:
+                st.info("No JMeter activity yet. Click on an action button to start.")
+
+    with col_left:
+        # Use a button to start the JMeter test
+        if st.button("🚀 Start JMeter", key="start_jmeter", disabled=st.session_state.session_started):
+            # Call the function to handle start session
+            ##handle_run_jmeter_test()
+            ...
+
+    with col_right:
+        if st.button("🔄 New Session", key="reset_jmeter"):
+            # Call the function to handle reset session
+            ##handle_reset_jmeter_test()
+            ...
+
 def render_jmeter_config(jmeter_path):
     """
     Render the JMeter configurations for the webpage.

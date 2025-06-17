@@ -176,6 +176,77 @@ def inject_chatbot_area_styles():
         </style>
     """, unsafe_allow_html=True)
 
+# --- JMeter Area Styles ---------------------------------------------------
+def inject_jmeter_viewer_styles():
+    """
+    Inject custom CSS styles for the JMeter Viewer in the Streamlit app.
+    """
+    # Inject custom CSS for styling
+    st.markdown("""
+        <style>
+        .jmeter-viewer-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .jmeter-viewer-textarea {
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: #f8f8f8;
+            font-family: monospace;
+            padding: 10px;
+            height: 100%;
+        }
+        .st-key-start_jmeter button {
+            background-color: #2d5c7f !important; /* Darker blue */
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            padding: 10px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            float: right;
+            margin: 0 10px;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: none;
+            outline: none;
+            white-space: nowrap;
+        }
+        .st-key-start_jmeter button:hover {
+            background-color: #1a3a4d !important;   /* Darker blue */
+            color: #a3cae9; /* Lighter blue */
+            border: 2px solid #c95000;
+            cursor: pointer;
+        }
+        .st-key-start_jmeter button:disabled {
+            background-color: #666666 !important;
+            color: #cccccc !important;
+            border: none !important;
+        }
+        .st-key-reset_jmeter button {
+            background-color: #2d5c7f !important; /* Darker blue */
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            padding: 10px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            float: left;
+            margin: 0 10px;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: none;
+            outline: none;
+            white-space: nowrap;
+        }
+        .st-key-reset_jmeter button:hover {
+            background-color: #1a3a4d !important;   /* Darker blue */
+            color: #a3cae9; /* Lighter blue */
+            border: 2px solid #c95000;
+            cursor: pointer;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
 # --- Action Button Styles ---------------------------------------------------
 def inject_action_button_styles():
     """
