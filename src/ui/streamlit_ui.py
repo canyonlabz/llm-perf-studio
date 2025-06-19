@@ -35,7 +35,7 @@ def render_ui():
 
     pg = st.navigation(
         pages=[page_homepage, page_jmeter, page_deepeval],
-        position=True,
+        position="sidebar",
     )
     pg.run()
 
