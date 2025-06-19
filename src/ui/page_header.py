@@ -24,11 +24,11 @@ def render_page_header():
     with col2:
         tab_col1, tab_col2, tab_col3, tab_col4 = st.columns([0.13, 0.14, 0.15, 0.58], border=False) # Define four columns for navigation tabs
         with tab_col1:
-            st.page_link("pages/page_homepage.py", label="Home", icon="🏠")
+            st.page_link("nav_pages/page_homepage.py", label="Home", icon="🏠")
         with tab_col2:
-            st.page_link("pages/page_jmeter.py", label="JMeter", icon="📊")
+            st.page_link("nav_pages/page_jmeter.py", label="JMeter", icon="📊")
         with tab_col3:
-            st.page_link("pages/page_deepeval.py", label="DeepEval", icon="📈")
+            st.page_link("nav_pages/page_deepeval.py", label="DeepEval", icon="📈")
         
     with col3:
         # Exit button with custom CSS class

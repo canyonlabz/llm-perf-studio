@@ -29,9 +29,9 @@ def render_ui():
     st.set_page_config(page_title="LLM Performance Test Studio", layout="wide")
 
     # Set the page configuration for Streamlit
-    page_homepage = st.Page("pages/page_homepage.py", title="Home", icon="🏠")
-    page_jmeter = st.Page("pages/page_jmeter.py", title="JMeter", icon="📊")
-    page_deepeval = st.Page("pages/page_deepeval.py", title="DeepEval", icon="📈")
+    page_homepage = st.Page("nav_pages/page_homepage.py", title="Home", icon="🏠")
+    page_jmeter = st.Page("nav_pages/page_jmeter.py", title="JMeter", icon="📊")
+    page_deepeval = st.Page("nav_pages/page_deepeval.py", title="DeepEval", icon="📈")
 
     pg = st.navigation(
         pages=[page_homepage, page_jmeter, page_deepeval],
