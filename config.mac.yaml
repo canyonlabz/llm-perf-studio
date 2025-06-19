@@ -1,0 +1,30 @@
+general:
+  enable_debug: False  # Enable/disable debug mode
+  enable_logging: True  # Enable/disable logging
+  enable_user_interface: True  # Enable/disable user interface
+  enable_chatbot: True  # Enable/disable chatbot functionality
+
+llm:
+  llm_model: "gpt-4o-mini"  # Model name
+  llm_temperature: 0        # Temperature for randomness in responses
+
+ollama:
+  ollama_model: "llama3.2:1b"  # Model name for Ollama
+  ollama_temperature: 0.7  # Temperature for randomness in responses
+  ollama_api_url: "http://localhost:11434"  # API URL for Ollama
+  ollama_api_key: ""  # API key for Ollama, if required
+
+logging:
+  log_level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  verbose_mode: False  # Enable verbose logging for debugging
+  log_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/tmp/logs"  # Update with the actual path
+
+user_interface:
+  ui_port: 8501    # Port for the UI; adjust as needed
+  enable_debug_button: False  # Enable/disable the debug button (custom setting)
+
+jmeter:
+  jmeter_home: "/opt/apache-jmeter-5.6.3"  # Update with the actual JMeter home path
+  jmeter_bin_path: "/opt/apache-jmeter-5.6.3/bin/jmeter"  # Update with the actual JMeter bin path
+  jmeter_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/jmeter"  # Path for JMeter JMX files
+  jmeter_results_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/tmp/results"  # Path for JMeter results files
