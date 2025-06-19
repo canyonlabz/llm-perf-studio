@@ -9,7 +9,6 @@ from pathlib import Path
 import os
 from src.utils.config import load_config  # Importing configuration loader
 
-print("🔍 CWD:", os.getcwd())
 # --- Load Configuration -----------------------------------------------------
 
 # Load the full configuration from config.yaml
