@@ -127,21 +127,20 @@ def render_page_buttons():
             ##handle_run_smoke_test()
             ...
 
-# --- Render JMeter Page Body ------------------------------------------------
-
-def render_jmeter_config_area(jmeter_path):
+# ============================================================================
+# JMeter Page Body: This section contains the main body of the JMeter page.
+# It includes the JMeter configuration area, viewer area, and buttons.
+# ============================================================================
+def render_jmeter_config_area():
     """
     Render the JMeter configuration area for the webpage.
     """
     inject_jmeter_config_styles()  # Inject custom styles for JMeter configuration
 
     # Use 6 columns: spacers + 4 button columns + spacers
-    col1, col2, col3, col4, col5 = st.columns([0.20, 0.20, 0.20, 0.20, 0.20], vertical_alignment="top", border=False) # Define six columns with specified widths and borders
+    col1, col2, col3, col4 = st.columns([0.25, 0.25, 0.25, 0.25], vertical_alignment="top", border=False) # Define six columns with specified widths and borders
 
     with col1:
-        jmx_filename = file_selector(jmeter_path)   # Call the file selector function to get the JMX file path
-
-    with col2:
         # Top: Subtitle
         st.markdown('<div class="jmeter-config-subtitle">Number of Virtual Users</div>', unsafe_allow_html=True)
 
@@ -163,8 +162,9 @@ def render_jmeter_config_area(jmeter_path):
             f'<span class="jmeter-config-value">{vusers if vusers is not None else "None"}</span>',
             unsafe_allow_html=True
         )
+        st.session_state.jmeter_state["vusers"] = vusers
 
-    with col3:
+    with col2:
         # Top: Subtitle
         st.markdown('<div class="jmeter-config-subtitle">Ramp-Up Period</div>', unsafe_allow_html=True) 
 
@@ -186,8 +186,9 @@ def render_jmeter_config_area(jmeter_path):
             f'<span class="jmeter-config-value">{ramp_up if ramp_up is not None else "None"}</span>',
             unsafe_allow_html=True
         )
+        st.session_state.jmeter_state["ramp_up"] = ramp_up
 
-    with col4:
+    with col3:
         # Top: Subtitle
         st.markdown('<div class="jmeter-config-subtitle">Test Duration</div>', unsafe_allow_html=True)
 
@@ -209,8 +210,9 @@ def render_jmeter_config_area(jmeter_path):
             f'<span class="jmeter-config-value">{duration if duration is not None else "None"}</span>',
             unsafe_allow_html=True
         )
+        st.session_state.jmeter_state["duration"] = duration
 
-    with col5:
+    with col4:
         # Top: Subtitle
         st.markdown('<div class="jmeter-config-subtitle">Number of Iterations</div>', unsafe_allow_html=True)
 
@@ -232,24 +234,24 @@ def render_jmeter_config_area(jmeter_path):
             f'<span class="jmeter-config-value">{iterations if iterations is not None else "None"}</span>',
             unsafe_allow_html=True
         )
-
-    # If a file is uploaded, store it in session state
-    if jmx_filename is not None:
-        st.session_state.jmeter_state["jmx_path"] = jmx_filename
-        st.session_state.jmeter_state["vusers"] = vusers
-        st.session_state.jmeter_state["ramp_up"] = ramp_up
-        st.session_state.jmeter_state["duration"] = duration
         st.session_state.jmeter_state["iterations"] = iterations
 
-def render_jmeter_viewer_area():
+def render_jmeter_viewer_area(jmeter_path):
     """
     Render the JMeter test viewer and buttons on the webpage.
     """
-    # Inject custom styles for JMeter page
-    inject_action_button_styles()  # Inject custom styles for action buttons
+    inject_jmeter_config_styles()  # Inject custom styles for JMeter configuration
 
     # Centered column for the JMeter page
     col_left, col_viewer, col_right = st.columns([2, 6, 2], border=True)  # Define three columns with specified widths and borders
+
+    with col_left:
+        # Select box to select a JMX file
+        jmx_filename = file_selector(jmeter_path)   # Call the file selector function to get the JMX file path
+
+        # If a file is uploaded, store it in session state
+        if jmx_filename is not None:
+            st.session_state.jmeter_state["jmx_path"] = jmx_filename
 
     with col_viewer:
         # Create the JMeter section
@@ -274,17 +276,17 @@ def render_jmeter_viewer_area():
             else:
                 st.info("No JMeter activity yet. Click on an action button to start.")
 
-    with col_left:
-        # Use a button to start the JMeter test
-        if st.button("▶️ Start JMeter", key="start_jmeter", disabled=st.session_state.session_started):
-            # Call the function to handle start session
-            ##handle_start_jmeter_test()
+    with col_right:
+        # Button to start the JMeter test
+        if st.button("▶️ Start JMeter", key="start_jmeter"):
+            # Call the function to handle start JMeter test
+            #handle_start_jmeter_test()
             ...
 
-    with col_right:
+        # Button to stop the JMeter test
         if st.button("🛑 Stop Test", key="stop_jmeter"):
-            # Call the function to handle reset session
-            ##handle_stop_jmeter_test()
+            # Call the function to handle stop JMeter test
+            #handle_stop_jmeter_test()
             ...
 
 def render_agent_viewer(ui_config):
