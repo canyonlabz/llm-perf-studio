@@ -176,7 +176,44 @@ def inject_chatbot_area_styles():
         </style>
     """, unsafe_allow_html=True)
 
-# --- JMeter Area Styles ---------------------------------------------------
+# --- JMeter Configuration Area Styles ---------------------------------------------------
+def inject_jmeter_config_styles():
+    """
+    Inject custom CSS styles for the JMeter configuration area in the Streamlit app.
+    """
+    st.markdown("""
+        <style>
+        .jmeter-config-subtitle {
+            font-size: 1.18rem;
+            color: #133366; /* dark blue */
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.2px;
+        }
+        /* Number input and select box border styling */
+        .stNumberInput input, .stSelectbox div[data-baseweb="select"] {
+            border: 1.5px solid #cfd8dc !important;  /* light grey */
+            border-radius: 7px !important;
+            background-color: #f8fafc !important;
+            padding: 0.35rem 0.75rem !important;
+            font-size: 1.08rem !important;
+        }
+        .jmeter-config-label {
+            color: #222;           /* Black or near-black for label */
+            font-weight: 600;
+            font-size: 1.08rem;
+            letter-spacing: 0.2px;
+        }
+        .jmeter-config-value {
+            font-size: 1.09rem;
+            color: #1976d2;  /* blue-grey for modern look */
+            font-weight: 500;
+            margin-top: 0.18rem;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+# --- JMeter Viewer Styles ---------------------------------------------------
 def inject_jmeter_viewer_styles():
     """
     Inject custom CSS styles for the JMeter Viewer in the Streamlit app.

@@ -18,7 +18,9 @@ import pandas as pd
 from src.ui.page_styles import (
     inject_action_button_styles,
     inject_agent_viewer_styles,
-    inject_report_viewer_styles
+    inject_report_viewer_styles,
+    inject_jmeter_config_styles,    # JMeter configuration styles
+    inject_jmeter_viewer_styles     # JMeter viewer styles
 )
 from src.ui.page_utils import (
     format_duration, 
@@ -125,9 +127,87 @@ def render_page_buttons():
             ##handle_run_smoke_test()
             ...
 
-def render_jmeter_area():
+# --- Render JMeter Page Body ------------------------------------------------
+
+def render_jmeter_config_area(jmeter_path):
     """
-    Render the JMeter page that displays JMeter-related functionalities.
+    Render the JMeter configuration area for the webpage.
+    """
+    inject_jmeter_config_styles()  # Inject custom styles for JMeter configuration
+
+    # Use 6 columns: spacers + 4 button columns + spacers
+    col1, col2, col3, col4, col5 = st.columns([0.20, 0.20, 0.20, 0.20, 0.20], border=True) # Define six columns with specified widths and borders
+
+    with col1:
+        jmx_filename = file_selector(jmeter_path)   # Call the file selector function to get the JMX file path
+
+    with col2:
+        ##vusers_value = st.session_state.jmeter_state.get("vusers", None)
+
+        # Top: Subtitle
+        st.markdown('<div class="jmeter-config-subtitle">Number of Virtual Users</div>', unsafe_allow_html=True)
+
+        # Middle: Number input for virtual users
+        vusers = st.number_input(
+            "Number of Virtual Users", 
+            key="vusers_input", 
+            value=st.session_state.jmeter_state.get("vusers", None), 
+            step=1, 
+            min_value=None, 
+            format="%d",
+            help="Enter the number of virtual users for the JMeter test.", 
+            placeholder="Enter number...",
+            label_visibility="collapsed"
+        )
+
+        # Bottom: Value display
+        st.markdown(
+            f'<span class="jmeter-config-label">Virtual Users:</span> <span class="jmeter-config-value">{vusers if vusers is not None else "None"}</span>',
+            unsafe_allow_html=True
+        )
+
+    with col3:
+        ramp_up_value = st.session_state.jmeter_state.get("ramp_up", None)
+        # Number input for ramp-up period
+        ramp_up = st.number_input(
+            "Ramp-Up Period (seconds)", 
+            key="ramp_up_input", 
+            value=ramp_up_value, 
+            step=1, 
+            min_value=None, 
+            format="%d",
+            help="Enter the ramp-up period in seconds for the JMeter test.", 
+            placeholder="Enter seconds..."
+        )
+        st.write("Ramp-Up Period (sec): ", ramp_up)
+
+    with col4:
+        duration_value = st.session_state.jmeter_state.get("duration", None)
+        # Number input for test duration
+        duration = st.number_input(
+            "Test Duration (seconds)", key="duration_input", value=duration_value, step=1, min_value=None, format="%d", placeholder="Enter seconds..."
+        )
+        st.write("Test Duration (sec): ", duration)
+
+    with col5:
+        iterations_value = st.session_state.jmeter_state.get("iterations", None)
+        # Number input for number of iterations
+        iterations = st.number_input(
+            "Number of Iterations", key="iterations_input", value=iterations_value, step=1, min_value=None, format="%d", placeholder="Enter iterations..."
+        )
+        st.write("Number of Iterations: ", iterations)
+
+    # If a file is uploaded, store it in session state
+    if jmx_filename is not None:
+        st.session_state.jmeter_state["jmx_path"] = jmx_filename
+        st.session_state.jmeter_state["vusers"] = vusers
+        st.session_state.jmeter_state["ramp_up"] = ramp_up
+        st.session_state.jmeter_state["duration"] = duration
+        st.session_state.jmeter_state["iterations"] = iterations
+
+def render_jmeter_viewer_area():
+    """
+    Render the JMeter test viewer and buttons on the webpage.
     """
     # Inject custom styles for JMeter page
     inject_action_button_styles()  # Inject custom styles for action buttons
@@ -170,70 +250,6 @@ def render_jmeter_area():
             # Call the function to handle reset session
             ##handle_reset_jmeter_test()
             ...
-
-def render_jmeter_config(jmeter_path):
-    """
-    Render the JMeter configurations for the webpage.
-    """
-    # Use 6 columns: spacers + 4 button columns + spacers
-    col1, col2, col3, col4, col5 = st.columns([0.20, 0.20, 0.20, 0.20, 0.20], border=True) # Define six columns with specified widths and borders
-
-    with col1:
-        jmx_filename = file_selector(jmeter_path)   # Call the file selector function to get the JMX file path
-
-    with col2:
-        vusers_value = st.session_state.jmeter_state.get("vusers", None)
-        # Number input for virtual users
-        vusers = st.number_input(
-            "Number of Virtual Users", 
-            key="vusers_input", 
-            value=vusers_value, 
-            step=1, 
-            min_value=None, 
-            format="%d",
-            help="Enter the number of virtual users for the JMeter test.", 
-            placeholder="Enter number..."
-        )
-        st.write("Virtual Users: ", vusers)
-
-    with col3:
-        ramp_up_value = st.session_state.jmeter_state.get("ramp_up", None)
-        # Number input for ramp-up period
-        ramp_up = st.number_input(
-            "Ramp-Up Period (seconds)", 
-            key="ramp_up_input", 
-            value=ramp_up_value, 
-            step=1, 
-            min_value=None, 
-            format="%d",
-            help="Enter the ramp-up period in seconds for the JMeter test.", 
-            placeholder="Enter seconds..."
-        )
-        st.write("Ramp-Up Period (sec): ", ramp_up)
-
-    with col4:
-        duration_value = st.session_state.jmeter_state.get("duration", None)
-        # Number input for test duration
-        duration = st.number_input(
-            "Test Duration (seconds)", key="duration_input", value=duration_value, step=1, min_value=None, format="%d", placeholder="Enter seconds..."
-        )
-        st.write("Test Duration (sec): ", duration)
-
-    with col5:
-        iterations_value = st.session_state.jmeter_state.get("iterations", None)
-        # Number input for number of iterations
-        iterations = st.number_input(
-            "Number of Iterations", key="iterations_input", value=iterations_value, step=1, min_value=None, format="%d", placeholder="Enter iterations..."
-        )
-        st.write("Number of Iterations: ", iterations)
-
-    # If a file is uploaded, store it in session state
-    if jmx_filename is not None:
-        st.session_state.jmeter_state["jmx_path"] = jmx_filename
-        st.session_state.jmeter_state["vusers"] = vusers
-        st.session_state.jmeter_state["ramp_up"] = ramp_up
-        st.session_state.jmeter_state["duration"] = duration
-        st.session_state.jmeter_state["iterations"] = iterations
 
 def render_agent_viewer(ui_config):
     """

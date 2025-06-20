@@ -16,8 +16,8 @@ from src.utils.config import load_config  # Importing configuration loader
 from src.ui.page_header import render_page_header  # Importing page header
 from src.ui.page_title import render_jmeter_title  # Importing page body
 from src.ui.page_body import (
-    render_jmeter_config,   # Importing JMeter configuration
-    render_jmeter_area,     # Importing JMeter area
+    render_jmeter_config_area,   # Importing JMeter configuration
+    render_jmeter_viewer_area,     # Importing JMeter area
 #    render_page_buttons,  # Importing page buttons
 #    render_agent_viewer,  # Importing agent automation viewer
 #    render_report_viewer  # Importing report viewer
@@ -46,8 +46,8 @@ def render_ui():
     # Set the page configuration for Streamlit
     render_page_header()    # Render the page header
     render_jmeter_title()   # Render the page body (title, subtitle, etc.)
-    render_jmeter_config(jmeter_path)  # Render the JMeter configuration
-    render_jmeter_area()    # Render the JMeter area (main content)
+    render_jmeter_config_area(jmeter_path)  # Render the JMeter configuration
+    render_jmeter_viewer_area()    # Render the JMeter area (main content)
 
 # --- Main Function ---------------------------------------------------------
 
