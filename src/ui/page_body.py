@@ -276,15 +276,15 @@ def render_jmeter_viewer_area():
 
     with col_left:
         # Use a button to start the JMeter test
-        if st.button("🚀 Start JMeter", key="start_jmeter", disabled=st.session_state.session_started):
+        if st.button("▶️ Start JMeter", key="start_jmeter", disabled=st.session_state.session_started):
             # Call the function to handle start session
-            ##handle_run_jmeter_test()
+            ##handle_start_jmeter_test()
             ...
 
     with col_right:
-        if st.button("🔄 New Session", key="reset_jmeter"):
+        if st.button("🛑 Stop Test", key="stop_jmeter"):
             # Call the function to handle reset session
-            ##handle_reset_jmeter_test()
+            ##handle_stop_jmeter_test()
             ...
 
 def render_agent_viewer(ui_config):
