@@ -5,6 +5,8 @@ import os
 from datetime import datetime
 import streamlit as st
 
+from src.ui.page_styles import inject_jmeter_config_styles
+
 # Function to format a duration into a human-readable string
 # Example: timedelta(minutes=5, seconds=30) -> "5 minutes, 30 seconds"
 # Assume duration is a timedelta, start_time and end_time are datetime objects
@@ -27,6 +29,8 @@ def format_datetime(dt):
 # Function to select a file from a given folder path
 # This function lists all files with a .jmx extension in the specified folder
 def file_selector(folder_path='.'):
+    inject_jmeter_config_styles()  # Inject custom styles for JMeter configuration
+
     # Get list of JMX files
     filenames = [f for f in os.listdir(folder_path) if f.lower().endswith('.jmx')]
     if not filenames:
@@ -42,6 +46,9 @@ def file_selector(folder_path='.'):
     if st.session_state.selected_jmx_file and st.session_state.selected_jmx_file in filenames:
         default_index = filenames.index(st.session_state.selected_jmx_file)
 
+    # Top: Subtitle
+    st.markdown('<div class="jmeter-config-subtitle">Select JMX File</div>', unsafe_allow_html=True)
+
     # Create selectbox with persisted state
     selected_filename = st.selectbox(
         'Select a JMeter JMX file', 
@@ -49,7 +56,8 @@ def file_selector(folder_path='.'):
         key='jmx_file_selector',  # Unique key for the selectbox
         index=default_index,
         help="Select a JMX file to load. If no files are found, please ensure you have JMX files in the specified folder.",
-        placeholder="Select a JMX file" if filenames else "No JMX files found"
+        placeholder="Select a JMX file" if filenames else "No JMX files found",
+        label_visibility="collapsed"
     )
 
     # Update session state when selection changes

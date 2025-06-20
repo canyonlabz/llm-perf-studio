@@ -136,14 +136,12 @@ def render_jmeter_config_area(jmeter_path):
     inject_jmeter_config_styles()  # Inject custom styles for JMeter configuration
 
     # Use 6 columns: spacers + 4 button columns + spacers
-    col1, col2, col3, col4, col5 = st.columns([0.20, 0.20, 0.20, 0.20, 0.20], border=True) # Define six columns with specified widths and borders
+    col1, col2, col3, col4, col5 = st.columns([0.20, 0.20, 0.20, 0.20, 0.20], vertical_alignment="top", border=False) # Define six columns with specified widths and borders
 
     with col1:
         jmx_filename = file_selector(jmeter_path)   # Call the file selector function to get the JMX file path
 
     with col2:
-        ##vusers_value = st.session_state.jmeter_state.get("vusers", None)
-
         # Top: Subtitle
         st.markdown('<div class="jmeter-config-subtitle">Number of Virtual Users</div>', unsafe_allow_html=True)
 
@@ -159,43 +157,81 @@ def render_jmeter_config_area(jmeter_path):
             placeholder="Enter number...",
             label_visibility="collapsed"
         )
-
-        # Bottom: Value display
+        # Bottom: Virtual user value display
         st.markdown(
-            f'<span class="jmeter-config-label">Virtual Users:</span> <span class="jmeter-config-value">{vusers if vusers is not None else "None"}</span>',
+            f'<span class="jmeter-config-label">Virtual Users:</span> '
+            f'<span class="jmeter-config-value">{vusers if vusers is not None else "None"}</span>',
             unsafe_allow_html=True
         )
 
     with col3:
-        ramp_up_value = st.session_state.jmeter_state.get("ramp_up", None)
-        # Number input for ramp-up period
+        # Top: Subtitle
+        st.markdown('<div class="jmeter-config-subtitle">Ramp-Up Period</div>', unsafe_allow_html=True) 
+
+        # Middle: Number input for ramp-up period
         ramp_up = st.number_input(
             "Ramp-Up Period (seconds)", 
             key="ramp_up_input", 
-            value=ramp_up_value, 
+            value=st.session_state.jmeter_state.get("ramp_up", None), 
             step=1, 
             min_value=None, 
             format="%d",
             help="Enter the ramp-up period in seconds for the JMeter test.", 
-            placeholder="Enter seconds..."
+            placeholder="Enter seconds...",
+            label_visibility="collapsed"
         )
-        st.write("Ramp-Up Period (sec): ", ramp_up)
+        # Bottom: Ramp-Up value display
+        st.markdown(
+            f'<span class="jmeter-config-label">Ramp-Up Period (sec):</span> '
+            f'<span class="jmeter-config-value">{ramp_up if ramp_up is not None else "None"}</span>',
+            unsafe_allow_html=True
+        )
 
     with col4:
-        duration_value = st.session_state.jmeter_state.get("duration", None)
-        # Number input for test duration
+        # Top: Subtitle
+        st.markdown('<div class="jmeter-config-subtitle">Test Duration</div>', unsafe_allow_html=True)
+
+        # Middle: Number input for test duration
         duration = st.number_input(
-            "Test Duration (seconds)", key="duration_input", value=duration_value, step=1, min_value=None, format="%d", placeholder="Enter seconds..."
+            "Test Duration (seconds)", 
+            key="duration_input", 
+            value=st.session_state.jmeter_state.get("duration", None), 
+            step=1, 
+            min_value=None, 
+            format="%d", 
+            help="Enter the test duration in seconds for the JMeter test.",
+            placeholder="Enter seconds...",
+            label_visibility="collapsed"
         )
-        st.write("Test Duration (sec): ", duration)
+        # Bottom: Test duration value display
+        st.markdown(
+            f'<span class="jmeter-config-label">Test Duration (sec):</span> '
+            f'<span class="jmeter-config-value">{duration if duration is not None else "None"}</span>',
+            unsafe_allow_html=True
+        )
 
     with col5:
-        iterations_value = st.session_state.jmeter_state.get("iterations", None)
-        # Number input for number of iterations
+        # Top: Subtitle
+        st.markdown('<div class="jmeter-config-subtitle">Number of Iterations</div>', unsafe_allow_html=True)
+
+        # Middle: Number input for number of iterations
         iterations = st.number_input(
-            "Number of Iterations", key="iterations_input", value=iterations_value, step=1, min_value=None, format="%d", placeholder="Enter iterations..."
+            "Number of Iterations", 
+            key="iterations_input", 
+            value=st.session_state.jmeter_state.get("iterations", None), 
+            step=1, 
+            min_value=None, 
+            format="%d",
+            help="Enter the number of iterations for the JMeter test.", 
+            placeholder="Enter iterations...",
+            label_visibility="collapsed"
         )
-        st.write("Number of Iterations: ", iterations)
+        # Bottom: Number of Iterations value display
+        st.markdown(
+            f'<span class="jmeter-config-label">Number of Iterations:</span> '
+            f'<span class="jmeter-config-value">{iterations if iterations is not None else "None"}</span>',
+            unsafe_allow_html=True
+        )
 
     # If a file is uploaded, store it in session state
     if jmx_filename is not None:
