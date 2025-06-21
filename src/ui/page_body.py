@@ -289,6 +289,16 @@ def render_jmeter_viewer_area(jmeter_path):
             #handle_stop_jmeter_test()
             ...
 
+        on = st.toggle(
+            "RAG Mode",
+            value=False,
+            key="enable_rag_mode",
+            help="Toggle Retrieval Augmented Generation (RAG) mode on or off.",)
+        if on:
+            st.markdown('<div class="toggle-button-title">🟢 RAG Mode Enabled</div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="toggle-button-title">🔴 RAG Mode Disabled</div>', unsafe_allow_html=True)
+
 def render_agent_viewer(ui_config):
     """
     Render the Agent Automation Viewer area that displays agent logs and activities.
