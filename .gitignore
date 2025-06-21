@@ -160,3 +160,8 @@ testdata_json/ollama_response_generate-api.json
 test_results/*.json
 test_results/*.csv
 test_results/*.jtl
+
+# Ignore docker data created by the test suite
+docker/data/*
+jmeter/test_results/*
+# Ignore JMeter test results
