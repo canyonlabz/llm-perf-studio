@@ -16,11 +16,8 @@ from src.utils.config import load_config  # Importing configuration loader
 from src.ui.page_header import render_page_header  # Importing page header
 from src.ui.page_title import render_jmeter_title  # Importing page body
 from src.ui.page_body import (
-    render_jmeter_config_area,   # Importing JMeter configuration
-    render_jmeter_viewer_area,     # Importing JMeter area
-#    render_page_buttons,  # Importing page buttons
-#    render_agent_viewer,  # Importing agent automation viewer
-#    render_report_viewer  # Importing report viewer
+    render_jmeter_config_area,     # Importing JMeter configuration settings area
+    render_jmeter_viewer_area,     # Importing JMeter viewer area and buttons
 )
 
 #from src.utils.agent_logs import add_agent_log

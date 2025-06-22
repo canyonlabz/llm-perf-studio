@@ -28,15 +28,27 @@ def render_chatbot_area(llm_model="gpt-4o-mini"):
     col_left, col_chat, col_right = st.columns([2, 6, 2])
 
     with col_left:
-        on = st.toggle(
-            "Test Mode",
-            value=False,
-            key="enable_llm_mode",
-            help="Toggle local LLM mode on or off.",)
-        if on:
-            st.markdown('<div class="chatbot-title">💬 LLM Mode Enabled</div>', unsafe_allow_html=True)
-        else:
-            st.markdown('<div class="chatbot-title">🧪 Test Mode Enabled</div>', unsafe_allow_html=True)
+        st.markdown('<div class="homepage-subtitle">Select RAG File</div>', unsafe_allow_html=True)
+
+        uploaded_file = st.file_uploader(
+            "Choose a file for RAG", 
+            type=["txt", "csv", "pdf", "xlsx", "docx"], 
+            key="rag_file_uploader",
+            help="Upload a file to use as a source for Retrieval-Augmented Generation (RAG).",
+            label_visibility="collapsed",
+        )
+        
+        # If a file is uploaded, store it in session state
+        if uploaded_file is not None:
+            st.session_state.selected_rag_file = uploaded_file
+
+        process_disabled = (
+            st.session_state.selected_rag_file is None
+        )
+        if st.button("Process RAG File", key="process_rag_file", disabled=process_disabled):
+            # Call the function to handle file upload
+            #handle_process_rag_file(st.session_state.selected_rag_file)
+            ...  # This is where you would handle the file upload logic
         
     with col_chat:
         # --- Chatbot Section ---
@@ -80,6 +92,16 @@ def render_chatbot_area(llm_model="gpt-4o-mini"):
 
     with col_right:
         st.button("🧹 Clear Chat", key="clear_chat", on_click=clear_chat)
+
+        on = st.toggle(
+            "LLM Mode",
+            value=False,
+            key="enable_llm_mode",
+            help="Toggle local LLM mode on or off.",)
+        if on:
+            st.markdown('<div class="chatbot-title">☁️ OpenAI Enabled</div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="chatbot-title">🖥️ Ollama Enabled</div>', unsafe_allow_html=True)
 
 # --- Callback function to clear chat ---
 def clear_chat():

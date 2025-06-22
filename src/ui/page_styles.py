@@ -145,7 +145,15 @@ def inject_chatbot_area_styles():
     """
     st.markdown("""
         <style>
+        .homepage-subtitle {
+            font-size: 1.18rem;
+            color: #133366; /* dark blue */
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.2px;
+        }
         .chatbot-title {
+            color: #133366; /* dark blue */
             font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
@@ -172,6 +180,37 @@ def inject_chatbot_area_styles():
         .st-key-clear_chat button:hover {
             background: #c95000;
             color: #fff;
+        }
+        /* Shared pill style for all action buttons */
+        .st-key-process_rag_file button {
+            background-color: #2d5c7f !important; /* Darker blue */
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            padding: 10px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 0 10px;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: none;
+            outline: none;
+            white-space: nowrap;  /* Prevent text wrapping */
+        }
+
+        /* Hover: swap background and text color */
+        .st-key-process_rag_file button:hover {
+            background-color: #1a3a4d !important;   /* Darker blue */
+            color: #a3cae9; /* Lighter blue */
+            border: 2px solid #c95000;
+            cursor: pointer;
+        }
+    
+        /* Disabled state */
+        .st-key-process_rag_file button:disabled {
+            background-color: #cccccc !important;
+            color: #666666 !important;
+            border: none !important;
+            cursor: not-allowed !important;
         }
         </style>
     """, unsafe_allow_html=True)
