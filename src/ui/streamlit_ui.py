@@ -16,6 +16,42 @@ module_config = load_config()
 general_config = module_config.get("general", {})
 ui_config = module_config.get("user_interface", {})
 
+# --- Initialize Session State ------------------------------------------------
+
+# Initialize session state
+if "session_started" not in st.session_state:
+    st.session_state.session_started = False
+# Initialize the LLM mode in session state if not already present
+if "llm_mode" not in st.session_state:
+    st.session_state.llm_mode = "ollama"  # Default LLM model ("ollama" or "openai")
+# Initialize the agent logs in session state if not already present
+if "agent_logs" not in st.session_state:
+    st.session_state.agent_logs = []
+# initialize the JMeter state in session state if not already present
+if "jmeter_state" not in st.session_state:
+    # Mirror the same shape your pipeline expects
+    st.session_state.jmeter_state = {
+        "jmx_path": "",
+        "jmx_valid": False,
+        "vusers": None,
+        "ramp_up": None,
+        "duration": None,
+        "iterations": None,
+        "smoke_test_results": {},
+        "jmeter_jtl_path": "",
+        "jmeter_log_path": "",
+        "run_counts": {},
+    }
+# Initialize the selected RAG file in session state if not already present
+if "selected_rag_file" not in st.session_state:
+    st.session_state.selected_rag_file = None
+# Initialize the RAG mode in session state if not already present
+if "rag_mode" not in st.session_state:
+    st.session_state.rag_mode = False  # Default RAG mode (False or True)
+# Initialize the selected JMeter JMX file in session state if not already present
+if "selected_jmx_file" not in st.session_state:
+    st.session_state.selected_jmx_file = None
+
 # --- Render UI ---------------------------------------------------------------
 
 def render_ui():
