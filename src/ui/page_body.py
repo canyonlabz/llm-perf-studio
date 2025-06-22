@@ -20,7 +20,8 @@ from src.ui.page_styles import (
     inject_agent_viewer_styles,
     inject_report_viewer_styles,
     inject_jmeter_config_styles,    # JMeter configuration styles
-    inject_jmeter_viewer_styles     # JMeter viewer styles
+    inject_jmeter_viewer_styles,     # JMeter viewer styles
+    inject_jmeter_button_styles
 )
 from src.ui.page_utils import (
     format_duration, 
@@ -240,10 +241,11 @@ def render_jmeter_viewer_area(jmeter_path):
     """
     Render the JMeter test viewer and buttons on the webpage.
     """
-    inject_jmeter_config_styles()  # Inject custom styles for JMeter configuration
+    inject_jmeter_viewer_styles()  # Inject custom styles for JMeter viewer
+    inject_jmeter_button_styles()  # Inject custom styles for JMeter buttons
 
     # Centered column for the JMeter page
-    col_left, col_viewer, col_right = st.columns([2, 6, 2], border=True)  # Define three columns with specified widths and borders
+    col_left, col_viewer, col_right = st.columns([2, 6, 2], border=False)  # Define three columns with specified widths and borders
 
     with col_left:
         # Select box to select a JMX file

@@ -229,57 +229,64 @@ def inject_jmeter_viewer_styles():
         .jmeter-viewer-textarea {
             border: 2px solid #ddd;
             border-radius: 6px;
-            background: #f8f8f8;
+            border-color: #4c4e52;  /* Dark grey border */
+            background: #f8f8f8;    /* Light grey background */
             font-family: monospace;
             padding: 10px;
             height: 100%;
         }
-        .st-key-start_jmeter button {
-            background-color: #2d5c7f !important; /* Darker blue */
-            color: #fff;
-            border: none;
-            border-radius: 24px;
-            padding: 10px 28px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            float: right;
-            margin: 0 10px;
-            transition: background 0.2s, color 0.2s;
-            box-shadow: none;
+        </style>
+    """, unsafe_allow_html=True)
+
+# --- JMeter Button Styles ---------------------------------------------------
+def inject_jmeter_button_styles():
+    """
+    Inject custom CSS styles for JMeter buttons in the Streamlit app.
+    """
+    st.markdown("""
+        <style>
+        /* Base style for all JMeter buttons */
+        .st-key-start_jmeter button,
+        .st-key-stop_jmeter button {
+            width: 160px;
+            height: 44px;
+            font-size: 1.08rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            border-color: #4c4e52;  /* Dark grey border */
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            cursor: pointer;
             outline: none;
-            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Start JMeter button */
+        .st-key-start_jmeter button {
+            background: #e3f0fc;    /* Light blue background */
+            color: #1976d2;         /* Dark blue text */
         }
         .st-key-start_jmeter button:hover {
-            background-color: #1a3a4d !important;   /* Darker blue */
-            color: #a3cae9; /* Lighter blue */
-            border: 2px solid #c95000;
-            cursor: pointer;
+            background: #1976d2;    /* Dark blue background on hover */
+            color: #fff;            /* White text on hover */
+            box-shadow: 0 4px 16px rgba(25, 118, 210, 0.16);
+            border-color: #cfd8dc; /* Maintain light grey border */
         }
-        .st-key-start_jmeter button:disabled {
-            background-color: #666666 !important;
-            color: #cccccc !important;
-            border: none !important;
+
+        /* Stop Test button */
+        .st-key-stop_jmeter button {
+            background: #fde8e8;    /* Light red background */
+            color: #d32f2f;         /* Dark red text */
         }
-        .st-key-reset_jmeter button {
-            background-color: #2d5c7f !important; /* Darker blue */
-            color: #fff;
-            border: none;
-            border-radius: 24px;
-            padding: 10px 28px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            float: left;
-            margin: 0 10px;
-            transition: background 0.2s, color 0.2s;
-            box-shadow: none;
-            outline: none;
-            white-space: nowrap;
-        }
-        .st-key-reset_jmeter button:hover {
-            background-color: #1a3a4d !important;   /* Darker blue */
-            color: #a3cae9; /* Lighter blue */
-            border: 2px solid #c95000;
-            cursor: pointer;
+        .st-key-stop_jmeter button:hover {
+            background: #d32f2f;    /* Dark red background on hover */
+            color: #fff;            /* White text on hover */
+            box-shadow: 0 4px 16px rgba(211, 47, 47, 0.16);
         }
         </style>
     """, unsafe_allow_html=True)
