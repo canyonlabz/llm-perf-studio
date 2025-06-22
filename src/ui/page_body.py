@@ -33,6 +33,9 @@ from src.ui.page_utils import (
 # Initialize session state
 if "session_started" not in st.session_state:
     st.session_state.session_started = False
+# Initialize the LLM mode in session state if not already present
+if "llm_mode" not in st.session_state:
+    st.session_state.llm_mode = "ollama"  # Default LLM model ("ollama" or "openai")
 # Initialize the agent logs in session state if not already present
 if "agent_logs" not in st.session_state:
     st.session_state.agent_logs = []
@@ -54,7 +57,9 @@ if "jmeter_state" not in st.session_state:
 # Initialize the selected RAG file in session state if not already present
 if "selected_rag_file" not in st.session_state:
     st.session_state.selected_rag_file = None
-
+# Initialize the RAG mode in session state if not already present
+if "rag_mode" not in st.session_state:
+    st.session_state.rag_mode = False  # Default RAG mode (False or True)
 # Initialize the selected JMeter JMX file in session state if not already present
 if "selected_jmx_file" not in st.session_state:
     st.session_state.selected_jmx_file = None

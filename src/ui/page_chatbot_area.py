@@ -100,8 +100,10 @@ def render_chatbot_area(llm_model="gpt-4o-mini"):
             help="Toggle local LLM mode on or off.",)
         if on:
             st.markdown('<div class="chatbot-title">☁️ OpenAI Enabled</div>', unsafe_allow_html=True)
+            st.session_state.llm_mode = "openai"    # Set the model to OpenAI
         else:
             st.markdown('<div class="chatbot-title">🖥️ Ollama Enabled</div>', unsafe_allow_html=True)
+            st.session_state.llm_mode = "ollama"    # Set the model to Ollama
 
 # --- Callback function to clear chat ---
 def clear_chat():
