@@ -270,8 +270,8 @@ def render_jmeter_viewer_area(jmeter_path):
         # Display all JMeter logs inside the container
         with jmeter_container:
             # Join all log entries with newlines
-            if st.session_state.agent_logs:
-                log_text = "\n".join(st.session_state.agent_logs) if st.session_state.agent_logs else ""
+            if st.session_state.jmeter_logs:
+                log_text = "\n".join(st.session_state.jmeter_logs) if st.session_state.jmeter_logs else ""
                 st.text_area(
                     label="JMeter Activity Logs", 
                     value=log_text, 
