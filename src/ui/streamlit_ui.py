@@ -25,8 +25,8 @@ if "session_started" not in st.session_state:
 if "llm_mode" not in st.session_state:
     st.session_state.llm_mode = "ollama"  # Default LLM model ("ollama" or "openai")
 # Initialize the agent logs in session state if not already present
-if "agent_logs" not in st.session_state:
-    st.session_state.agent_logs = []
+if "jmeter_logs" not in st.session_state:
+    st.session_state.jmeter_logs = []
 # initialize the JMeter state in session state if not already present
 if "jmeter_state" not in st.session_state:
     # Mirror the same shape your pipeline expects
