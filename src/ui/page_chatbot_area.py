@@ -43,13 +43,6 @@ def render_chatbot_area(llm_model="gpt-4o-mini"):
             st.session_state.selected_rag_file = uploaded_file
 
         # Display the name of the selected RAG file
-        #selected_file = st.session_state.get("selected_rag_file")
-        #if selected_file:
-        #    st.markdown(f'<span style="color:#1976d2;">{selected_file}</span>', unsafe_allow_html=True)
-        #else:
-        #    st.markdown('<span style="color:#b0b8c1;">No File Selected</span>', unsafe_allow_html=True)
-
-        # Display the name of the selected RAG file
         st.markdown('<div class="homepage-subtitle">Selected File:</div>', unsafe_allow_html=True)
         if st.session_state.selected_rag_file is not None:
             selected_file = st.session_state.selected_rag_file.name
