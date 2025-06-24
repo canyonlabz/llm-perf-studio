@@ -109,9 +109,12 @@ def render_chatbot_area(llm_model="gpt-4o-mini"):
     with col_right:
         st.button("🧹 Clear Chat", key="clear_chat", on_click=clear_chat)
 
+        # True if OpenAI is selected, False if Ollama is selected
+        toggle_value = st.session_state.llm_mode == "openai"
+
         on = st.toggle(
             "LLM Mode",
-            value=False,
+            value=toggle_value,
             key="enable_llm_mode",
             help="Toggle local LLM mode on or off.",)
         if on:
