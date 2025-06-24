@@ -182,7 +182,9 @@ def inject_chatbot_area_styles():
             color: #fff;
         }
         /* Shared pill style for all action buttons */
-        .st-key-process_rag_file button {
+        .st-key-process_rag_btn button,
+        .st-key-clear_rag_btn button {
+            width: 170px;
             background-color: #2d5c7f !important; /* Darker blue */
             color: #fff;
             border: none;
@@ -198,7 +200,8 @@ def inject_chatbot_area_styles():
         }
 
         /* Hover: swap background and text color */
-        .st-key-process_rag_file button:hover {
+        .st-key-process_rag_btn button:hover,
+        .st-key-clear_rag_btn button:hover {
             background-color: #1a3a4d !important;   /* Darker blue */
             color: #a3cae9; /* Lighter blue */
             border: 2px solid #c95000;
@@ -206,11 +209,18 @@ def inject_chatbot_area_styles():
         }
     
         /* Disabled state */
-        .st-key-process_rag_file button:disabled {
+        .st-key-process_rag_btn button:disabled,
+        .st-key-clear_rag_btn button:disabled {
             background-color: #cccccc !important;
             color: #666666 !important;
             border: none !important;
             cursor: not-allowed !important;
+        }
+        .rag-file-name {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #4c4e52; /* Dark grey */
+            margin-bottom: 1.25rem;
         }
         </style>
     """, unsafe_allow_html=True)

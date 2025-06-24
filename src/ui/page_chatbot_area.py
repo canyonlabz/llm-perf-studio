@@ -42,10 +42,33 @@ def render_chatbot_area(llm_model="gpt-4o-mini"):
         if uploaded_file is not None:
             st.session_state.selected_rag_file = uploaded_file
 
-        process_disabled = (
-            st.session_state.selected_rag_file is None
-        )
-        if st.button("Process RAG File", key="process_rag_file", disabled=process_disabled):
+        # Display the name of the selected RAG file
+        #selected_file = st.session_state.get("selected_rag_file")
+        #if selected_file:
+        #    st.markdown(f'<span style="color:#1976d2;">{selected_file}</span>', unsafe_allow_html=True)
+        #else:
+        #    st.markdown('<span style="color:#b0b8c1;">No File Selected</span>', unsafe_allow_html=True)
+
+        # Display the name of the selected RAG file
+        st.markdown('<div class="homepage-subtitle">Selected File:</div>', unsafe_allow_html=True)
+        if st.session_state.selected_rag_file is not None:
+            selected_file = st.session_state.selected_rag_file.name
+            if selected_file:
+                st.markdown(f'<div class="rag-file-name">{selected_file}</div>', unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="rag-file-name">No File Selected</div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="rag-file-name">No File Selected</div>', unsafe_allow_html=True)
+
+        # Only enabled if a RAG file is selected
+        disabled_state = not st.session_state.get("selected_rag_file", None)
+
+        # Button to clear the selected RAG file
+        if st.button("🗑️ Clear RAG File", key="clear_rag_btn", disabled=disabled_state):
+            # Clear the selected RAG file from session state
+            st.session_state.selected_rag_file = None
+
+        if st.button("⚙️ Process RAG File", key="process_rag_btn", disabled=disabled_state):
             # Call the function to handle file upload
             #handle_process_rag_file(st.session_state.selected_rag_file)
             ...  # This is where you would handle the file upload logic
