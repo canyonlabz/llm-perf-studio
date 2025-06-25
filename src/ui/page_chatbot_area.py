@@ -5,16 +5,11 @@ import os
 
 # Importing custom styles for the chatbot area
 from src.ui.page_styles import inject_chatbot_area_styles
-# Import OpenAI client
-from openai import OpenAI
 
 # Import chat service for handling chat interactions
 from src.services.chat_service import ChatService
 # Initialize chat service
 chat_service = ChatService()
-
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 chatbot_prompt = """
 You are an AI assistant specialized in performance testing. Help the user with JMeter scripts, load testing strategies, and performance analysis.
@@ -103,9 +98,6 @@ def render_chatbot_area(llm_model="gpt-4o-mini"):
                 except Exception as e:
                     st.error(f"Error: {str(e)}")
                     st.session_state.messages.append({"role": "assistant", "content": "Sorry, I encountered an error"})
-        
-            # Add assistant response to chat history
-            #st.session_state.messages.append({"role": "assistant", "content": response.choices[0].message.content})
        
         # Display ALL messages INSIDE the container
         with chat_container:
