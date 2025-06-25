@@ -8,10 +8,14 @@ llm:
   llm_model: "gpt-4o-mini"  # Model name
   llm_temperature: 0        # Temperature for randomness in responses
 
+openai:
+  openai_model: "gpt-4o-mini"  # Model name for OpenAI
+  openai_temperature: 0.2      # Temperature for randomness in responses
+
 ollama:
   ollama_model: "llama3.2:1b"  # Model name for Ollama
-  ollama_temperature: 0.7  # Temperature for randomness in responses
-  ollama_api_url: "http://localhost:11434"  # API URL for Ollama
+  ollama_temperature: 0.2  # Temperature for randomness in responses
+  ollama_api_url: "http://192.168.1.110:11434"  # API URL for Ollama
   ollama_api_key: ""  # API key for Ollama, if required
 
 logging:

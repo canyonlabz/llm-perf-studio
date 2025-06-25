@@ -8,6 +8,11 @@ from src.ui.page_styles import inject_chatbot_area_styles
 # Import OpenAI client
 from openai import OpenAI
 
+# Import chat service for handling chat interactions
+from src.services.chat_service import ChatService
+# Initialize chat service
+chat_service = ChatService()
+
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -88,15 +93,19 @@ def render_chatbot_area(llm_model="gpt-4o-mini"):
 
             # Show spinner while waiting for LLM response
             with st.spinner("Thinking..."):
-                # Get AI response
-                response = client.chat.completions.create(
-                    model=llm_model,
-                    messages=st.session_state.messages,
-                    temperature=0.7,
-                )
-  
+                try:
+                    # Get response based on current LLM mode
+                    response = chat_service.get_response(
+                        messages=st.session_state.messages,
+                        llm_mode=st.session_state.llm_mode
+                    )
+                    st.session_state.messages.append({"role": "assistant", "content": response})
+                except Exception as e:
+                    st.error(f"Error: {str(e)}")
+                    st.session_state.messages.append({"role": "assistant", "content": "Sorry, I encountered an error"})
+        
             # Add assistant response to chat history
-            st.session_state.messages.append({"role": "assistant", "content": response.choices[0].message.content})
+            #st.session_state.messages.append({"role": "assistant", "content": response.choices[0].message.content})
        
         # Display ALL messages INSIDE the container
         with chat_container:
