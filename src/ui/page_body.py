@@ -6,15 +6,9 @@ import os, sys
 from datetime import datetime
 import pandas as pd
 ##from src.utils.agent_logs import add_agent_log
-#from src.agents.ui_handlers import (
-#    handle_upload_task,
-#    handle_run_browser,
-#    handle_generate_jmx,
-#    handle_run_smoke_test,
-#    handle_debug_test,
-#    handle_start_session,
-#    handle_reset_session
-#)
+from src.ui.ui_handlers import (
+    handle_start_jmeter_test,
+)
 from src.ui.page_styles import (
     inject_action_button_styles,
     inject_agent_viewer_styles,
@@ -287,8 +281,7 @@ def render_jmeter_viewer_area(jmeter_path):
         # Button to start the JMeter test
         if st.button("▶️ Start JMeter", key="start_jmeter"):
             # Call the function to handle start JMeter test
-            #handle_start_jmeter_test()
-            ...
+            handle_start_jmeter_test()
 
         # Button to stop the JMeter test
         if st.button("🛑 Stop Test", key="stop_jmeter"):

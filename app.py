@@ -8,6 +8,10 @@ import asyncio
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
+# Disable Streamlit's file watcher to avoid issues with file changes (production use case)
+#os.environ["STREAMLIT_SERVER_ENABLE_WATCHER"] = "false"
+os.environ["STREAMLIT_SERVER_FILE_WATCHER_TYPE"] = "poll"
+
 # 1. Ensure the API key is set (either via .env or in your shell env)
 if not os.getenv("OPENAI_API_KEY"):
     raise ValueError(

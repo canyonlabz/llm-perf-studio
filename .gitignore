@@ -165,3 +165,4 @@ test_results/*.jtl
 docker/data/*
 jmeter/test_results/*
 # Ignore JMeter test results
+tmp/results/*

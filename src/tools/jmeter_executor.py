@@ -31,6 +31,7 @@ def run_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
     duration = state.get("duration", 300)  # Default to 5 minutes if not set
     ramp_up = state.get("ramp_up", 60)  # Default to 60 seconds if not set
     iterations = state.get("iterations", 1)  # Default to 1 iteration if not set
+    # TODO: Add "useRAG" and "promptNum" settings later 
 
     jmeter_jtl = os.path.join(jmeter_results_path, f"jmeter_test_{run_timestamp}.jtl")
     jmeter_log = os.path.join(jmeter_results_path, f"jmeter_test_{run_timestamp}.log")
@@ -43,9 +44,9 @@ def run_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
         '-l', jmeter_jtl,  # JTL results file
         '-j', jmeter_log,  # JMeter log file
         '-Jduration={}'.format(duration),   # Ramp-up time in seconds
-        '-Jthreads={}'.format(vusers),      # Number of threads (virtual users)
-        '-Jrampup={}'.format(ramp_up),      # Ramp-up time in seconds
-        '-Jloops={}'.format(iterations),    # Number of iterations
+        '-Jvusers={}'.format(vusers),      # Number of threads (virtual users)
+        '-Jramp_up={}'.format(ramp_up),      # Ramp-up time in seconds
+        '-Jiterations={}'.format(iterations),    # Number of iterations
     ]
 
     try:
