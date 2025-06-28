@@ -43,6 +43,7 @@ if "jmeter_state" not in st.session_state:
         "run_counts": {},
         "use_rag": False,  # Whether to use RAG mode
         "prompt_num": 1,  # Number of prompts to use from input JSON file
+        "run_timestamp": "",
     }
 # Initialize the selected RAG file in session state if not already present
 if "selected_rag_file" not in st.session_state:

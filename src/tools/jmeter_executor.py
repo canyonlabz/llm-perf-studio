@@ -24,7 +24,7 @@ def run_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
     Run a JMeter load test: Example - 1 thread, 1 loop, 5 minutes duration.
     Returns paths to the JTL results file and JMeter log file.
     """
-    run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")    # Define a unique timestamp for the load test.
+    run_timestamp = state.get("run_timestamp", datetime.now().strftime("%Y%m%d_%H%M%S"))
 
     # Define the JMeter command to run the load test which supports both Windows and Mac/Linux.
     cli = config['jmeter']['jmeter_bin_path']
@@ -64,6 +64,7 @@ def run_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
         '-Jduration={}'.format(duration),       # Ramp-up time in seconds
         '-Juse_rag={}'.format(use_rag),         # Use RAG mode
         '-Jprompt_num={}'.format(prompt_num),   # Number of prompts to use
+        '-Jrun_timestamp={}'.format(run_timestamp)  # Run timestamp for unique file names
     ]
 
     try:

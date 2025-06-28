@@ -55,6 +55,7 @@ if "jmeter_state" not in st.session_state:
         "run_counts": {},
         "use_rag": False,   # Whether to use RAG mode
         "prompt_num": 1,    # Number of prompts to use from input JSON file
+        "run_timestamp": "",
     }
 # Initialize the selected RAG file in session state if not already present
 if "selected_rag_file" not in st.session_state:
@@ -291,6 +292,9 @@ def render_jmeter_viewer_area(jmeter_path):
             st.session_state.jmeter_state["prompt_num"] = config['jmeter']['prompt_num']
         else:
             st.session_state.jmeter_state["prompt_num"] = 1  # Default to 1 if not specified
+
+        # Set the run timestamp in session state (will overwrite on each run)
+        st.session_state.jmeter_state["run_timestamp"] = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         # Button to start the JMeter test
         if st.button("▶️ Start JMeter", key="start_jmeter"):
