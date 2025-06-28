@@ -5,9 +5,13 @@ from pathlib import Path
 import os, sys
 from datetime import datetime
 import pandas as pd
+
+# Import configuration loader
+from src.utils.config import load_config
 ##from src.utils.agent_logs import add_agent_log
 from src.ui.ui_handlers import (
     handle_start_jmeter_test,
+    handle_stop_jmeter_test,
 )
 from src.ui.page_styles import (
     inject_action_button_styles,
@@ -22,6 +26,8 @@ from src.ui.page_utils import (
     format_datetime,
     file_selector
 )
+
+config = load_config()  # Load the full configuration from config.yaml
 # --- Initialize Session State ------------------------------------------------
 
 # Initialize session state
@@ -43,10 +49,12 @@ if "jmeter_state" not in st.session_state:
         "ramp_up": None,
         "duration": None,
         "iterations": None,
-        "smoke_test_results": {},
+        "jmeter_test_results": {},
         "jmeter_jtl_path": "",
         "jmeter_log_path": "",
         "run_counts": {},
+        "use_rag": False,   # Whether to use RAG mode
+        "prompt_num": 1,    # Number of prompts to use from input JSON file
     }
 # Initialize the selected RAG file in session state if not already present
 if "selected_rag_file" not in st.session_state:
@@ -278,6 +286,12 @@ def render_jmeter_viewer_area(jmeter_path):
                 st.info("No JMeter activity yet. Click on an action button to start.")
 
     with col_right:
+        # Get the number of prompts from the config.yaml file and set it in session state
+        if 'jmeter' in config and 'prompt_num' in config['jmeter']:
+            st.session_state.jmeter_state["prompt_num"] = config['jmeter']['prompt_num']
+        else:
+            st.session_state.jmeter_state["prompt_num"] = 1  # Default to 1 if not specified
+
         # Button to start the JMeter test
         if st.button("▶️ Start JMeter", key="start_jmeter"):
             # Call the function to handle start JMeter test
@@ -286,8 +300,7 @@ def render_jmeter_viewer_area(jmeter_path):
         # Button to stop the JMeter test
         if st.button("🛑 Stop Test", key="stop_jmeter"):
             # Call the function to handle stop JMeter test
-            #handle_stop_jmeter_test()
-            ...
+            handle_stop_jmeter_test()
 
         on = st.toggle(
             "RAG Mode",
@@ -296,8 +309,10 @@ def render_jmeter_viewer_area(jmeter_path):
             help="Toggle Retrieval Augmented Generation (RAG) mode on or off.",)
         if on:
             st.markdown('<div class="toggle-button-title">🟢 RAG Mode Enabled</div>', unsafe_allow_html=True)
+            st.session_state.jmeter_state["use_rag"] = True
         else:
             st.markdown('<div class="toggle-button-title">🔴 RAG Mode Disabled</div>', unsafe_allow_html=True)
+            st.session_state.jmeter_state["use_rag"] = False
 
 def render_agent_viewer(ui_config):
     """

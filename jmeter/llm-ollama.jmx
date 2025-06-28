@@ -16,7 +16,7 @@
         <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
       </CookieManager>
       <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables (Global)">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables (Global)" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="timestamp" elementType="Argument">
             <stringProp name="Argument.name">timestamp</stringProp>
@@ -34,22 +34,46 @@
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Absolute path of where the JMeter script is located.</stringProp>
           </elementProp>
+          <elementProp name="vusers" elementType="Argument">
+            <stringProp name="Argument.name">vusers</stringProp>
+            <stringProp name="Argument.value">${__P(vusers,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">The number of virtual users to simulate (i.e. Thread count)</stringProp>
+          </elementProp>
+          <elementProp name="rampUp" elementType="Argument">
+            <stringProp name="Argument.name">rampUp</stringProp>
+            <stringProp name="Argument.value">${__P(ramp_up,10)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">The ramp-up duration in seconds.</stringProp>
+          </elementProp>
+          <elementProp name="iterations" elementType="Argument">
+            <stringProp name="Argument.name">iterations</stringProp>
+            <stringProp name="Argument.value">${__P(iterations,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">The number of iterations (i.e. Loop count).</stringProp>
+          </elementProp>
+          <elementProp name="duration" elementType="Argument">
+            <stringProp name="Argument.name">duration</stringProp>
+            <stringProp name="Argument.value">${__P(duration,300)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">The duration of the test in seconds. Default is 5 minutes.</stringProp>
+          </elementProp>
           <elementProp name="useRAG" elementType="Argument">
             <stringProp name="Argument.name">useRAG</stringProp>
-            <stringProp name="Argument.value">true</stringProp>
+            <stringProp name="Argument.value">${__changeCase(${__P(use_rag,&quot;false&quot;)},LOWER,)}</stringProp>
             <stringProp name="Argument.desc">Determines whether the prompt template should use RAG techniques or not (default is false).</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="promptNum" elementType="Argument">
             <stringProp name="Argument.name">promptNum</stringProp>
-            <stringProp name="Argument.value">5</stringProp>
+            <stringProp name="Argument.value">${__P(prompt_num,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">The number of prompts to send to the LLM (Max = 20). Based upon the JSON input file.</stringProp>
+            <stringProp name="Argument.desc">The number of prompts to send to the LLM. Max is based upon the JSON input file.</stringProp>
           </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config (Environment)">
+      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config (Environment)" enabled="true">
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding"></stringProp>
         <stringProp name="filename">testdata_csv/environment.csv</stringProp>
@@ -61,23 +85,23 @@
         <stringProp name="variableNames">hostname,port</stringProp>
       </CSVDataSet>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group - LLM APIs">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group - LLM APIs" enabled="true">
         <stringProp name="TestPlan.comments">NOTE:  Thread Loop Count will continue to loop over the number of prompts you set in the &quot;Global&quot; User Defined Variables which is set by the variable &quot;promptNum&quot;.</stringProp>
-        <stringProp name="ThreadGroup.num_threads">${__P(vusers,1)}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${__P(ramp_up,1)}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${vusers}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${rampUp}</stringProp>
         <longProp name="ThreadGroup.duration">0</longProp>
         <longProp name="ThreadGroup.delay">0</longProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController">
-          <stringProp name="LoopController.loops">${__P(iterations,1)}</stringProp>
+          <stringProp name="LoopController.loops">${iterations}</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
       </ThreadGroup>
       <hashTree>
         <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="TC00_Load Prompt Data" enabled="true"/>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC00_TS01_Import JSON Prompt Data" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC00_TS01_Import JSON Prompt Data">
             <stringProp name="HTTPSampler.protocol">file</stringProp>
             <stringProp name="HTTPSampler.path">${jsonFilename}</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
@@ -122,7 +146,7 @@ else {
               <stringProp name="scriptLanguage">groovy</stringProp>
             </JSR223PreProcessor>
             <hashTree/>
-            <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor (${__samplerName()})" enabled="true">
+            <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor (${__samplerName()})">
               <stringProp name="cacheKey">false</stringProp>
               <stringProp name="filename"></stringProp>
               <stringProp name="parameters"></stringProp>
@@ -153,14 +177,14 @@ if (file.exists()) {
     vars.put(&quot;jsonFilename&quot;, jsonFilename)
     log.info(&quot;[INFO]:[${threadName}]: ${samplerName}: File exists (${file.length()} bytes)&quot;)
 } else {
-    log.error(&quot;[ERROR]:[${threadName}]: ${samplerName}: File not found at ${jsonFilename}&quot;)
     vars.put(&quot;jsonFilename&quot;, &quot;FILE_NOT_FOUND&quot;)
+    log.error(&quot;[ERROR]:[${threadName}]: ${samplerName}: File not found at &quot; + jsonFilename)
 }
 </stringProp>
               <stringProp name="scriptLanguage">groovy</stringProp>
             </JSR223PreProcessor>
             <hashTree/>
-            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})">
               <stringProp name="scriptLanguage">groovy</stringProp>
               <stringProp name="parameters"></stringProp>
               <stringProp name="filename"></stringProp>
@@ -193,6 +217,12 @@ for (int i = 1; i &lt;= count; i++) {
 
 log.debug(&quot;[DEBUG]:  ---- End of Questions ----&quot;)
 log.info(&quot;[INFO]:  Found a total of &quot; + count + &quot; questions and option choices (A, B, C, D).&quot;)
+log.info(&quot;[INFO]:  Number of Prompts to Send: &quot; + vars.get(&quot;promptNum&quot;))
+log.info(&quot;[INFO]:  RAG Mode: &quot; + vars.get(&quot;useRAG&quot;))
+log.info(&quot;[DEBUG]:  Number of Virtual Users: &quot; + vars.get(&quot;vusers&quot;))
+log.info(&quot;[DEBUG]:  Ramp-Up (sec): &quot; + vars.get(&quot;rampUp&quot;))
+log.info(&quot;[DEBUG]:  Iterations: &quot; + vars.get(&quot;iterations&quot;))
+log.info(&quot;[DEBUG]:  Duration (sec): &quot; + vars.get(&quot;duration&quot;))
 </stringProp>
             </JSR223PostProcessor>
             <hashTree/>
@@ -418,7 +448,7 @@ log.info(&quot;[INFO]:[Thread-${__threadNum}]:  embeddingLength=&quot; + vars.ge
             <hashTree/>
           </hashTree>
         </hashTree>
-        <ForeachController guiclass="ForeachControlPanel" testclass="ForeachController" testname="TC02_ForEach Controller (questionOptions)" enabled="true">
+        <ForeachController guiclass="ForeachControlPanel" testclass="ForeachController" testname="TC02_ForEach Controller (questionOptions)">
           <stringProp name="ForeachController.inputVal">questionOptions</stringProp>
           <stringProp name="ForeachController.returnVal">promptData</stringProp>
           <boolProp name="ForeachController.useSeparator">true</boolProp>
@@ -427,9 +457,9 @@ log.info(&quot;[INFO]:[Thread-${__threadNum}]:  embeddingLength=&quot; + vars.ge
           <stringProp name="TestPlan.comments">NOTE: The &quot;promptNum&quot; is defined in the User Defined Variables (Global).</stringProp>
         </ForeachController>
         <hashTree>
-          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS01_Get Prompt Data" enabled="true"/>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS01_Get Prompt Data"/>
           <hashTree>
-            <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS01_Get Prompt Question &amp; Options" enabled="true">
+            <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS01_Get Prompt Question &amp; Options">
               <stringProp name="scriptLanguage">groovy</stringProp>
               <stringProp name="parameters"></stringProp>
               <stringProp name="filename"></stringProp>
@@ -480,7 +510,7 @@ vars.put(&quot;explanationD&quot;,explanationD)
 </stringProp>
             </JSR223Sampler>
             <hashTree>
-              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})">
                 <stringProp name="scriptLanguage">groovy</stringProp>
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>
@@ -491,15 +521,15 @@ prev.setIgnore()</stringProp>
               <hashTree/>
             </hashTree>
           </hashTree>
-          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS02_Define Prompt Template" enabled="true"/>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS02_Define Prompt Template"/>
           <hashTree>
-            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="TC02_TS02_If Controller (useRAG == false)" enabled="true">
+            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="TC02_TS02_If Controller (useRAG == false)">
               <stringProp name="IfController.condition">${__groovy( (&quot;${useRAG}&quot; == &quot;false&quot;) )}</stringProp>
               <boolProp name="IfController.evaluateAll">false</boolProp>
               <boolProp name="IfController.useExpression">true</boolProp>
             </IfController>
             <hashTree>
-              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS02_Define Prompt Template" enabled="true">
+              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS02_Define Prompt Template">
                 <stringProp name="scriptLanguage">groovy</stringProp>
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>
@@ -527,7 +557,7 @@ log.info(&quot;[DEBUG]: escapedPrompt = &quot; + escapedPrompt)
 vars.put(&quot;promptTemplate&quot;, escapedPrompt)</stringProp>
               </JSR223Sampler>
               <hashTree>
-                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})">
                   <stringProp name="scriptLanguage">groovy</stringProp>
                   <stringProp name="parameters"></stringProp>
                   <stringProp name="filename"></stringProp>
@@ -538,7 +568,7 @@ prev.setIgnore()</stringProp>
                 <hashTree/>
               </hashTree>
             </hashTree>
-            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="TC02_TS02_If Controller (useRAG == true)" enabled="true">
+            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="TC02_TS02_If Controller (useRAG == true)">
               <stringProp name="IfController.condition">${__groovy( (&quot;${useRAG}&quot; == &quot;true&quot;) )}</stringProp>
               <boolProp name="IfController.evaluateAll">false</boolProp>
               <boolProp name="IfController.useExpression">true</boolProp>
@@ -697,7 +727,7 @@ log.info(&quot;[DEBUG]: escapedPrompt = &quot; + escapedPrompt)
 vars.put(&quot;promptTemplate&quot;, escapedPrompt)</stringProp>
               </JSR223Sampler>
               <hashTree>
-                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})">
                   <stringProp name="scriptLanguage">groovy</stringProp>
                   <stringProp name="parameters"></stringProp>
                   <stringProp name="filename"></stringProp>
@@ -709,7 +739,7 @@ prev.setIgnore()</stringProp>
               </hashTree>
             </hashTree>
           </hashTree>
-          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS03_Generate" enabled="true">
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC02_TS03_Generate">
             <stringProp name="TestPlan.comments">Use for single, stateless completions.</stringProp>
           </GenericController>
           <hashTree>
@@ -938,315 +968,13 @@ try {
                 <hashTree/>
               </hashTree>
             </hashTree>
-            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller (useRAG == true)" enabled="true">
+            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller (useRAG == true)">
               <stringProp name="IfController.condition">${__groovy( (&quot;${useRAG}&quot; == &quot;true&quot;) )}</stringProp>
               <boolProp name="IfController.evaluateAll">false</boolProp>
               <boolProp name="IfController.useExpression">true</boolProp>
             </IfController>
             <hashTree>
-              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC02_TS03_/api/generate" enabled="false">
-                <intProp name="HTTPSampler.concurrentPool">6</intProp>
-                <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
-                <stringProp name="HTTPSampler.port">${port}</stringProp>
-                <stringProp name="HTTPSampler.protocol">http</stringProp>
-                <stringProp name="HTTPSampler.path">/api/generate</stringProp>
-                <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-                <stringProp name="HTTPSampler.method">POST</stringProp>
-                <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-                  <collectionProp name="Arguments.arguments">
-                    <elementProp name="" elementType="HTTPArgument">
-                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                      <stringProp name="Argument.value">{&#xd;
-	&quot;model&quot;: &quot;llama3.2:1b&quot;,&#xd;
-	&quot;prompt&quot;: &quot;${promptTemplate}&quot;,&#xd;
-	&quot;stream&quot;: false&#xd;
-}</stringProp>
-                      <stringProp name="Argument.metadata">=</stringProp>
-                    </elementProp>
-                  </collectionProp>
-                </elementProp>
-              </HTTPSamplerProxy>
-              <hashTree>
-                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager" enabled="true">
-                  <collectionProp name="HeaderManager.headers">
-                    <elementProp name="" elementType="Header">
-                      <stringProp name="Header.name">Accept</stringProp>
-                      <stringProp name="Header.value">*/*</stringProp>
-                    </elementProp>
-                    <elementProp name="" elementType="Header">
-                      <stringProp name="Header.name">Accept-Encoding</stringProp>
-                      <stringProp name="Header.value">gzip, deflate, br</stringProp>
-                    </elementProp>
-                    <elementProp name="" elementType="Header">
-                      <stringProp name="Header.name">Connection</stringProp>
-                      <stringProp name="Header.value">keep-alive</stringProp>
-                    </elementProp>
-                    <elementProp name="" elementType="Header">
-                      <stringProp name="Header.name">Content-Type</stringProp>
-                      <stringProp name="Header.value">application/json</stringProp>
-                    </elementProp>
-                  </collectionProp>
-                </HeaderManager>
-                <hashTree/>
-                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (total_duration)" enabled="true">
-                  <stringProp name="JSONPostProcessor.referenceNames">total_duration</stringProp>
-                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.total_duration</stringProp>
-                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
-                </JSONPostProcessor>
-                <hashTree/>
-                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (load_duration)" enabled="true">
-                  <stringProp name="JSONPostProcessor.referenceNames">load_duration</stringProp>
-                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.load_duration</stringProp>
-                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
-                </JSONPostProcessor>
-                <hashTree/>
-                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (prompt_eval_duration)" enabled="true">
-                  <stringProp name="JSONPostProcessor.referenceNames">prompt_eval_duration</stringProp>
-                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.prompt_eval_duration</stringProp>
-                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
-                </JSONPostProcessor>
-                <hashTree/>
-                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (eval_count)" enabled="true">
-                  <stringProp name="JSONPostProcessor.referenceNames">eval_count</stringProp>
-                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.eval_count</stringProp>
-                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
-                </JSONPostProcessor>
-                <hashTree/>
-                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (eval_duration)" enabled="true">
-                  <stringProp name="JSONPostProcessor.referenceNames">eval_duration</stringProp>
-                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.eval_duration</stringProp>
-                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
-                </JSONPostProcessor>
-                <hashTree/>
-                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (llm_answer)" enabled="true">
-                  <stringProp name="JSONPostProcessor.referenceNames">llm_answer</stringProp>
-                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.response</stringProp>
-                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-                  <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
-                </JSONPostProcessor>
-                <hashTree/>
-                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (KPI Token Calculations)" enabled="true">
-                  <stringProp name="scriptLanguage">groovy</stringProp>
-                  <stringProp name="parameters"></stringProp>
-                  <stringProp name="filename"></stringProp>
-                  <stringProp name="cacheKey">true</stringProp>
-                  <stringProp name="script">// Convert values from JMeter JSON Extractors
-def totalDurationNano = vars.get(&quot;total_duration&quot;) as long		// Total request duration (nanoseconds)
-def loadDurationNano = vars.get(&quot;load_duration&quot;) as long		// Model loading duration (nanoseconds)
-def promptEvalNano = vars.get(&quot;prompt_eval_duration&quot;) as long	// Prompt evaluation duration (nanoseconds)
-def evalCount = vars.get(&quot;eval_count&quot;) as long				// Number of generated tokens
-def evalDurationNano = vars.get(&quot;eval_duration&quot;) as long		// Token generation duration (nanoseconds)
-
-// Convert durations from nanoseconds to milliseconds
-def totalDurationMs = totalDurationNano / 1e6
-def loadDurationMs = loadDurationNano / 1e6
-def promptEvalMs = promptEvalNano / 1e6
-def evalDurationMs = evalDurationNano / 1e6
-
-// Calculate KPIs
-def ttftMs = loadDurationMs + promptEvalMs							// Time to First Token
-def tps = evalCount &gt; 0 ? (evalCount / (totalDurationNano / 1e9)) : 0		// Tokens per second
-def tpot = evalCount &gt; 0 ? ((totalDurationMs - ttftMs) / evalCount) : 0	// Time per output token
-
-// Log KPIs
-log.info(&quot;[INFO]:  TTFT (ms): ${ttftMs}&quot;)
-log.info(&quot;[INFO]:  TPS (tokens/sec): ${tps}&quot;)
-log.info(&quot;[INFO]:  TPOT (ms/token): ${tpot}&quot;)
-
-// Store KPIs as JMeter variables for later use
-vars.put(&quot;TTFT&quot;, ttftMs.toString())
-vars.put(&quot;TPS&quot;, tps.toString())
-vars.put(&quot;TPOT&quot;, tpot.toString())
-</stringProp>
-                </JSR223PostProcessor>
-                <hashTree/>
-                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (DeepEval LLM Correctness)" enabled="false">
-                  <stringProp name="scriptLanguage">groovy</stringProp>
-                  <stringProp name="parameters"></stringProp>
-                  <stringProp name="filename"></stringProp>
-                  <stringProp name="cacheKey">true</stringProp>
-                  <stringProp name="script"></stringProp>
-                </JSR223PostProcessor>
-                <hashTree/>
-                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="false">
-                  <stringProp name="scriptLanguage">groovy</stringProp>
-                  <stringProp name="parameters"></stringProp>
-                  <stringProp name="filename"></stringProp>
-                  <stringProp name="cacheKey">true</stringProp>
-                  <stringProp name="script">import groovy.json.JsonOutput
-
-// Get LLM answer
-def llmAnswer = vars.get(&quot;llm_answer&quot;)  
-log.info(&quot;LLM Response: ${llm_answer}&quot;)
-
-// Validate the LLM answer against correct answer.
-def correctAnswer = vars.get(&quot;correctAnswer&quot;)
-if (llmAnswer == correctAnswer) {
-    log.info(&quot;✅ LLM Answer is CORRECT!&quot;)
-} else {
-    log.warn(&quot;❌ LLM Answer is INCORRECT! Expected: ${correctAnswer.toUpperCase()}, Got: ${llm_answer}&quot;)
-}
-
-// Save validation result as a JMeter variable
-vars.put(&quot;IS_CORRECT&quot;, (llmAnswer == correctAnswer) ? &quot;true&quot; : &quot;false&quot;)
-
-
-</stringProp>
-                </JSR223PostProcessor>
-                <hashTree/>
-                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="true">
-                  <stringProp name="scriptLanguage">groovy</stringProp>
-                  <stringProp name="parameters"></stringProp>
-                  <stringProp name="filename"></stringProp>
-                  <stringProp name="cacheKey">true</stringProp>
-                  <stringProp name="script">import groovy.json.JsonSlurper
-import groovy.json.JsonOutput
-
-// Extract variables
-def scriptPath = vars.get(&quot;scriptPath&quot;)			// Full path of the JMeter script location
-def questionNumber = vars.get(&quot;question_number&quot;)	// Question number
-def question = vars.get(&quot;question&quot;)			// Question
-def prompt = vars.get(&quot;promptTemplate&quot;)			// Input prompt
-def correctAnswer = vars.get(&quot;correctAnswer&quot;)?.toUpperCase()	// Correct answer (A, B, C, or D)
-def llmRawResponse = vars.get(&quot;llm_answer&quot;)?.trim() ?: &quot;{}&quot;		// Extracted JSON string from API
-def retrievalStatus = &quot;UNKNOWN&quot;
-def llmResponse = &quot;UNKNOWN&quot;					// Default value if extraction fails
-def explanationA = vars.get(&quot;explanationA&quot;)
-def explanationB = vars.get(&quot;explanationB&quot;)
-def explanationC = vars.get(&quot;explanationC&quot;)
-def explanationD = vars.get(&quot;explanationD&quot;)
-
-// Remove triple backticks if present
-if (llmRawResponse.startsWith(&quot;```json&quot;)) {
-    llmRawResponse = llmRawResponse.replaceFirst(/^```json\s*/, &quot;&quot;).replaceFirst(/\s*```$/, &quot;&quot;)
-}
-
-// Fix incorrect single quotes inside retrieved_context
-if (llmRawResponse.contains(&quot;&apos;{&quot;) || llmRawResponse.contains(&quot;}&apos;&quot;)) {
-    llmRawResponse = llmRawResponse.replaceAll(/&apos;\{/, &quot;{&quot;).replaceAll(/\}&apos;/, &quot;}&quot;)
-}
-
-// Ensure JSON is well-formed (fix missing quotes around &quot;answer&quot;)
-if (llmRawResponse.contains(&apos;&quot;answer&quot;: &apos;) &amp;&amp; !llmRawResponse.contains(&apos;&quot;answer&quot;: &quot;&apos;)) {
-    llmRawResponse = llmRawResponse.replaceAll(/&quot;answer&quot;:\s*([A-D])/, &apos;&quot;answer&quot;: &quot;$1&quot;&apos;)
-}
-
-// Check for missing closing curly brace at the end
-if (!llmRawResponse.endsWith(&quot;}&quot;)) {
-    log.warn(&quot;[WARN]: Detected incomplete JSON response. Attempting to auto-fix.&quot;)
-    llmRawResponse += &quot; }&quot; // Append closing brace to fix truncation
-}
-
-// Attempt to parse extracted `llm_answer` JSON
-try {
-    def jsonResponse = new JsonSlurper().parseText(llmRawResponse)
-    llmResponse = jsonResponse?.answer?.toString()?.trim()?.toUpperCase() ?: &quot;UNKNOWN&quot;
-
-    // Fix LaTeX-style formatting (e.g., $\boxed{C}$ → C)
-    llmResponse = llmResponse.replaceAll(/\$\\boxed\{([A-D])\}\$/, &apos;$1&apos;)
-
-    // Extract `retrieval_status`
-    retrievalStatus = jsonResponse?.retrieval_status?.toString()?.trim()?.toUpperCase() ?: &quot;UNKNOWN&quot;
-
-    // Fix improperly formatted `retrieved_context`
-    if (jsonResponse?.retrieved_context instanceof List) {
-        jsonResponse.retrieved_context = jsonResponse.retrieved_context.collect { ctx -&gt;
-            ctx = ctx.toString().trim()
-            if (ctx.startsWith(&quot;{&quot;) &amp;&amp; ctx.endsWith(&quot;}&quot;)) {
-                try {
-                    def parsedCtx = new JsonSlurper().parseText(ctx) // Attempt parsing as JSON
-                    return parsedCtx.values().join(&quot; &quot;) // Extract actual content
-                } catch (Exception ignored) {
-                    return ctx // Fallback to raw string
-                }
-            }
-            return ctx // Keep as-is if not wrapped in braces
-        }
-    }
-} catch (Exception e) {
-    log.error(&quot;[ERROR]: Failed to parse LLM JSON response. Attempting regex extraction.&quot;, e)
-
-    // Regex fallback: Extract retrieval_status (SUCCESS or FAILED)
-    def match = llmRawResponse =~ /&quot;retrieval_status&quot;\s*:\s*&quot;(\w+)&quot;/
-    if (match) {
-        retrievalStatus = match[0][1].toUpperCase()
-    }
-
-    // Regex fallback: Extract answer (handle missing quotes around answer)
-    match = llmRawResponse =~ /&quot;answer&quot;\s*:\s*&quot;(\w)&quot;/   // Match &quot;answer&quot;: &quot;B&quot;
-    if (!match) {
-        match = llmRawResponse =~ /&quot;answer&quot;\s*:\s*(\w)/  // Match &quot;answer&quot;: B (without quotes)
-    }
-    
-    if (match) {
-        llmResponse = match[0][1].toUpperCase()
-    } else {
-        llmResponse = &quot;UNKNOWN&quot;  // Mark as unknown if extraction fails
-    }
-
-    // Fix LaTeX-style formatting again in case regex extraction was used
-    llmResponse = llmResponse.replaceAll(/\$\\boxed\{([A-D])\}\$/, &apos;$1&apos;)
-}
-
-// Validate LLM answer against correct answer
-def isCorrect = (llmResponse == correctAnswer)
-
-// Validate the LLM answer against correct answer.
-log.info(&quot;[INFO]:  Question Number [&quot; + questionNumber + &quot;]:  &quot; + question)
-log.info(&quot;[INFO]:  LLM Response [&quot; + questionNumber + &quot;]:  &quot; + llmResponse.toUpperCase())
-log.info(&quot;[INFO]:  Retrieval Status: &quot; + retrievalStatus)
-
-if (llmResponse == correctAnswer) {
-    log.info(&quot;[INFO]:  ✅ LLM Answer is CORRECT!&quot;)
-} else {
-    log.warn(&quot;[INFO]:  ❌ LLM Answer is INCORRECT! Expected: ${correctAnswer.toUpperCase()}, Got: ${llmResponse.toUpperCase()}&quot;)
-}
-
-// Create a map of results
-def result = [
-    question_number: questionNumber,
-    retrieval_status: retrievalStatus,
-    prompt: prompt,
-    question: question,
-    llm_response: llmResponse,
-    correct_answer: correctAnswer,
-    is_correct: isCorrect
-]
-
-// Define our file path string
-def filePath = scriptPath + &quot;test_results&quot; + File.separator + &quot;jmeter_results_${timestamp}.json&quot;
-log.debug(&quot;[DEBUG]: filePath=&quot; + filePath)
-
-// Check for back slashes in case running on Windows.
-if (filePath ==~ /.*\\\\.*/) {
-    filePath = filePath.replace(&quot;\\\\&quot;,&quot;/&quot;)
-    log.debug(&quot;[INFO]: ${__samplerName()}:  filePath=&quot; + filePath)
-} else {
-    log.debug(&quot;[INFO]: ${__samplerName()}:  No Regex Match!&quot;)
-}
-
-// Create a File object from the file path
-def resultsFile = new File(filePath)
-
-// Append result to file with error handling
-try {
-    resultsFile &lt;&lt; JsonOutput.toJson(result) + &quot;\n&quot;
-    log.info(&quot;[INFO]:  Results successfully written to file: &quot; + resultsFile.getAbsolutePath())
-} catch (Exception e) {
-    log.error(&quot;[ERROR]:  Failed to write results to file!&quot;, e)
-}
-</stringProp>
-                </JSR223PostProcessor>
-                <hashTree/>
-              </hashTree>
-              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC02_TS03_/api/generate" enabled="true">
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC02_TS03_/api/generate">
                 <intProp name="HTTPSampler.concurrentPool">6</intProp>
                 <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
                 <stringProp name="HTTPSampler.port">${port}</stringProp>
@@ -1538,14 +1266,6 @@ if (osName.contains(&quot;win&quot;)) {
     log.debug(&quot;[DEBUG]: Non-Windows OS (${osName}), leaving path as-is&quot;)
 }
 
-// Check for back slashes in case running on Windows.
-//if (filePath ==~ /.*\\\\.*/) {
-//    filePath = filePath.replace(&quot;\\\\&quot;,&quot;/&quot;)
-//    log.debug(&quot;[INFO]: ${__samplerName()}:  filePath=&quot; + filePath)
-//} else {
-//    log.debug(&quot;[INFO]: ${__samplerName()}:  No Regex Match!&quot;)
-//}
-
 // Create a File object from the file path
 def resultsFile = new File(filePath)
 
@@ -1728,7 +1448,7 @@ vars.put(&quot;IS_CORRECT&quot;, (llmAnswer == correctAnswer) ? &quot;true&quot;
           </hashTree>
         </hashTree>
       </hashTree>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -1765,7 +1485,7 @@ vars.put(&quot;IS_CORRECT&quot;, (llmAnswer == correctAnswer) ? &quot;true&quot;
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -1802,7 +1522,7 @@ vars.put(&quot;IS_CORRECT&quot;, (llmAnswer == correctAnswer) ? &quot;true&quot;
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -1839,7 +1559,7 @@ vars.put(&quot;IS_CORRECT&quot;, (llmAnswer == correctAnswer) ? &quot;true&quot;
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer" enabled="true">
+      <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -1874,7 +1594,7 @@ vars.put(&quot;IS_CORRECT&quot;, (llmAnswer == correctAnswer) ? &quot;true&quot;
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename">${scriptPath}/test_results/test_results_${timestamp}.jtl</stringProp>
+        <stringProp name="filename">${scriptPath}/test_results/${timestamp}_test_results.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>

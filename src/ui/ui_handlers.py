@@ -10,7 +10,8 @@ from src.utils.event_logs import (
 )
 from src.tools.jmeter_executor import (
     run_jmeter_test_node,
-    analyze_jmeter_test_node
+    analyze_jmeter_test_node,
+    stop_jmeter_test_node,
 )
 # Import configuration loader
 from src.utils.config import load_config
@@ -45,3 +46,15 @@ def handle_start_jmeter_test():
     st.session_state["jmeter_state"] = state        # Updates the full state
 
     add_jmeter_log("✅ Load test executed successfully.", agent_name="JMeterAgent")
+
+def handle_stop_jmeter_test():
+    add_jmeter_log("🛑 Stopping JMeter load test...", agent_name="JMeterAgent")
+    state = st.session_state.get("jmeter_state", {}).copy()
+    if not state:
+        add_jmeter_log("❌ No JMeter test is currently running.", agent_name="AgentError")
+        return
+    # Call the JMeter stop test node
+    result = stop_jmeter_test_node(state)
+    state.update(result)
+    st.session_state["jmeter_state"] = state        # Updates the full state
+    add_jmeter_log("🛑 JMeter load test stopped successfully.", agent_name="JMeterAgent")

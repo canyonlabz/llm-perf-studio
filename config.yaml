@@ -8,10 +8,14 @@ llm:
   llm_model: "gpt-4o-mini"  # Model name
   llm_temperature: 0        # Temperature for randomness in responses
 
+openai:
+  openai_model: "gpt-4o-mini"  # Model name for OpenAI
+  openai_temperature: 0.2      # Temperature for randomness in responses
+
 ollama:
   ollama_model: "llama3.2:1b"  # Model name for Ollama
-  ollama_temperature: 0.7  # Temperature for randomness in responses
-  ollama_api_url: "http://localhost:11434"  # API URL for Ollama
+  ollama_temperature: 0.2  # Temperature for randomness in responses
+  ollama_api_url: "http://192.168.1.110:11434"  # API URL for Ollama
   ollama_api_key: ""  # API key for Ollama, if required
 
 logging:
@@ -25,6 +29,8 @@ user_interface:
 
 jmeter:
   jmeter_home: "/opt/apache-jmeter-5.6.3"  # Update with the actual JMeter home path
-  jmeter_bin_path: "/opt/apache-jmeter-5.6.3/bin/jmeter"  # Update with the actual JMeter bin path
+  jmeter_bin_path: "/opt/apache-jmeter-5.6.3/bin"  # Update with the actual JMeter bin path
   jmeter_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/jmeter"  # Path for JMeter JMX files
-  jmeter_results_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/tmp/results"  # Path for JMeter results files
+  jmeter_results_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/jmeter/test_results"  # Path for JMeter results files
+  use_rag: False  # Whether to use RAG mode in JMeter tests (can be configured in UI)
+  prompt_num: 5   # Number of prompts to use from input JSON file in JMeter tests

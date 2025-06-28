@@ -4,12 +4,18 @@ import subprocess
 from typing import Dict, Any
 import pandas as pd
 import numpy as np
+import platform
+import threading
+from queue import Queue
 from datetime import datetime
 from src.utils.config import load_config
 from src.utils.event_logs import add_jmeter_log
 
 # Load configurations
 config = load_config()
+
+# Add global output queue
+output_queue = Queue()
 
 #--- JMeter Test Node ---
 # This node runs a load test on the selected JMX file.
@@ -19,7 +25,14 @@ def run_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
     Returns paths to the JTL results file and JMeter log file.
     """
     run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")    # Define a unique timestamp for the load test.
+
+    # Define the JMeter command to run the load test which supports both Windows and Mac/Linux.
     cli = config['jmeter']['jmeter_bin_path']
+    is_windows = platform.system().lower().startswith("win")
+    start_script = "jmeter.bat" if is_windows else "jmeter"
+    start_cmd = os.path.join(cli, start_script)
+
+    # Define the JMeter results path and JMX path
     jmeter_results_path = config['jmeter']['jmeter_results_path']
     jmx_path = state.get("jmx_path")
     if not jmx_path or not os.path.exists(jmx_path):
@@ -28,25 +41,29 @@ def run_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
 
     # Get the JMeter settings from the session state
     vusers = state.get("vusers", 1)
-    duration = state.get("duration", 300)  # Default to 5 minutes if not set
     ramp_up = state.get("ramp_up", 60)  # Default to 60 seconds if not set
     iterations = state.get("iterations", 1)  # Default to 1 iteration if not set
+    duration = state.get("duration", 300)  # Default to 5 minutes if not set
+    use_rag = state.get("use_rag", False)  # Whether to use RAG mode
+    prompt_num = state.get("prompt_num", 5)  # Number of prompts to use from input JSON file
     # TODO: Add "useRAG" and "promptNum" settings later 
 
-    jmeter_jtl = os.path.join(jmeter_results_path, f"jmeter_test_{run_timestamp}.jtl")
-    jmeter_log = os.path.join(jmeter_results_path, f"jmeter_test_{run_timestamp}.log")
+    jmeter_jtl = os.path.join(jmeter_results_path, f"{run_timestamp}_jmeter_test.jtl")
+    jmeter_log = os.path.join(jmeter_results_path, f"{run_timestamp}_jmeter_test.log")
 
     # Build the JMeter command to run the load test
     cmd = [
-        cli,
+        start_cmd,
         '-n',  # Non-GUI mode
         '-t', jmx_path,  # JMX test plan
         '-l', jmeter_jtl,  # JTL results file
         '-j', jmeter_log,  # JMeter log file
-        '-Jduration={}'.format(duration),   # Ramp-up time in seconds
-        '-Jvusers={}'.format(vusers),      # Number of threads (virtual users)
-        '-Jramp_up={}'.format(ramp_up),      # Ramp-up time in seconds
-        '-Jiterations={}'.format(iterations),    # Number of iterations
+        '-Jvusers={}'.format(vusers),           # Number of threads (virtual users)
+        '-Jramp_up={}'.format(ramp_up),         # Ramp-up time in seconds
+        '-Jiterations={}'.format(iterations),   # Number of iterations
+        '-Jduration={}'.format(duration),       # Ramp-up time in seconds
+        '-Juse_rag={}'.format(use_rag),         # Use RAG mode
+        '-Jprompt_num={}'.format(prompt_num),   # Number of prompts to use
     ]
 
     try:
@@ -139,3 +156,24 @@ def analyze_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
     }
     add_jmeter_log(f"✅ Load test analysis complete: {summary['status']} ({passed}/{total_samples} passed)", agent_name="JMeterAgent")
     return summary 
+
+def stop_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Stop the currently running JMeter test.
+    This is a placeholder function as stopping JMeter tests programmatically is complex.
+    """
+    cli = config['jmeter']['jmeter_bin_path']
+    is_windows = platform.system().lower().startswith("win")
+    stop_script = "stoptest.cmd" if is_windows else "stoptest.sh"
+    stop_cmd = os.path.join(cli, stop_script)
+
+    try:
+        subprocess.run(stop_cmd, shell=True, check=True)
+        add_jmeter_log("🛑 JMeter stop command sent successfully.")
+    except subprocess.CalledProcessError as e:
+        add_jmeter_log(f"❗Failed to stop JMeter: {e}", agent_name="AgentError")
+
+    # In practice, you would need to implement a way to stop the JMeter process gracefully.
+    # This could involve sending a shutdown command or killing the process.
+    add_jmeter_log("🛑 Stopping JMeter test!", agent_name="JMeterAgent")
+    return {}

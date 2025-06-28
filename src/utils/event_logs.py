@@ -13,9 +13,11 @@ def add_jmeter_log(message: str, agent_name: str = "JMeterAgent"):
     timestamp = datetime.now().strftime("%H:%M:%S")
     log_entry = f"[{timestamp}] {agent_name}: {message}"
     
+    # Update logs and force UI refresh
     st.session_state.jmeter_logs.append(log_entry)
+    #st.rerun()  # Updated method
     
-    # Optional: Limit log size
+    # Optional log size limit
     if len(st.session_state.jmeter_logs) > 1000:
         st.session_state.jmeter_logs = st.session_state.jmeter_logs[-1000:]
 

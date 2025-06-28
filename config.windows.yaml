@@ -29,6 +29,9 @@ user_interface:
 
 jmeter:
   jmeter_home: "C:\\opt\\apache-jmeter-5.6.3"  # Update with the actual JMeter home path
-  jmeter_bin_path: "C:\\opt\\apache-jmeter-5.6.3\\bin\\jmeter.bat"  # Update with the actual JMeter bin path
+  jmeter_bin_path: "C:\\opt\\apache-jmeter-5.6.3\\bin"  # Update with the actual JMeter bin path
   jmeter_path: "C:\\Users\\Jason\\Repos\\_GitHub\\llm-perf-testing\\jmeter"  # Path for JMeter JMX files
-  jmeter_results_path: "C:\\Users\\Jason\\Repos\\_GitHub\\llm-perf-testing\\tmp\\results"  # Path for JMeter results files
+  jmeter_results_path: "C:\\Users\\Jason\\Repos\\_GitHub\\llm-perf-testing\\jmeter\\test_results"  # Path for JMeter results files
+  use_rag: False  # Whether to use RAG mode in JMeter tests (can be configured in UI)
+  prompt_num: 3   # Number of prompts to use from input JSON file in JMeter tests
+
