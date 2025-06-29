@@ -374,9 +374,12 @@ def render_agent_viewer(ui_config):
                 ##handle_debug_test()
                 ...  # This is where you would handle the debug test logic
 
+# ============================================================================
+# JMeter Report Body: This section contains the main body of the JMeter report page.
+# ============================================================================
 def render_report_viewer():
     """
-    Render the Report Viewer area that displays JMeter test results.
+    Render the JMeter Report Viewer area that displays JMeter test results.
     """
     inject_report_viewer_styles()  # Inject custom styles for report viewer
 
