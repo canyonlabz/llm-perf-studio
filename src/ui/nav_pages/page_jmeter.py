@@ -16,8 +16,9 @@ from src.utils.config import load_config  # Importing configuration loader
 from src.ui.page_header import render_page_header  # Importing page header
 from src.ui.page_title import render_jmeter_title  # Importing page body
 from src.ui.page_body import (
-    render_jmeter_config_area,     # Importing JMeter configuration settings area
-    render_jmeter_viewer_area,     # Importing JMeter viewer area and buttons
+    render_jmeter_config_area,      # Importing JMeter configuration settings area
+    render_jmeter_viewer_area,      # Importing JMeter viewer area and buttons
+    render_report_viewer,           # Importing report viewer area
 )
 
 #from src.utils.agent_logs import add_agent_log
@@ -45,6 +46,7 @@ def render_ui():
     render_jmeter_title()   # Render the page body (title, subtitle, etc.)
     render_jmeter_config_area()             # Render the JMeter configuration settings area
     render_jmeter_viewer_area(jmeter_path)  # Render the JMeter viewer and buttons
+    render_report_viewer()                  # Render the report viewer area
 
 # --- Main Function ---------------------------------------------------------
 

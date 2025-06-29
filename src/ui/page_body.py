@@ -387,10 +387,10 @@ def render_report_viewer():
         # Create the report viewer section
         if (
             "jmeter_state" in st.session_state
-            and "smoke_test_results" in st.session_state["jmeter_state"]
-            and st.session_state["jmeter_state"]["smoke_test_results"]
+            and "jmeter_test_results" in st.session_state["jmeter_state"]
+            and st.session_state["jmeter_state"]["jmeter_test_results"]
         ):
-            results = st.session_state["jmeter_state"]["smoke_test_results"]
+            results = st.session_state["jmeter_state"]["jmeter_test_results"]
             overlay_df = results['overlay_df']  # DataFrame with time, pct90_response, and vusers columns
             duration = results['duration']  # timedelta
             start_time = results['start_time']  # datetime
@@ -407,10 +407,10 @@ def render_report_viewer():
             start_time_str = format_datetime(start_time)
             end_time_str = format_datetime(end_time)
 
-            with st.expander("Expand to see smoke test results", expanded=False):
+            with st.expander("Expand to see JMeter test results", expanded=False):
 
                 # Create the report viewer section
-                st.markdown('<div class="report-viewer-title">📊 JMeter Smoke Test Results</div>', unsafe_allow_html=True)
+                st.markdown('<div class="report-viewer-title">📊 JMeter Test Results</div>', unsafe_allow_html=True)
                 tab1, tab2, tab3 = st.tabs(["📋 Results Summary", "🗃 Results Table", "📈 Results Chart"])
 
                 with tab1:
