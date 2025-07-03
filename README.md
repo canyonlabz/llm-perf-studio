@@ -1,12 +1,8 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" class="logo" width="120"/>
-
-# Let's update the README as per your suggestions and I can cherry-pick what works and doesn't.
-
-Here is a revised version of your README.md incorporating all suggested updates, with clear sections you can cherry-pick as needed:
-
 ## 🧪 LLM Performance Testing Framework
 
-A modern, extensible proof-of-concept for performance and quality assessment of Large Language Models (LLMs) using automated load testing, token-level metrics, and advanced response evaluation. Benchmark your LLMs, compare results to industry leaderboards, and visualize performance trends—all in a Dockerized, open, and reproducible environment.
+A modern, extensible proof-of-concept for performance and quality assessment of Large Language Models (LLMs) using automated load testing, token-level metrics, and advanced response evaluation. Easily benchmark your LLMs, compare results to industry leaderboards, and visualize performance trends—all in a Dockerized, open, and reproducible environment.
+
+---
 
 ### 🚀 Features
 
@@ -14,27 +10,30 @@ A modern, extensible proof-of-concept for performance and quality assessment of 
 - **Live, Responsive UI:** Streamlit-based dashboard with real-time JMeter logs and test status updates, powered by background threading and auto-refresh.
 - **Token Utilization Metrics:** Capture Time to First Token (TTFT), Tokens per Second (TPS), and Time per Output Token (TPOT) for deep performance insights.
 - **Quality Assessment:** Analyze LLM responses against ground truth using DeepEval for objective scoring.
-- **RAG Support:** Integrate ChromaDB for Retrieval-Augmented Generation with your own PDF-based Q\&A datasets.
+- **RAG Support:** Integrate ChromaDB for Retrieval-Augmented Generation with your own PDF-based Q&A datasets.
 - **Leaderboard Comparison:** (Planned) Benchmark your local LLM’s quality scores against Hugging Face and other public leaderboards.
-- **Modern UI:** Manage and interact with your LLM stack via OpenWebUI and custom Streamlit dashboards.
+- **Modern UI:** Manage and interact with your LLM stack via OpenWebUI.
 - **Fully Containerized:** One-command setup with Docker Compose for rapid deployment and reproducibility.
 - **BSD 2-Clause Licensed:** Open source, permissive, and ready for community contributions.
 
+---
 
 ### 📦 Technology Stack
 
-| Component | Purpose |
-| :-- | :-- |
-| **Streamlit** | Custom UI for live logs, test control, and dashboards |
-| **streamlit-autorefresh** | Enables real-time log and status updates in the UI |
-| **Ollama** | LLM backend \& API interface |
-| **llama3.2:1b** | Default LLM model (swap for any Ollama-supported model) |
-| **ChromaDB** | Vector database for RAG, PDF ingestion |
-| **OpenWebUI** | Web-based LLM management UI |
-| **JMeter** | Load generation, metrics capture, and test orchestration |
-| **DeepEval** | Python-based quality assessment framework |
-| **Docker Compose** | Orchestration and persistent environment setup |
-| **Threading (Python)** | Background task execution for non-blocking UI |
+| Component                 | Purpose                                                   |
+|---------------------------|-----------------------------------------------------------|
+| Streamlit                 | Custom UI for live logs, test control, and dashboards     |
+| streamlit-autorefresh     | Enables real-time log and status updates in the UI        |
+| Ollama                    | LLM backend & API interface                               |
+| llama3.2:1b               | Default LLM model (swap for any Ollama-supported model)   |
+| ChromaDB                  | Vector database for RAG, PDF ingestion                    |
+| OpenWebUI                 | Web-based LLM management UI                               |
+| JMeter                    | Load generation, metrics capture, and test orchestration  |
+| DeepEval                  | Python-based quality assessment framework                 |
+| Docker Compose            | Orchestration and persistent environment setup            |
+| Threading (Python)        | Background task execution for non-blocking UI             |
+
+---
 
 ### 🗂️ Project Structure
 
@@ -43,22 +42,9 @@ LLM-PERF-TESTING/
 │   demo-llm-llama3-2-1b.jmx
 │   LICENSE
 │   README.md
-│   requirements.txt
 │
 ├───docker-compose/
 │       docker-compose.yml
-│
-├───src/
-│   ├───ui/
-│   │     page_body.py
-│   │     ui_handlers.py
-│   ├───tools/
-│   │     jmeter_executor.py
-│   │     deepeval_assessment.py
-│   └───utils/
-│         test_state.py
-│         event_logs.py
-│         config.py
 │
 ├───testdata_csv/
 │       environment.csv
@@ -75,8 +61,12 @@ LLM-PERF-TESTING/
 │       _llm-test-results.csv
 │       _llm-test-results.jtl
 │       _llm_responses.json
+│
+└───tools/
+        deepeval_assessment.py
 ```
 
+---
 
 ### ⚡ Quick Start
 
@@ -160,6 +150,3 @@ BSD 2-Clause License (see [LICENSE](LICENSE) for details).
 ### 🌟 Stay tuned for leaderboard integration, advanced visualizations, and more!
 
 *Made with ❤️ for the LLM community.*
-
-Let me know which sections you’d like to keep, modify, or expand further!
-
