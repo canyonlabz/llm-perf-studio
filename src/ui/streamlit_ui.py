@@ -7,7 +7,10 @@ import streamlit as st
 import streamlit.components.v1 as components
 from pathlib import Path
 import os
+
+# Importing necessary modules
 from src.utils.config import load_config  # Importing configuration loader
+from src.utils.test_state import TestState
 
 # --- Load Configuration -----------------------------------------------------
 
@@ -54,6 +57,8 @@ if "rag_mode" not in st.session_state:
 # Initialize the selected JMeter JMX file in session state if not already present
 if "selected_jmx_file" not in st.session_state:
     st.session_state.selected_jmx_file = None
+if "jmeter_test_state" not in st.session_state:
+    st.session_state.jmeter_test_state = TestState.NOT_STARTED
 
 # --- Render UI ---------------------------------------------------------------
 

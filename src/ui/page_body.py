@@ -26,6 +26,11 @@ from src.ui.page_utils import (
     format_datetime,
     file_selector
 )
+from src.utils.event_logs import (
+    add_jmeter_log,
+    add_deepeval_log,
+)
+from src.utils.test_state import TestState
 
 config = load_config()  # Load the full configuration from config.yaml
 # --- Initialize Session State ------------------------------------------------
@@ -66,6 +71,8 @@ if "rag_mode" not in st.session_state:
 # Initialize the selected JMeter JMX file in session state if not already present
 if "selected_jmx_file" not in st.session_state:
     st.session_state.selected_jmx_file = None
+if "jmeter_test_state" not in st.session_state:
+    st.session_state.jmeter_test_state = TestState.NOT_STARTED
 
 # --- Render UI ---------------------------------------------------------------
 
@@ -140,6 +147,14 @@ def render_page_buttons():
 # JMeter Page Body: This section contains the main body of the JMeter page.
 # It includes the JMeter configuration area, viewer area, and buttons.
 # ============================================================================
+def get_button_states():
+    state = st.session_state.jmeter_test_state
+    return {
+        "start_disabled": state == TestState.RUNNING,
+        "stop_disabled": state != TestState.RUNNING,
+        "rag_disabled": state == TestState.RUNNING
+    }
+
 def render_jmeter_config_area():
     """
     Render the JMeter configuration area for the webpage.
@@ -252,6 +267,23 @@ def render_jmeter_viewer_area(jmeter_path):
     inject_jmeter_viewer_styles()  # Inject custom styles for JMeter viewer
     inject_jmeter_button_styles()  # Inject custom styles for JMeter buttons
 
+    # Get current running state
+    test_state = get_button_states()
+    start_disabled, stop_disabled, rag_disabled = (
+        test_state["start_disabled"],   # True if test is running (prevents duplicate starts)
+        test_state["stop_disabled"],    # Only enabled if test is running
+        test_state["rag_disabled"]      # Disabled if test is running (RAG mode toggle)
+    )
+
+    # Status message mapping
+    status_messages = {
+        TestState.NOT_STARTED: "🟢 Ready to start test",
+        TestState.RUNNING: "🟡 Test in progress...",
+        TestState.COMPLETED: "✅ Test completed successfully",
+        TestState.FAILED: "❌ Test failed",
+        TestState.STOPPED: "⏹️ Test stopped by user"
+    }
+
     # Centered column for the JMeter page
     col_left, col_viewer, col_right = st.columns([2, 6, 2], border=False)  # Define three columns with specified widths and borders
 
@@ -297,18 +329,43 @@ def render_jmeter_viewer_area(jmeter_path):
         st.session_state.jmeter_state["run_timestamp"] = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         # Button to start the JMeter test
-        if st.button("▶️ Start JMeter", key="start_jmeter"):
-            # Call the function to handle start JMeter test
-            handle_start_jmeter_test()
+        if st.button("▶️ Start JMeter", 
+                disabled=start_disabled,
+                help="Start the JMeter performance test with the selected configuration.",
+                key="start_jmeter"
+            ):
+            # Only allow if not already running
+            if st.session_state.jmeter_test_state != TestState.RUNNING:
+                add_jmeter_log("🏃‍♂️ Starting JMeter load test...", agent_name="JMeterAgent")
+                add_jmeter_log("Preparing to execute load test with selected JMX file.", agent_name="JMeterAgent")
+
+                # Update state BEFORE calling the function to prevent race conditions
+                st.session_state.jmeter_test_state = TestState.RUNNING
+                # Force UI refresh to show updated state immediately
+                ##st.rerun()
+                # Now call the handler function
+                handle_start_jmeter_test()
 
         # Button to stop the JMeter test
-        if st.button("🛑 Stop Test", key="stop_jmeter"):
-            # Call the function to handle stop JMeter test
-            handle_stop_jmeter_test()
+        if st.button("🛑 Stop Test",
+                disabled=stop_disabled, 
+                help="Stop the currently running JMeter performance test.",
+                key="stop_jmeter" 
+            ):
+            # Only allow if currently running
+            if st.session_state.jmeter_test_state == TestState.RUNNING:
+                add_jmeter_log("Preparing to stop JMeter load test...", agent_name="JMeterAgent")
+                # Update state BEFORE calling the function
+                st.session_state.jmeter_test_state = TestState.STOPPED
+                # Force UI refresh to show updated state immediately
+                ##st.rerun()
+                # Now call the handler function
+                handle_stop_jmeter_test()
 
         on = st.toggle(
             "RAG Mode",
-            value=False,
+            value=st.session_state.jmeter_state.get("use_rag", False),  # Default to False if not set
+            disabled=rag_disabled,  # Disable if test is running
             key="enable_rag_mode",
             help="Toggle Retrieval Augmented Generation (RAG) mode on or off.",)
         if on:

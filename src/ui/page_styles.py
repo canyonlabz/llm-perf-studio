@@ -284,6 +284,17 @@ def inject_jmeter_viewer_styles():
             padding: 10px;
             height: 100%;
         }
+        .test-status {
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+        .test-status-0 { color: #10B981; } /* NOT_STARTED */
+        .test-status-1 { color: #F59E0B; } /* RUNNING */
+        .test-status-2 { color: #3B82F6; } /* COMPLETED */
+        .test-status-3 { color: #EF4444; } /* FAILED */
+        .test-status-4 { color: #8B5CF6; } /* STOPPED */
         </style>
     """, unsafe_allow_html=True)
 
