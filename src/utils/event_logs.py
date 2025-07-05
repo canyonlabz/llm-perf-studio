@@ -15,11 +15,18 @@ def add_jmeter_log(message: str, agent_name: str = "JMeterAgent"):
     
     # Update logs and force UI refresh
     st.session_state.jmeter_logs.append(log_entry)
-    #st.rerun()  # Updated method
     
     # Optional log size limit
     if len(st.session_state.jmeter_logs) > 1000:
         st.session_state.jmeter_logs = st.session_state.jmeter_logs[-1000:]
+
+def thread_safe_add_log(log_list, message: str, agent_name: str = "JMeterAgent"):
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    log_entry = f"[{timestamp}] {agent_name}: {message}"
+    log_list.append(log_entry)
+    # Optional: limit log size
+    if len(log_list) > 1000:
+        del log_list[:-1000]
 
 # --- DeepEval Logs ------------------------------------------------
 # This module handles logging to the DeepEval viewer.

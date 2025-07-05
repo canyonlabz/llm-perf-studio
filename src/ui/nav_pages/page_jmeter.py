@@ -46,7 +46,7 @@ def render_ui():
     render_jmeter_title()   # Render the page body (title, subtitle, etc.)
     render_jmeter_config_area()             # Render the JMeter configuration settings area
     render_jmeter_viewer_area(jmeter_path)  # Render the JMeter viewer and buttons
-    render_report_viewer()                  # Render the report viewer area
+    ##render_report_viewer()                  # Render the report viewer area
 
 # --- Main Function ---------------------------------------------------------
 

@@ -4,9 +4,15 @@ import subprocess
 import sys
 from pathlib import Path
 import asyncio
+import logging
+import warnings
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
+# Suppress Streamlit thread warnings
+logging.getLogger("streamlit.runtime.scriptrunner.script_runner").setLevel(logging.ERROR)
+warnings.filterwarnings("ignore", message=".*missing ScriptRunContext.*")
 
 # Disable Streamlit's file watcher to avoid issues with file changes (production use case)
 #os.environ["STREAMLIT_SERVER_ENABLE_WATCHER"] = "false"

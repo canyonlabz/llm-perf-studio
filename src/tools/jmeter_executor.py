@@ -9,7 +9,7 @@ import threading
 from queue import Queue
 from datetime import datetime
 from src.utils.config import load_config
-from src.utils.event_logs import add_jmeter_log
+from src.utils.event_logs import add_jmeter_log, thread_safe_add_log
 
 # Load configurations
 config = load_config()
@@ -19,7 +19,7 @@ output_queue = Queue()
 
 #--- JMeter Test Node ---
 # This node runs a load test on the selected JMX file.
-def run_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
+def run_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
     """
     Run a JMeter load test: Example - 1 thread, 1 loop, 5 minutes duration.
     Returns paths to the JTL results file and JMeter log file.
@@ -36,7 +36,7 @@ def run_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
     jmeter_results_path = config['jmeter']['jmeter_results_path']
     jmx_path = state.get("jmx_path")
     if not jmx_path or not os.path.exists(jmx_path):
-        add_jmeter_log("❌ No valid JMX file found. Please select JMX first.", agent_name="AgentError")
+        thread_safe_add_log(shared_data['logs'], "❌ No valid JMX file found. Please select JMX first.", agent_name="AgentError")
         return {}
 
     # Get the JMeter settings from the session state
@@ -46,7 +46,6 @@ def run_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
     duration = state.get("duration", 300)  # Default to 5 minutes if not set
     use_rag = state.get("use_rag", False)  # Whether to use RAG mode
     prompt_num = state.get("prompt_num", 5)  # Number of prompts to use from input JSON file
-    # TODO: Add "useRAG" and "promptNum" settings later 
 
     jmeter_jtl = os.path.join(jmeter_results_path, f"{run_timestamp}_jmeter_test.jtl")
     jmeter_log = os.path.join(jmeter_results_path, f"{run_timestamp}_jmeter_test.log")
@@ -68,10 +67,10 @@ def run_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
     ]
 
     try:
-        add_jmeter_log(f"🏃‍♂️ Running JMeter: {' '.join(cmd)}", agent_name="JMeterAgent")
+        thread_safe_add_log(shared_data['logs'], f"🏃‍♂️ Running JMeter: {' '.join(cmd)}", agent_name="JMeterAgent")
         subprocess.run(cmd, check=True)
     except subprocess.CalledProcessError as e:
-        add_jmeter_log(f"❌ Load test failed: {e}", agent_name="AgentError")
+        thread_safe_add_log(shared_data['logs'], f"❌ Load test failed: {e}", agent_name="AgentError")
         return {}
 
     return {

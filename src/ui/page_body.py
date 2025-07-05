@@ -1,6 +1,7 @@
 import altair as alt
 import streamlit as st
 import streamlit.components.v1 as components
+from streamlit_autorefresh import st_autorefresh
 from pathlib import Path
 import os, sys
 from datetime import datetime
@@ -73,6 +74,12 @@ if "selected_jmx_file" not in st.session_state:
     st.session_state.selected_jmx_file = None
 if "jmeter_test_state" not in st.session_state:
     st.session_state.jmeter_test_state = TestState.NOT_STARTED
+if 'jmeter_thread_data' not in st.session_state:
+    st.session_state['jmeter_thread_data'] = {
+        'logs': [],
+        'status': None,
+        'results': None
+    }
 
 # --- Render UI ---------------------------------------------------------------
 
@@ -275,14 +282,30 @@ def render_jmeter_viewer_area(jmeter_path):
         test_state["rag_disabled"]      # Disabled if test is running (RAG mode toggle)
     )
 
-    # Status message mapping
-    status_messages = {
-        TestState.NOT_STARTED: "🟢 Ready to start test",
-        TestState.RUNNING: "🟡 Test in progress...",
-        TestState.COMPLETED: "✅ Test completed successfully",
-        TestState.FAILED: "❌ Test failed",
-        TestState.STOPPED: "⏹️ Test stopped by user"
-    }
+    # === SYNC BACKGROUND THREAD DATA (ADD HERE) ===
+    # Sync background thread data with UI
+    shared_data = st.session_state.get("jmeter_thread_data", {})
+    
+    # Sync logs from background thread
+    if shared_data.get('logs'):
+        st.session_state['jmeter_logs'].extend(shared_data['logs'])
+        shared_data['logs'].clear()
+
+    # Sync status from background thread
+    if shared_data.get('status') and st.session_state.jmeter_test_state != shared_data['status']:
+        st.session_state.jmeter_test_state = shared_data['status']
+        st.rerun()  # Force UI refresh when status changes
+
+    # Sync results from background thread
+    if shared_data.get('results'):
+        st.session_state.jmeter_state['jmeter_test_results'] = shared_data['results']
+        shared_data['results'] = None  # Clear after syncing
+        
+    # Sync analysis results
+    if shared_data.get('analysis'):
+        st.session_state.jmeter_state['jmeter_test_analysis'] = shared_data['analysis']
+        shared_data['analysis'] = None  # Clear after syncing
+    # === END SYNC SECTION ===
 
     # Centered column for the JMeter page
     col_left, col_viewer, col_right = st.columns([2, 6, 2], border=False)  # Define three columns with specified widths and borders
@@ -340,9 +363,7 @@ def render_jmeter_viewer_area(jmeter_path):
                 add_jmeter_log("Preparing to execute load test with selected JMX file.", agent_name="JMeterAgent")
 
                 # Update state BEFORE calling the function to prevent race conditions
-                st.session_state.jmeter_test_state = TestState.RUNNING
-                # Force UI refresh to show updated state immediately
-                ##st.rerun()
+                ##st.session_state.jmeter_test_state = TestState.RUNNING
                 # Now call the handler function
                 handle_start_jmeter_test()
 
@@ -357,8 +378,6 @@ def render_jmeter_viewer_area(jmeter_path):
                 add_jmeter_log("Preparing to stop JMeter load test...", agent_name="JMeterAgent")
                 # Update state BEFORE calling the function
                 st.session_state.jmeter_test_state = TestState.STOPPED
-                # Force UI refresh to show updated state immediately
-                ##st.rerun()
                 # Now call the handler function
                 handle_stop_jmeter_test()
 
@@ -374,6 +393,9 @@ def render_jmeter_viewer_area(jmeter_path):
         else:
             st.markdown('<div class="toggle-button-title">🔴 RAG Mode Disabled</div>', unsafe_allow_html=True)
             st.session_state.jmeter_state["use_rag"] = False
+
+    # Auto-refresh every 2 seconds for live updates
+    st_autorefresh(interval=2000, key="jmeter_autorefresh")
 
 def render_agent_viewer(ui_config):
     """

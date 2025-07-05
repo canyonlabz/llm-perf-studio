@@ -59,6 +59,12 @@ if "selected_jmx_file" not in st.session_state:
     st.session_state.selected_jmx_file = None
 if "jmeter_test_state" not in st.session_state:
     st.session_state.jmeter_test_state = TestState.NOT_STARTED
+if 'jmeter_thread_data' not in st.session_state:
+    st.session_state['jmeter_thread_data'] = {
+        'logs': [],
+        'status': None,
+        'results': None
+    }
 
 # --- Render UI ---------------------------------------------------------------
 
