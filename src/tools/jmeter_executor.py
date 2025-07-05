@@ -78,20 +78,20 @@ def run_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> 
         "jmeter_log_path": jmeter_log
     }
 
-def analyze_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
+def analyze_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
     """
     Analyze the results of the load test.
     Returns a summary of the test results.
     """
-    jtl_path = state.get("jmeter_jtl_path")
+    jtl_path = shared_data.get('jmeter_jtl_path', None)
     if not jtl_path or not os.path.exists(jtl_path):
-        add_jmeter_log("❌ No valid JTL file found. Please run load test first.", agent_name="AgentError")
+        thread_safe_add_log(shared_data['logs'], "❌ No valid JTL file found. Please run load test first.", agent_name="AgentError")
         return {}
 
     # Load JTL as DataFrame
     df = pd.read_csv(jtl_path)
     if df.empty:
-        add_jmeter_log("❌ JTL file is empty.", agent_name="AgentError")
+        thread_safe_add_log(shared_data['logs'], "❌ JTL file is empty.", agent_name="AgentError")
         return {}
 
     # Convert timestamps
@@ -154,8 +154,8 @@ def analyze_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
         "vusers_over_time": vusers_over_time,
         "overlay_df": df_overlay,
     }
-    add_jmeter_log(f"✅ Load test analysis complete: {summary['status']} ({passed}/{total_samples} passed)", agent_name="JMeterAgent")
-    return summary 
+    thread_safe_add_log(shared_data['logs'], f"✅ Load test analysis complete: {summary['status']} ({passed}/{total_samples} passed)", agent_name="JMeterAgent")
+    return summary
 
 def stop_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
     """

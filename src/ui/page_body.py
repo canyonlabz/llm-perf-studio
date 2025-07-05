@@ -78,7 +78,10 @@ if 'jmeter_thread_data' not in st.session_state:
     st.session_state['jmeter_thread_data'] = {
         'logs': [],
         'status': None,
-        'results': None
+        'results': None,
+        'jmeter_jtl_path': "",
+        'jmeter_log_path': "",
+        'analysis': None,
     }
 
 # --- Render UI ---------------------------------------------------------------

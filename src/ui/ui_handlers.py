@@ -35,12 +35,20 @@ def __start_jmeter_thread(shared_data, state_snapshot):
             thread_safe_add_log(shared_data['logs'], "✅ JMeter load test executed successfully.", agent_name="JMeterAgent")
             shared_data['status'] = TestState.COMPLETED
             shared_data['results'] = result
+            shared_data['jmeter_jtl_path'] = result['jmeter_jtl_path']
+            shared_data['jmeter_log_path'] = result['jmeter_log_path']
             thread_safe_add_log(shared_data['logs'], f"📊🔥 Load test results saved to {result['jmeter_jtl_path']}", agent_name="JMeterAgent")
             thread_safe_add_log(shared_data['logs'], f"📊🔥 Load test log saved to {result['jmeter_log_path']}", agent_name="JMeterAgent")
             
             # Analyze results in background thread
             thread_safe_add_log(shared_data['logs'], "🔍 Analyzing load test results...", agent_name="JMeterAgent")
-            analysis_result = analyze_jmeter_test_node(state_snapshot)
+            analysis_result = analyze_jmeter_test_node(shared_data, state_snapshot)
+            if not analysis_result:
+                thread_safe_add_log(shared_data['logs'], "⚠️ No analysis results found. Check JTL file.", agent_name="AgentError")
+                shared_data['status'] = TestState.FAILED
+            else:
+                thread_safe_add_log(shared_data['logs'], "✅ Load test analysis completed successfully.", agent_name="JMeterAgent")
+                #thread_safe_add_log(shared_data['logs'], f"📊 Analysis results: {analysis_result}", agent_name="JMeterAgent")
             shared_data['analysis'] = analysis_result
             
         else:
