@@ -29,8 +29,17 @@ def __start_jmeter_thread(shared_data, state_snapshot):
     try:
         # Update status to running in shared data
         shared_data['status'] = TestState.RUNNING
+        shared_data['stop_requested'] = False  # Add stop flag
         
         result = run_jmeter_test_node(shared_data, state_snapshot)
+
+        # Check if stop was requested before processing results
+        if shared_data.get('stop_requested', False):
+            thread_safe_add_log(shared_data['logs'], "🛑 JMeter test was stopped by user request.", agent_name="JMeterAgent")
+            thread_safe_add_log(shared_data['logs'], "🔍 Skipping analysis - test was stopped.", agent_name="JMeterAgent")
+            shared_data['status'] = TestState.STOPPED
+            return  # Exit early, don't process results
+        # If we reach here, it means the test ran successfully
         if result:
             thread_safe_add_log(shared_data['logs'], "✅ JMeter load test executed successfully.", agent_name="JMeterAgent")
             shared_data['status'] = TestState.COMPLETED
@@ -40,24 +49,27 @@ def __start_jmeter_thread(shared_data, state_snapshot):
             thread_safe_add_log(shared_data['logs'], f"📊🔥 Load test results saved to {result['jmeter_jtl_path']}", agent_name="JMeterAgent")
             thread_safe_add_log(shared_data['logs'], f"📊🔥 Load test log saved to {result['jmeter_log_path']}", agent_name="JMeterAgent")
             
-            # Analyze results in background thread
-            thread_safe_add_log(shared_data['logs'], "🔍 Analyzing load test results...", agent_name="JMeterAgent")
-            analysis_result = analyze_jmeter_test_node(shared_data, state_snapshot)
-            if not analysis_result:
-                thread_safe_add_log(shared_data['logs'], "⚠️ No analysis results found. Check JTL file.", agent_name="AgentError")
-                shared_data['status'] = TestState.FAILED
+            # Analyze results in background thread# Only analyze if not stopped
+            if not shared_data.get('stop_requested', False):
+                thread_safe_add_log(shared_data['logs'], "🔍 Analyzing load test results...", agent_name="JMeterAgent")
+                analysis_result = analyze_jmeter_test_node(shared_data, state_snapshot)
+                if not analysis_result:
+                    thread_safe_add_log(shared_data['logs'], "⚠️ No analysis results found. Check JTL file.", agent_name="AgentError")
+                    shared_data['status'] = TestState.FAILED
+                else:
+                    thread_safe_add_log(shared_data['logs'], "✅ Load test analysis completed successfully.", agent_name="JMeterAgent")
+                shared_data['analysis'] = analysis_result
             else:
-                thread_safe_add_log(shared_data['logs'], "✅ Load test analysis completed successfully.", agent_name="JMeterAgent")
-                #thread_safe_add_log(shared_data['logs'], f"📊 Analysis results: {analysis_result}", agent_name="JMeterAgent")
-            shared_data['analysis'] = analysis_result
-            
+                thread_safe_add_log(shared_data['logs'], "🔍 Skipping analysis - test was stopped.", agent_name="JMeterAgent")
+
         else:
             thread_safe_add_log(shared_data['logs'], "❌ JMeter load test failed to execute.", agent_name="AgentError")
             shared_data['status'] = TestState.FAILED
-            
+            shared_data['results'] = None
     except Exception as e:
         thread_safe_add_log(shared_data['logs'], f"❌ JMeter load test execution failed: {str(e)}", agent_name="AgentError")
         shared_data['status'] = TestState.FAILED
+        shared_data['results'] = None
 
 def handle_start_jmeter_test():
     """Handler for starting the JMeter test."""
@@ -89,14 +101,19 @@ def handle_stop_jmeter_test():
         return
 
     state = st.session_state.get("jmeter_state", {}).copy()
+    shared_data = st.session_state.get("jmeter_thread_data", {})
+
+    # Set stop flag FIRST to signal the background thread
+    shared_data['stop_requested'] = True
+    shared_data['status'] = TestState.STOPPED
     add_jmeter_log("🛑 Stopping JMeter load test...", agent_name="JMeterAgent")
 
     try:
         # Call the JMeter stop test node
-        result = stop_jmeter_test_node(state)
+        result = stop_jmeter_test_node(shared_data, state)
         if result:
             state.update(result)
-            st.session_state["jmeter_state"] = state        # Updates the full state
+            st.session_state["jmeter_state"] = state
             add_jmeter_log("🛑 JMeter load test stopped successfully.", agent_name="JMeterAgent")
         else:
             add_jmeter_log("⚠️ Failed to stop JMeter test gracefully.", agent_name="JMeterAgent")

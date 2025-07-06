@@ -157,7 +157,7 @@ def analyze_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any])
     thread_safe_add_log(shared_data['logs'], f"✅ Load test analysis complete: {summary['status']} ({passed}/{total_samples} passed)", agent_name="JMeterAgent")
     return summary
 
-def stop_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
+def stop_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
     """
     Stop the currently running JMeter test.
     This is a placeholder function as stopping JMeter tests programmatically is complex.
@@ -167,13 +167,15 @@ def stop_jmeter_test_node(state: Dict[str, Any]) -> Dict[str, Any]:
     stop_script = "stoptest.cmd" if is_windows else "stoptest.sh"
     stop_cmd = os.path.join(cli, stop_script)
 
+    thread_safe_add_log(shared_data['logs'], f"Attempting to stop JMeter test with command: {stop_cmd}", agent_name="JMeterAgent")
+
     try:
         subprocess.run(stop_cmd, shell=True, check=True)
-        add_jmeter_log("🛑 JMeter stop command sent successfully.")
+        thread_safe_add_log(shared_data['logs'], "🛑 JMeter stop command sent successfully.", agent_name="JMeterAgent")
     except subprocess.CalledProcessError as e:
-        add_jmeter_log(f"❗Failed to stop JMeter: {e}", agent_name="AgentError")
+        thread_safe_add_log(shared_data['logs'], f"❗Failed to stop JMeter: {e}", agent_name="AgentError")
 
     # In practice, you would need to implement a way to stop the JMeter process gracefully.
     # This could involve sending a shutdown command or killing the process.
-    add_jmeter_log("🛑 Stopping JMeter test!", agent_name="JMeterAgent")
+    thread_safe_add_log(shared_data['logs'], "🛑 Stopping JMeter test!", agent_name="JMeterAgent")
     return {}

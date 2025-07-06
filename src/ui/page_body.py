@@ -82,6 +82,7 @@ if 'jmeter_thread_data' not in st.session_state:
         'jmeter_jtl_path': "",
         'jmeter_log_path': "",
         'analysis': None,
+        'stop_requested': False,
     }
 
 # --- Render UI ---------------------------------------------------------------
@@ -364,10 +365,6 @@ def render_jmeter_viewer_area(jmeter_path):
             if st.session_state.jmeter_test_state != TestState.RUNNING:
                 add_jmeter_log("🏃‍♂️ Starting JMeter load test...", agent_name="JMeterAgent")
                 add_jmeter_log("Preparing to execute load test with selected JMX file.", agent_name="JMeterAgent")
-
-                # Update state BEFORE calling the function to prevent race conditions
-                ##st.session_state.jmeter_test_state = TestState.RUNNING
-                # Now call the handler function
                 handle_start_jmeter_test()
 
         # Button to stop the JMeter test
@@ -379,9 +376,6 @@ def render_jmeter_viewer_area(jmeter_path):
             # Only allow if currently running
             if st.session_state.jmeter_test_state == TestState.RUNNING:
                 add_jmeter_log("Preparing to stop JMeter load test...", agent_name="JMeterAgent")
-                # Update state BEFORE calling the function
-                st.session_state.jmeter_test_state = TestState.STOPPED
-                # Now call the handler function
                 handle_stop_jmeter_test()
 
         on = st.toggle(

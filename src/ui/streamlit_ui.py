@@ -67,6 +67,7 @@ if 'jmeter_thread_data' not in st.session_state:
         'jmeter_jtl_path': "",
         'jmeter_log_path': "",
         'analysis': None,
+        'stop_requested': False,
     }
 
 # --- Render UI ---------------------------------------------------------------
