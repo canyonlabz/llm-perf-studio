@@ -307,7 +307,8 @@ def inject_jmeter_button_styles():
         <style>
         /* Base style for all JMeter buttons */
         .st-key-start_jmeter button,
-        .st-key-stop_jmeter button {
+        .st-key-stop_jmeter button,
+        .st-key-clear_jmeter_logs button {
             width: 160px;
             height: 44px;
             font-size: 1.08rem;
@@ -347,6 +348,23 @@ def inject_jmeter_button_styles():
             background: #d32f2f;    /* Dark red background on hover */
             color: #fff;            /* White text on hover */
             box-shadow: 0 4px 16px rgba(211, 47, 47, 0.16);
+        }
+                
+        /* Clear Logs button */
+        .st-key-clear_jmeter_logs {
+            margin-top: 20px;  /* Adjust this value as needed */
+        }
+        .st-key-clear_jmeter_logs button {
+            background: #fff8e1;    /* Light orange background */
+            color: #b26a00;         /* Dark orange text */
+            border: 1px solid #4c4e52;  /* Dark grey border */
+            box-shadow: 0 2px 8px rgba(255, 179, 0, 0.08);
+        }
+        .st-key-clear_jmeter_logs button:hover {
+            background: #ffb300;    /* Dark orange background on hover */
+            color: #fff;            /* White text on hover */
+            box-shadow: 0 4px 16px rgba(255, 179, 0, 0.15);
+            border-color: #4c4e52; /* Maintain dark grey border */
         }
         </style>
     """, unsafe_allow_html=True)

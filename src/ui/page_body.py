@@ -163,7 +163,8 @@ def get_button_states():
     return {
         "start_disabled": state == TestState.RUNNING,
         "stop_disabled": state != TestState.RUNNING,
-        "rag_disabled": state == TestState.RUNNING
+        "rag_disabled": state == TestState.RUNNING,
+        "clear_logs_disabled": state == TestState.RUNNING
     }
 
 def render_jmeter_config_area():
@@ -280,10 +281,11 @@ def render_jmeter_viewer_area(jmeter_path):
 
     # Get current running state
     test_state = get_button_states()
-    start_disabled, stop_disabled, rag_disabled = (
+    start_disabled, stop_disabled, rag_disabled, clear_logs_disabled = (
         test_state["start_disabled"],   # True if test is running (prevents duplicate starts)
         test_state["stop_disabled"],    # Only enabled if test is running
-        test_state["rag_disabled"]      # Disabled if test is running (RAG mode toggle)
+        test_state["rag_disabled"],     # Disabled if test is running (RAG mode toggle)
+        test_state["clear_logs_disabled"]  # Disabled if test is running (Clear Logs button)
     )
 
     # === SYNC BACKGROUND THREAD DATA (ADD HERE) ===
@@ -390,6 +392,15 @@ def render_jmeter_viewer_area(jmeter_path):
         else:
             st.markdown('<div class="toggle-button-title">🔴 RAG Mode Disabled</div>', unsafe_allow_html=True)
             st.session_state.jmeter_state["use_rag"] = False
+
+        # Button to clear JMeter logs
+        if st.button("🧹 Clear Logs", 
+                disabled=clear_logs_disabled,
+                help="Clear all JMeter logs from the viewer.",
+                key="clear_jmeter_logs"
+            ):
+            st.session_state.jmeter_logs = []  # Clear the logs
+            add_jmeter_log("🧹 JMeter logs cleared.", agent_name="JMeterAgent")
 
     # Auto-refresh every 2 seconds for live updates
     st_autorefresh(interval=2000, key="jmeter_autorefresh")
