@@ -62,3 +62,20 @@ def render_deepeval_title():
         '</div>',
         unsafe_allow_html=True
     )
+
+def render_report_title():
+    """ Render the title and subtitle for the report page. """
+    # Inject custom CSS for centering and font styling
+    inject_page_title_styles()
+
+    # Main title (centered, bold)
+    st.markdown('<div class="centered-title">LLM Performance Test Report</div>', unsafe_allow_html=True)
+
+    # Subtitle/description (centered)
+    st.markdown(
+        '<div class="centered-subtitle">'
+        'View and analyze the results of your LLM performance tests.<br>'
+        'Gain insights into LLM system behavior and identify bottlenecks or quality issues in your models.'
+        '</div>',
+        unsafe_allow_html=True
+    )

@@ -166,3 +166,5 @@ docker/data/*
 jmeter/test_results/*
 # Ignore JMeter test results
 tmp/results/*
+# Ignore DeepEval test results
+src/tools/.deepeval/*

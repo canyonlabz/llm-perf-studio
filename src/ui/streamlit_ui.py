@@ -86,9 +86,10 @@ def render_ui():
     page_homepage = st.Page("nav_pages/page_homepage.py", title="Home", icon="🏠")
     page_jmeter = st.Page("nav_pages/page_jmeter.py", title="JMeter", icon="📊")
     page_deepeval = st.Page("nav_pages/page_deepeval.py", title="DeepEval", icon="📈")
+    page_report = st.Page("nav_pages/page_report.py", title="Report", icon="📋")
 
     pg = st.navigation(
-        pages=[page_homepage, page_jmeter, page_deepeval],
+        pages=[page_homepage, page_jmeter, page_deepeval, page_report],
         position="sidebar",
     )
     pg.run()

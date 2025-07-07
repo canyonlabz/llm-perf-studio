@@ -7,8 +7,8 @@ from deepeval.test_case import LLMTestCaseParams
 from deepeval.metrics import GEval
 
 # Subfolder paths (relative to the script's location)
-INPUT_FOLDER = "../test_results"
-OUTPUT_FOLDER = "../test_results"
+INPUT_FOLDER = "../../jmeter/test_results"
+OUTPUT_FOLDER = "../../jmeter/test_results"
 
 # Load test cases from the exported JSON file
 def load_test_cases(json_file_path):
