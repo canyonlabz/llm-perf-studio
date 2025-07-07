@@ -8,11 +8,6 @@ import streamlit.components.v1 as components
 from pathlib import Path
 import os
 from src.utils.config import load_config  # Importing configuration loader
-
-# Initialize agent_logs FIRST before any other imports
-#if "agent_logs" not in st.session_state:
-#    st.session_state.agent_logs = []
-
 from src.ui.page_header import render_page_header  # Importing page header
 from src.ui.page_title import render_jmeter_title  # Importing page body
 from src.ui.page_body import (
@@ -20,8 +15,6 @@ from src.ui.page_body import (
     render_jmeter_viewer_area,      # Importing JMeter viewer area and buttons
     render_report_viewer,           # Importing report viewer area
 )
-
-#from src.utils.agent_logs import add_agent_log
 
 # --- Load Configuration -----------------------------------------------------
 # This module loads the configuration from config.yaml
@@ -46,7 +39,7 @@ def render_ui():
     render_jmeter_title()   # Render the page body (title, subtitle, etc.)
     render_jmeter_config_area()             # Render the JMeter configuration settings area
     render_jmeter_viewer_area(jmeter_path)  # Render the JMeter viewer and buttons
-    ##render_report_viewer()                  # Render the report viewer area
+    render_report_viewer()                  # Render the report viewer area
 
 # --- Main Function ---------------------------------------------------------
 

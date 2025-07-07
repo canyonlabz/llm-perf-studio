@@ -6,16 +6,12 @@ import pandas as pd
 import numpy as np
 import platform
 import threading
-from queue import Queue
 from datetime import datetime
 from src.utils.config import load_config
 from src.utils.event_logs import add_jmeter_log, thread_safe_add_log
 
 # Load configurations
 config = load_config()
-
-# Add global output queue
-output_queue = Queue()
 
 #--- JMeter Test Node ---
 # This node runs a load test on the selected JMX file.

@@ -58,7 +58,7 @@ def __start_jmeter_thread(shared_data, state_snapshot):
                     shared_data['status'] = TestState.FAILED
                 else:
                     thread_safe_add_log(shared_data['logs'], "✅ Load test analysis completed successfully.", agent_name="JMeterAgent")
-                shared_data['analysis'] = analysis_result
+                    shared_data['analysis'] = analysis_result
             else:
                 thread_safe_add_log(shared_data['logs'], "🔍 Skipping analysis - test was stopped.", agent_name="JMeterAgent")
 

@@ -304,12 +304,13 @@ def render_jmeter_viewer_area(jmeter_path):
 
     # Sync results from background thread
     if shared_data.get('results'):
-        st.session_state.jmeter_state['jmeter_test_results'] = shared_data['results']
+        st.session_state.jmeter_state['jmeter_jtl_path'] = shared_data['results'].get('jmeter_jtl_path', "")
+        st.session_state.jmeter_state['jmeter_log_path'] = shared_data['results'].get('jmeter_log_path', "")
         shared_data['results'] = None  # Clear after syncing
         
     # Sync analysis results
     if shared_data.get('analysis'):
-        st.session_state.jmeter_state['jmeter_test_analysis'] = shared_data['analysis']
+        st.session_state.jmeter_state['jmeter_test_results'] = shared_data['analysis']
         shared_data['analysis'] = None  # Clear after syncing
     # === END SYNC SECTION ===
 
@@ -482,9 +483,9 @@ def render_report_viewer():
         ):
             results = st.session_state["jmeter_state"]["jmeter_test_results"]
             overlay_df = results['overlay_df']  # DataFrame with time, pct90_response, and vusers columns
-            duration = results['duration']  # timedelta
+            duration = results['duration']      # timedelta
             start_time = results['start_time']  # datetime
-            end_time = results['end_time']  # datetime
+            end_time = results['end_time']      # datetime
 
             # If already string, parse to datetime
             if isinstance(start_time, str):
@@ -581,3 +582,4 @@ def render_report_viewer():
                     layered_chart = alt.layer(line1, line2).resolve_scale(y='independent')
 
                     st.altair_chart(layered_chart, use_container_width=True)
+    
