@@ -472,15 +472,11 @@ def render_report_viewer():
     inject_report_viewer_styles()  # Inject custom styles for report viewer
 
     # Centered column for the report viewer
-    col_left, col_report_viewer, col_right = st.columns([2, 6, 2], border=True)  # Define three columns with specified widths and borders
+    col_left, col_report_viewer, col_right = st.columns([0.10, 0.80, 0.10], border=False)  # Define three columns with specified widths and borders
 
     with col_report_viewer:
         # Create the report viewer section
-        if (
-            "jmeter_state" in st.session_state
-            and "jmeter_test_results" in st.session_state["jmeter_state"]
-            and st.session_state["jmeter_state"]["jmeter_test_results"]
-        ):
+        if st.session_state.get('jmeter_state', {}).get('jmeter_test_results'):
             results = st.session_state["jmeter_state"]["jmeter_test_results"]
             overlay_df = results['overlay_df']  # DataFrame with time, pct90_response, and vusers columns
             duration = results['duration']      # timedelta
@@ -583,3 +579,5 @@ def render_report_viewer():
 
                     st.altair_chart(layered_chart, use_container_width=True)
     
+        else:
+            st.info("No JMeter test results yet. Please run a JMeter test first.")

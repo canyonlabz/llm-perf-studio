@@ -11,7 +11,7 @@ from src.utils.config import load_config  # Importing configuration loader
 from src.ui.page_header import render_page_header  # Importing page header
 from src.ui.page_title import render_report_title  # Importing page body
 from src.ui.page_body import (
-    render_page_buttons,  # Importing page buttons
+    render_report_viewer,           # Importing report viewer area
 )
 
 # --- Load Configuration -----------------------------------------------------
@@ -25,15 +25,16 @@ ui_config = module_config.get("user_interface", {})
 
 def render_ui():
     """
-    Render the main UI for the report summary configuration page.
+    Render the main UI for the report summary page.
     This function sets up the Streamlit page configuration, initializes the navigation,
-    and renders the header, title, and report summary configuration.
+    and renders the header, title, and report summary.
     """
     # Set the page configuration for Streamlit
-    render_page_header()        # Render the page header
-    render_report_title()     # Render the page body (title, subtitle, etc.)
+    render_page_header()    # Render the page header
+    render_report_title()   # Render the page body (title, subtitle, etc.)
+    render_report_viewer()  # Render the report viewer area
 
-# --- Main Function ---------------------------------------------------------
+# --- Main Function -----------------------------------------------------------
 
 if __name__ == "__main__":
     render_ui()
