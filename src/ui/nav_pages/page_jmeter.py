@@ -10,7 +10,7 @@ import os
 from src.utils.config import load_config  # Importing configuration loader
 from src.ui.page_header import render_page_header  # Importing page header
 from src.ui.page_title import render_jmeter_title  # Importing page body
-from src.ui.page_body import (
+from src.ui.page_body_jmeter import (
     render_jmeter_config_area,      # Importing JMeter configuration settings area
     render_jmeter_viewer_area,      # Importing JMeter viewer area and buttons
 )

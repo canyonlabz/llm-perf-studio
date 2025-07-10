@@ -10,13 +10,12 @@ import os
 from src.utils.config import load_config  # Importing configuration loader
 from src.ui.page_header import render_page_header  # Importing page header
 from src.ui.page_title import render_report_title  # Importing page body
-from src.ui.page_body import (
+from src.ui.page_body_report import (
     render_report_viewer,           # Importing report viewer area
 )
 
 # --- Load Configuration -----------------------------------------------------
 # This module loads the configuration from config.yaml
-
 module_config = load_config()
 general_config = module_config.get("general", {})
 ui_config = module_config.get("user_interface", {})

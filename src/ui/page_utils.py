@@ -6,11 +6,79 @@ from datetime import datetime
 import streamlit as st
 
 from src.ui.page_styles import inject_jmeter_config_styles
+from src.utils.test_state import TestState
 
-# Function to format a duration into a human-readable string
-# Example: timedelta(minutes=5, seconds=30) -> "5 minutes, 30 seconds"
-# Assume duration is a timedelta, start_time and end_time are datetime objects
+def initialize_session_state():
+    """
+    Initialize all Streamlit session state variables used across the application.
+    This function should be called once at the beginning of each page to ensure
+    all required session state variables are properly initialized.
+    """
+    # Initialize session state
+    if "session_started" not in st.session_state:
+        st.session_state.session_started = False
+    
+    # Initialize the LLM mode in session state if not already present
+    if "llm_mode" not in st.session_state:
+        st.session_state.llm_mode = "ollama"  # Default LLM model ("ollama" or "openai")
+    
+    # Initialize the agent logs in session state if not already present
+    if "jmeter_logs" not in st.session_state:
+        st.session_state.jmeter_logs = []
+    
+    # initialize the JMeter state in session state if not already present
+    if "jmeter_state" not in st.session_state:
+        # Mirror the same shape your pipeline expects
+        st.session_state.jmeter_state = {
+            "jmx_path": "",
+            "jmx_valid": False,
+            "vusers": None,
+            "ramp_up": None,
+            "duration": None,
+            "iterations": None,
+            "jmeter_test_results": {},
+            "jmeter_jtl_path": "",
+            "jmeter_log_path": "",
+            "run_counts": {},
+            "use_rag": False,   # Whether to use RAG mode
+            "prompt_num": 1,    # Number of prompts to use from input JSON file
+            "run_timestamp": "",
+        }
+    
+    # Initialize the selected RAG file in session state if not already present
+    if "selected_rag_file" not in st.session_state:
+        st.session_state.selected_rag_file = None
+    
+    # Initialize the RAG mode in session state if not already present
+    if "rag_mode" not in st.session_state:
+        st.session_state.rag_mode = False  # Default RAG mode (False or True)
+    
+    # Initialize the selected JMeter JMX file in session state if not already present
+    if "selected_jmx_file" not in st.session_state:
+        st.session_state.selected_jmx_file = None
+    
+    # Initialize JMeter test state
+    if "jmeter_test_state" not in st.session_state:
+        st.session_state.jmeter_test_state = TestState.NOT_STARTED
+    
+    # Initialize JMeter thread data for background processing
+    if 'jmeter_thread_data' not in st.session_state:
+        st.session_state['jmeter_thread_data'] = {
+            'logs': [],
+            'status': None,
+            'results': None,
+            'jmeter_jtl_path': "",
+            'jmeter_log_path': "",
+            'analysis': None,
+            'stop_requested': False,
+        }
+
 def format_duration(duration):
+    """
+    Function to format a duration into a human-readable string
+    Example: timedelta(minutes=5, seconds=30) -> "5 minutes, 30 seconds"
+    Assume duration is a timedelta, start_time and end_time are datetime objects
+    """
     total_seconds = int(duration.total_seconds())
     minutes, seconds = divmod(total_seconds, 60)
     parts = []
@@ -19,16 +87,20 @@ def format_duration(duration):
     parts.append(f"{seconds} second{'s' if seconds != 1 else ''}")
     return ", ".join(parts)
 
-# Function to format a datetime object into a readable string
-# Example: datetime(2023, 10, 5, 14, 30) -> "October 5, 2023 14:30:00 UTC"
 def format_datetime(dt):
+    """
+    Function to format a datetime object into a readable string
+    Example: datetime(2023, 10, 5, 14, 30) -> "October 5, 2023 14:30:00 UTC"
+    """
     # Use '%-d' on Unix, '%#d' on Windows for day without leading zero
     day_format = "%#d" if os.name == "nt" else "%-d"
     return dt.strftime(f"%B {day_format}, %Y %H:%M:%S UTC")
 
-# Function to select a file from a given folder path
-# This function lists all files with a .jmx extension in the specified folder
 def file_selector(folder_path='.'):
+    """
+    Function to select a file from a given folder path
+    This function lists all files with a .jmx extension in the specified folder
+    """
     inject_jmeter_config_styles()  # Inject custom styles for JMeter configuration
 
     # Get list of JMX files
