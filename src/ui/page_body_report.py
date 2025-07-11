@@ -107,7 +107,22 @@ def render_report_viewer():
 
                 with tab2:
                     tab2.markdown('<h2 class="tab-subheader">Results Table</h2>', unsafe_allow_html=True)
-                    tab2.dataframe(results['agg_table'][['label', 'samples', 'errors', 'error_rate', 'avg', 'min', 'max', 'pct90']],use_container_width=True)
+                    #tab2.dataframe(results['agg_table'][['label', 'samples', 'errors', 'error_rate', 'avg', 'min', 'max', 'pct90']],use_container_width=True)
+                    # Display with column configuration for better formatting
+                    tab2.dataframe(
+                        results['agg_table'][['label', 'samples', 'errors', 'error_rate', 'avg', 'min', 'max', 'pct90']],
+                        use_container_width=True,
+                        column_config={
+                            "label": st.column_config.TextColumn("API Endpoint", width="large"),
+                            "samples": st.column_config.NumberColumn("Total Requests", format="%d"),
+                            "errors": st.column_config.NumberColumn("Failed Requests", format="%d"),
+                            "error_rate": st.column_config.NumberColumn("Error Rate (%)", format="%.2f%%"),
+                            "avg": st.column_config.NumberColumn("Avg Response Time (ms)", format="%.2f"),
+                            "min": st.column_config.NumberColumn("Min Response Time (ms)", format="%.2f"),
+                            "max": st.column_config.NumberColumn("Max Response Time (ms)", format="%.2f"),
+                            "pct90": st.column_config.NumberColumn("90th Percentile (ms)", format="%.2f")
+                        }
+                    )
 
                 with tab3:
                     tab3.markdown('<h2 class="tab-subheader">Results Chart</h2>', unsafe_allow_html=True)
