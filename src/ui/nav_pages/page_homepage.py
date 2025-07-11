@@ -8,26 +8,16 @@ import streamlit.components.v1 as components
 from pathlib import Path
 import os
 from src.utils.config import load_config  # Importing configuration loader
-
-# Initialize agent_logs FIRST before any other imports
-#if "agent_logs" not in st.session_state:
-#    st.session_state.agent_logs = []
-
 from src.ui.page_header import render_page_header  # Importing page header
 from src.ui.page_title import render_homepage_title  # Importing page body
-from src.ui.page_chatbot_area import render_chatbot_area  # Importing interactive area
-#from src.utils.agent_logs import add_agent_log
+from src.ui.page_body_homepage import render_chatbot_area  # Importing interactive area
 
 # --- Load Configuration -----------------------------------------------------
 # This module loads the configuration from config.yaml
-
 module_config = load_config()
 general_config = module_config.get("general", {})
 llm_config = module_config.get("llm", {})
 ui_config = module_config.get("user_interface", {})
-
-# Define the LLM model to use.
-model = llm_config.get("llm_model", "gpt-4o-mini")  # Default to gpt-4o-mini if not specified in config
 
 # --- Render UI ---------------------------------------------------------------
 
@@ -40,7 +30,7 @@ def render_ui():
     # Set the page configuration for Streamlit
     render_page_header()        # Render the page header
     render_homepage_title()     # Render the page body (title, subtitle, etc.)
-    render_chatbot_area(llm_model=model)  # Render the chatbot area
+    render_chatbot_area()  # Render the chatbot area
 
 # --- Main Function ---------------------------------------------------------
 

@@ -9,81 +9,17 @@ import pandas as pd
 
 # Import configuration loader
 from src.utils.config import load_config
-##from src.utils.agent_logs import add_agent_log
-from src.ui.ui_handlers import (
-    handle_start_jmeter_test,
-    handle_stop_jmeter_test,
-)
+from src.ui.page_utils import initialize_session_state
 from src.ui.page_styles import (
     inject_action_button_styles,
-    inject_agent_viewer_styles,
-    inject_report_viewer_styles,
-    inject_jmeter_config_styles,    # JMeter configuration styles
-    inject_jmeter_viewer_styles,     # JMeter viewer styles
-    inject_jmeter_button_styles
-)
-from src.ui.page_utils import (
-    format_duration, 
-    format_datetime,
-    file_selector
 )
 from src.utils.event_logs import (
-    add_jmeter_log,
     add_deepeval_log,
 )
 from src.utils.test_state import TestState
 
-config = load_config()  # Load the full configuration from config.yaml
-# --- Initialize Session State ------------------------------------------------
-
-# Initialize session state
-if "session_started" not in st.session_state:
-    st.session_state.session_started = False
-# Initialize the LLM mode in session state if not already present
-if "llm_mode" not in st.session_state:
-    st.session_state.llm_mode = "ollama"  # Default LLM model ("ollama" or "openai")
-# Initialize the agent logs in session state if not already present
-if "jmeter_logs" not in st.session_state:
-    st.session_state.jmeter_logs = []
-# initialize the JMeter state in session state if not already present
-if "jmeter_state" not in st.session_state:
-    # Mirror the same shape your pipeline expects
-    st.session_state.jmeter_state = {
-        "jmx_path": "",
-        "jmx_valid": False,
-        "vusers": None,
-        "ramp_up": None,
-        "duration": None,
-        "iterations": None,
-        "jmeter_test_results": {},
-        "jmeter_jtl_path": "",
-        "jmeter_log_path": "",
-        "run_counts": {},
-        "use_rag": False,   # Whether to use RAG mode
-        "prompt_num": 1,    # Number of prompts to use from input JSON file
-        "run_timestamp": "",
-    }
-# Initialize the selected RAG file in session state if not already present
-if "selected_rag_file" not in st.session_state:
-    st.session_state.selected_rag_file = None
-# Initialize the RAG mode in session state if not already present
-if "rag_mode" not in st.session_state:
-    st.session_state.rag_mode = False  # Default RAG mode (False or True)
-# Initialize the selected JMeter JMX file in session state if not already present
-if "selected_jmx_file" not in st.session_state:
-    st.session_state.selected_jmx_file = None
-if "jmeter_test_state" not in st.session_state:
-    st.session_state.jmeter_test_state = TestState.NOT_STARTED
-if 'jmeter_thread_data' not in st.session_state:
-    st.session_state['jmeter_thread_data'] = {
-        'logs': [],
-        'status': None,
-        'results': None,
-        'jmeter_jtl_path': "",
-        'jmeter_log_path': "",
-        'analysis': None,
-        'stop_requested': False,
-    }
+config = load_config()      # Load the full configuration from config.yaml
+initialize_session_state()  # Initialize session state for the application
 
 # --- Render UI ---------------------------------------------------------------
 

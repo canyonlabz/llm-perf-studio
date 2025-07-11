@@ -17,7 +17,7 @@ You are an AI assistant specialized in performance testing. Help the user with J
 
 # -- Page Chatbot Definitions -----------------------------------------------------------
 
-def render_chatbot_area(llm_model="gpt-4o-mini"):
+def render_chatbot_area():
     """
     Render the interactive chatbot area for performance testing assistance.
     """

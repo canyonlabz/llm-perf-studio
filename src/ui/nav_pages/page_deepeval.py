@@ -8,22 +8,14 @@ import streamlit.components.v1 as components
 from pathlib import Path
 import os
 from src.utils.config import load_config  # Importing configuration loader
-
-# Initialize agent_logs FIRST before any other imports
-#if "agent_logs" not in st.session_state:
-#    st.session_state.agent_logs = []
-
 from src.ui.page_header import render_page_header  # Importing page header
 from src.ui.page_title import render_deepeval_title  # Importing page body
-from src.ui.page_body import (
+from src.ui.page_body_deepeval import (
     render_page_buttons,  # Importing page buttons
 )
 
-#from src.utils.agent_logs import add_agent_log
-
 # --- Load Configuration -----------------------------------------------------
 # This module loads the configuration from config.yaml
-
 module_config = load_config()
 general_config = module_config.get("general", {})
 ui_config = module_config.get("user_interface", {})

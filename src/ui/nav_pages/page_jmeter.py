@@ -17,7 +17,6 @@ from src.ui.page_body_jmeter import (
 
 # --- Load Configuration -----------------------------------------------------
 # This module loads the configuration from config.yaml
-
 module_config = load_config()
 general_config = module_config.get("general", {})
 jmeter_config = module_config.get("jmeter", {})
