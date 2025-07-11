@@ -87,7 +87,7 @@ def render_report_viewer():
                     col1, col2, col3, col4 = st.columns(4, border=True)  # Define four columns with borders
                     col1.metric("Max Virtual Users", int(results['vusers_over_time'].max()))
                     col2.metric("Avg. Response Time (ms)", f"{results['avg_response_time']:.2f}")
-                    col3.metric("90th % Response Time (ms)", f"{results['pct90_over_time'].max():.2f}")
+                    col3.metric("90th % Response Time (ms)", f"{results['pct90_response_time']:.2f}")
                     col4.metric("Error Rate (%)", f"{results['error_rate']:.2f}")
 
                     # Section 3: Pass/Fail Summary

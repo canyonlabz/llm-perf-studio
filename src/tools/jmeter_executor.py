@@ -129,6 +129,9 @@ def analyze_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any])
     # Aggregate average response time
     avg_response_time = df['elapsed'].mean()
 
+    # Aggregate 90th percentile response time
+    pct90_response_time = np.percentile(df['elapsed'], 90)
+
     # Overlay data for 90th percentile and virtual users
     df_overlay = pd.DataFrame({
         'time': pct90_over_time.index,
@@ -144,6 +147,7 @@ def analyze_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any])
         "end_time": end_time_str,
         "duration": duration,
         "avg_response_time": avg_response_time,
+        "pct90_response_time": pct90_response_time,
         "error_rate": error_rate,
         "agg_table": agg,
         "pct90_over_time": pct90_over_time,
