@@ -63,15 +63,15 @@ def render_report_viewer():
                 # Create the report viewer section
                 st.markdown('<div class="report-viewer-title">📊 Performance Test Results</div>', unsafe_allow_html=True)
                 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-                    "📋 API Results Summary", 
-                    "📉 API Results Table",  
-                    "📈 API Results Chart", 
-                    "🛠️📋 LLM Results Summary", 
-                    "🛠️📉 LLM Results Table", 
-                    "🛠️📈 LLM Results Chart"])
+                    "📋 Results Summary", 
+                    "📉 Results Table",  
+                    "📈 Results Chart", 
+                    "🛠️📈 TTFT", 
+                    "🛠️📈 TPOT", 
+                    "🛠️📈 TPS"])
 
                 with tab1:
-                    tab1.markdown('<h2 class="tab-subheader">API Results Summary</h2>', unsafe_allow_html=True)
+                    tab1.markdown('<h2 class="tab-subheader">Results Summary</h2>', unsafe_allow_html=True)
                     # Display the summary of results into 3 sections: 1) Overview, 2) Key Metrics, 3) Pass/Fail Summary
                     # Section 1: Overview
                     st.markdown("### Overview")
@@ -112,7 +112,7 @@ def render_report_viewer():
                     st.altair_chart(pie_chart, use_container_width=False)
 
                 with tab2:
-                    tab2.markdown('<h2 class="tab-subheader">API Results Table</h2>', unsafe_allow_html=True)
+                    tab2.markdown('<h2 class="tab-subheader">Results Table</h2>', unsafe_allow_html=True)
                     #tab2.dataframe(results['agg_table'][['label', 'samples', 'errors', 'error_rate', 'avg', 'min', 'max', 'pct90']],use_container_width=True)
                     # Display with column configuration for better formatting
                     tab2.dataframe(
@@ -131,7 +131,7 @@ def render_report_viewer():
                     )
 
                 with tab3:
-                    tab3.markdown('<h2 class="tab-subheader">API Results Chart</h2>', unsafe_allow_html=True)
+                    tab3.markdown('<h2 class="tab-subheader">Results Chart</h2>', unsafe_allow_html=True)
                     # Create the base chart with time on the x-axis
                     base = alt.Chart(overlay_df).encode(
                         x=alt.X('time:T', axis=alt.Axis(
@@ -165,7 +165,7 @@ def render_report_viewer():
                     st.altair_chart(layered_chart, use_container_width=True)
 
                 with tab4:
-                    tab4.markdown('<h2 class="tab-subheader">LLM Results Summary</h2>', unsafe_allow_html=True)
+                    tab4.markdown('<h2 class="tab-subheader">Time To First Token (TTFT)</h2>', unsafe_allow_html=True)
                     # Display the summary of LLM results
                     if results.get('llm_results'):
                         llm_results = results['llm_results']
@@ -186,7 +186,7 @@ def render_report_viewer():
                         st.info("No LLM test results available.")
 
                 with tab5:
-                    tab5.markdown('<h2 class="tab-subheader">LLM Results Table</h2>', unsafe_allow_html=True)
+                    tab5.markdown('<h2 class="tab-subheader">Time Per Output Token (TPOT)</h2>', unsafe_allow_html=True)
                     # Display the LLM results table if available
                     if results.get('llm_results_table'):
                         st.dataframe(
@@ -204,7 +204,7 @@ def render_report_viewer():
                         st.info("No LLM test results available.")
 
                 with tab6:
-                    tab6.markdown('<h2 class="tab-subheader">LLM Results Chart</h2>', unsafe_allow_html=True)
+                    tab6.markdown('<h2 class="tab-subheader">Tokens Per Second (TPS)</h2>', unsafe_allow_html=True)
                     # Create a chart for LLM results if available
                     if results.get('llm_results_chart'):
                         llm_chart_data = results['llm_results_chart']

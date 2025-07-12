@@ -270,20 +270,29 @@ def inject_jmeter_viewer_styles():
     # Inject custom CSS for styling
     st.markdown("""
         <style>
+        *, html {scroll-behavior: smooth !important;}
         .jmeter-viewer-title {
             font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
         }
-        .jmeter-viewer-textarea {
+        .st-key-jmeter_viewer_text {
             border: 2px solid #ddd;
             border-radius: 6px;
             border-color: #4c4e52;  /* Dark grey border */
-            background: #f8f8f8;    /* Light grey background */
-            font-family: monospace;
-            padding: 10px;
             height: 100%;
         }
+        .stTextArea [data-baseweb=base-input] {
+            background-color: #e8f4f8 !important;   /* Light blue background */
+        }
+        .stTextArea textarea {
+			font-family: 'Courier New', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.4 !important;
+		}
+        .stTextArea textarea[disabled] {
+		    color: #000000 !important;
+		}
         .test-status {
             padding: 0.5rem;
             border-radius: 4px;
