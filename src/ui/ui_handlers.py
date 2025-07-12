@@ -6,6 +6,8 @@ import streamlit as st
 from datetime import datetime
 from threading import Thread
 
+from torch import res
+
 from src.utils.event_logs import (
     add_jmeter_log,
     thread_safe_add_log,
@@ -46,9 +48,14 @@ def __start_jmeter_thread(shared_data, state_snapshot):
             shared_data['results'] = result
             shared_data['jmeter_jtl_path'] = result['jmeter_jtl_path']
             shared_data['jmeter_log_path'] = result['jmeter_log_path']
+            shared_data['llm_kpis_path'] = result.get('llm_kpis_path', "")
+            shared_data['llm_responses_path'] = result.get('llm_responses_path', "")
+            shared_data['run_timestamp'] = result.get('run_timestamp', datetime.now().strftime("%Y%m%d_%H%M%S"))
             thread_safe_add_log(shared_data['logs'], f"📊🔥 Load test results saved to {result['jmeter_jtl_path']}", agent_name="JMeterAgent")
             thread_safe_add_log(shared_data['logs'], f"📊🔥 Load test log saved to {result['jmeter_log_path']}", agent_name="JMeterAgent")
-            
+            thread_safe_add_log(shared_data['logs'], f"📊🔥 LLM KPIs saved to {result['llm_kpis_path']}", agent_name="JMeterAgent")
+            thread_safe_add_log(shared_data['logs'], f"📊🔥 LLM Responses saved to {result['llm_responses_path']}", agent_name="JMeterAgent")
+
             # Analyze results in background thread# Only analyze if not stopped
             if not shared_data.get('stop_requested', False):
                 thread_safe_add_log(shared_data['logs'], "🔍 Analyzing load test results...", agent_name="JMeterAgent")

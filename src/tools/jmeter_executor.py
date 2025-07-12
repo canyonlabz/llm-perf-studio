@@ -71,7 +71,10 @@ def run_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> 
 
     return {
         "jmeter_jtl_path": jmeter_jtl,
-        "jmeter_log_path": jmeter_log
+        "jmeter_log_path": jmeter_log,
+        "llm_kpis_path": os.path.join(jmeter_results_path, f"{run_timestamp}_llm_kpis.csv"),
+        "llm_responses_path": os.path.join(jmeter_results_path, f"{run_timestamp}_llm_responses.json"),
+        "run_timestamp": run_timestamp,
     }
 
 def analyze_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
