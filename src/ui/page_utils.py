@@ -39,6 +39,8 @@ def initialize_session_state():
             "jmeter_test_results": {},
             "jmeter_jtl_path": "",
             "jmeter_log_path": "",
+            "llm_kpis_path": "",        # Path to LLM KPIs file
+            "llm_responses_path": "",   # Path to LLM responses file
             "run_counts": {},
             "use_rag": False,   # Whether to use RAG mode
             "prompt_num": 1,    # Number of prompts to use from input JSON file
@@ -69,6 +71,8 @@ def initialize_session_state():
             'results': None,
             'jmeter_jtl_path': "",
             'jmeter_log_path': "",
+            "llm_kpis_path": "",        # Path to LLM KPIs file
+            "llm_responses_path": "",   # Path to LLM responses file
             'analysis': None,
             'stop_requested': False,
         }

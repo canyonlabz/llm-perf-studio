@@ -113,7 +113,7 @@ def render_report_viewer():
                         results['agg_table'][['label', 'samples', 'errors', 'error_rate', 'avg', 'min', 'max', 'pct90']],
                         use_container_width=True,
                         column_config={
-                            "label": st.column_config.TextColumn("API Endpoint", width="large"),
+                            "label": st.column_config.TextColumn("API Endpoint", width="None"),
                             "samples": st.column_config.NumberColumn("Total Requests", format="%d"),
                             "errors": st.column_config.NumberColumn("Failed Requests", format="%d"),
                             "error_rate": st.column_config.NumberColumn("Error Rate (%)", format="%.2f%%"),
