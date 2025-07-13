@@ -522,10 +522,10 @@ def inject_agent_viewer_styles():
         </style>
     """, unsafe_allow_html=True)
 
-# --- Smoke Test Styles ---------------------------------------------------
+# --- Report Viewer Styles ---------------------------------------------------
 def inject_report_viewer_styles():
     """
-    Inject custom CSS styles for the Smoke Test section in the Streamlit app.
+    Inject custom CSS styles for the Report Viewer section in the Streamlit app.
     """
     st.markdown("""
         <style>
@@ -547,18 +547,33 @@ def inject_report_viewer_styles():
             font-weight: 700;
             margin-bottom: 0.5em;
         }
-        .stDataFrame thead tr th {      /* Header background navy, text white and bold */
-            background-color: #001f3f !important;   
-            color: #fff !important;
-            font-weight: bold !important;
+        /* Report table styles */
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
         }
-        .stDataFrame td, .stDataFrame th {
-            padding: 12px 8px !important;
+        .custom-table th {
+            background-color: #2d5c7f; /* Darker blue */
+            color: #ffffff;
+            font-weight: bold;
+            padding: 12px 8px;
+            text-align: left;
+            border: 1px solid #000000;
         }
-        .stDataFrame tbody td, .stDataFrame thead th {  /* Set all borders to black and add padding */
-            border: 1px solid #000 !important;
-            padding: 10px 8px !important;
+        .custom-table td {
+            padding: 10px 8px;
+            border: 1px solid #000000;
+            background-color: #ffffff;
         }
+        .custom-table tr:nth-child(even) td {
+            background-color: #f8f9fa;  /* Light gray */
+        }
+        .custom-table tr:hover td {
+            background-color: #e3f2fd;
+        }
+        /* Report overview section styles */
         .overview-row {
             font-size: 1.1rem;
             margin-bottom: 0.5em;

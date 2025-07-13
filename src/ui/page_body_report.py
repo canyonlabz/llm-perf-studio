@@ -113,22 +113,27 @@ def render_report_viewer():
 
                 with tab2:
                     tab2.markdown('<h2 class="tab-subheader">Results Table</h2>', unsafe_allow_html=True)
-                    #tab2.dataframe(results['agg_table'][['label', 'samples', 'errors', 'error_rate', 'avg', 'min', 'max', 'pct90']],use_container_width=True)
-                    # Display with column configuration for better formatting
-                    tab2.dataframe(
-                        results['agg_table'][['label', 'samples', 'errors', 'error_rate', 'avg', 'min', 'max', 'pct90']],
-                        use_container_width=True,
-                        column_config={
-                            "label": st.column_config.TextColumn("API Endpoint", width="None"),
-                            "samples": st.column_config.NumberColumn("Total Requests", format="%d"),
-                            "errors": st.column_config.NumberColumn("Failed Requests", format="%d"),
-                            "error_rate": st.column_config.NumberColumn("Error Rate (%)", format="%.2f%%"),
-                            "avg": st.column_config.NumberColumn("Avg Response Time (ms)", format="%.2f"),
-                            "min": st.column_config.NumberColumn("Min Response Time (ms)", format="%.2f"),
-                            "max": st.column_config.NumberColumn("Max Response Time (ms)", format="%.2f"),
-                            "pct90": st.column_config.NumberColumn("90th Percentile (ms)", format="%.2f")
-                        }
-                    )
+
+                    # Convert DataFrame to HTML with custom styling
+                    df_subset = results['agg_table'][['label', 'samples', 'errors', 'error_rate', 'avg', 'min', 'max', 'pct90']].copy()
+                    
+                    # Rename columns for display
+                    df_subset.columns = [
+                        'API Endpoint', 'Total Requests', 'Failed Requests', 'Error Rate (%)', 
+                        'Avg Response Time (ms)', 'Min Response Time (ms)', 
+                        'Max Response Time (ms)', '90th Percentile (ms)'
+                    ]
+
+                    # Format numeric columns
+                    df_subset['Error Rate (%)'] = df_subset['Error Rate (%)'].apply(lambda x: f"{x:.2f}%")
+                    df_subset['Avg Response Time (ms)'] = df_subset['Avg Response Time (ms)'].apply(lambda x: f"{x:.2f}")
+                    df_subset['Min Response Time (ms)'] = df_subset['Min Response Time (ms)'].apply(lambda x: f"{x:.2f}")
+                    df_subset['Max Response Time (ms)'] = df_subset['Max Response Time (ms)'].apply(lambda x: f"{x:.2f}")
+                    df_subset['90th Percentile (ms)'] = df_subset['90th Percentile (ms)'].apply(lambda x: f"{x:.2f}")
+                    
+                    # Convert to HTML with custom CSS
+                    html_table = df_subset.to_html(index=False, escape=False, classes='custom-table')
+                    st.markdown(html_table, unsafe_allow_html=True)
 
                 with tab3:
                     tab3.markdown('<h2 class="tab-subheader">Results Chart</h2>', unsafe_allow_html=True)
