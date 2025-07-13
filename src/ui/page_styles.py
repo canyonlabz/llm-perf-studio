@@ -48,7 +48,7 @@ def inject_page_header_styles():
         /* Base tab style */
         a[data-testid="stPageLink-NavLink"] {
             background: #f5f7fa !important;
-            border: 1px solid #b0b8c1 !important;
+            border: 1px solid #b0b8c1 !important;   /* light grey border */
             color: #333 !important;
             text-decoration: none !important;
             border-radius: 8px 8px 0 0 !important;
@@ -63,7 +63,7 @@ def inject_page_header_styles():
         a[data-testid="stPageLink-NavLink"][aria-current="page"] {
             background: #426cc4 !important; /* darker blue for current tab */
             color: #fff !important;
-            border: 1px solid #2b4fa1 !important;
+            border: 1px solid #2b4fa1 !important;   /* darker border for active tab */
             z-index: 3 !important;
             border-bottom-color: transparent !important;
             box-shadow: 0 -3px 5px rgba(0,0,0,0.1) !important;
@@ -547,6 +547,80 @@ def inject_report_viewer_styles():
             font-weight: 700;
             margin-bottom: 0.5em;
         }
+        /* Custom styles for tabs */
+        .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
+            font-size: 1.1rem !important;
+        }
+        /* Set equal width for all tabs and center content */
+        .stTabs [data-baseweb="tab-list"] button {
+            flex: 1 !important;                           /* Equal width distribution */
+            min-width: 125px !important;                  /* Minimum width for smaller screens */
+            max-width: 175px !important;                  /* Maximum width to prevent too wide tabs */
+            text-align: center !important;                /* Center text horizontally */
+            justify-content: center !important;           /* Center content */
+            display: flex !important;                     /* Flex display for centering */
+            align-items: center !important;               /* Center content vertically */
+            border-radius: 8px 8px 0 0 !important;        /* Rounded top corners */
+            margin-right: 1px !important;                 /* Small gap between tabs */
+            transition: background-color 0.3s ease, color 0.3s ease !important;
+            border: 1px solid #b0b8c1 !important;   /* light grey border */
+        }
+
+        /* Center the markdown container content */
+        .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] {
+            text-align: center !important;
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+
+        /* Center the paragraph text */
+        .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
+            text-align: center !important;
+            margin: 0 !important;                         /* Remove default margins */
+            padding: 0 !important;                        /* Remove default padding */
+        }                
+
+
+        /* Inactive tab styling */
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="false"] {
+            background-color: #f0f2f6 !important;        /* Light grey background */
+            color: #666666 !important;                    /* Medium grey text */
+            border-bottom: 2px solid transparent !important;
+        }
+
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="false"] [data-testid="stMarkdownContainer"] p {
+            color: #666666 !important;                    /* Medium grey text for content */
+        }
+
+        /* Active tab styling */
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+            background-color: #7e99b4 !important;        /* Darker blue grey background */
+            color: #ffffff !important;                    /* White text */
+            border-bottom: 2px solid #1565c0 !important; /* Darker blue bottom border */
+        }
+
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {
+            color: #ffffff !important;                    /* White text for content */
+            /* font-weight: bold !important;                  Bold text for active tab */
+        }
+
+        /* Hover effects for inactive tabs */
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="false"]:hover {
+            background-color: #e3f2fd !important;        /* Light blue on hover */
+            color: #1976d2 !important;                    /* Blue text on hover */
+        }
+
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="false"]:hover [data-testid="stMarkdownContainer"] p {
+            color: #1976d2 !important;                    /* Blue text for content on hover */
+        }
+
+        /* Optional: Add transition effects for smooth color changes */
+        .stTabs [data-baseweb="tab-list"] button {
+            transition: background-color 0.3s ease, color 0.3s ease !important;
+        }
+
         /* Report table styles */
         .custom-table {
             width: 100%;
