@@ -58,157 +58,155 @@ def render_report_viewer():
             start_time_str = format_datetime(start_time)
             end_time_str = format_datetime(end_time)
 
-            with st.expander("Expand to see JMeter test results", expanded=False):
+            # Create the report viewer section
+            st.markdown('<div class="report-viewer-title">📊 Performance Test Results</div>', unsafe_allow_html=True)
+            tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+                "📋 Results Summary", 
+                "📉 Results Table",  
+                "📈 Results Chart", 
+                "🛠️📈 TTFT", 
+                "🛠️📈 TPOT", 
+                "🛠️📈 TPS"])
 
-                # Create the report viewer section
-                st.markdown('<div class="report-viewer-title">📊 Performance Test Results</div>', unsafe_allow_html=True)
-                tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-                    "📋 Results Summary", 
-                    "📉 Results Table",  
-                    "📈 Results Chart", 
-                    "🛠️📈 TTFT", 
-                    "🛠️📈 TPOT", 
-                    "🛠️📈 TPS"])
+            with tab1:
+                tab1.markdown('<h2 class="tab-subheader">Results Summary</h2>', unsafe_allow_html=True)
+                # Display the summary of results into 3 sections: 1) Overview, 2) Key Metrics, 3) Pass/Fail Summary
+                # Section 1: Overview
+                st.markdown("### Overview")
+                st.markdown(
+                    f'<div class="overview-row"><span class="overview-label">Duration:</span> <span class="overview-value">{duration_str}</span></div>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown(
+                    f'<div class="overview-row"><span class="overview-label">Start Time:</span> <span class="overview-value">{start_time_str}</span></div>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown(
+                    f'<div class="overview-row"><span class="overview-label">End Time:</span> <span class="overview-value">{end_time_str}</span></div>',
+                    unsafe_allow_html=True,
+                )
 
-                with tab1:
-                    tab1.markdown('<h2 class="tab-subheader">Results Summary</h2>', unsafe_allow_html=True)
-                    # Display the summary of results into 3 sections: 1) Overview, 2) Key Metrics, 3) Pass/Fail Summary
-                    # Section 1: Overview
+                # Section 2: Key Metrics
+                st.markdown("### Key Metrics")
+                col1, col2, col3, col4 = st.columns(4, border=True)  # Define four columns with borders
+                col1.metric("Max Virtual Users", int(results['vusers_over_time'].max()))
+                col2.metric("Avg. Response Time (ms)", f"{results['avg_response_time']:.2f}")
+                col3.metric("90th % Response Time (ms)", f"{results['pct90_response_time']:.2f}")
+                col4.metric("Error Rate (%)", f"{results['error_rate']:.2f}")
+
+                # Section 3: Pass/Fail Summary
+                st.markdown("### Pass/Fail Summary")
+                pie_data = pd.DataFrame({
+                    'Result': ['Pass', 'Fail'],
+                    'Percentage': [results['pass_pct'], results['fail_pct']]
+                })
+
+                pie_chart = alt.Chart(pie_data).mark_arc(innerRadius=40).encode(
+                    theta=alt.Theta(field="Percentage", type="quantitative"),
+                    color=alt.Color(field="Result", type="nominal",
+                                    scale=alt.Scale(domain=['Pass', 'Fail'], range=['#2ecc40', '#ff4136'])),
+                    tooltip=['Result', 'Percentage']
+                ).properties(width=250, height=250)
+                st.altair_chart(pie_chart, use_container_width=False)
+
+            with tab2:
+                tab2.markdown('<h2 class="tab-subheader">Results Table</h2>', unsafe_allow_html=True)
+
+                # Convert DataFrame to HTML with custom styling
+                df_subset = results['agg_table'][['label', 'samples', 'errors', 'error_rate', 'avg', 'min', 'max', 'pct90']].copy()
+                
+                # Rename columns for display
+                df_subset.columns = [
+                    'API Endpoint', 'Total Requests', 'Failed Requests', 'Error Rate (%)', 
+                    'Avg Response Time (ms)', 'Min Response Time (ms)', 
+                    'Max Response Time (ms)', '90th Percentile (ms)'
+                ]
+
+                # Format numeric columns
+                df_subset['Error Rate (%)'] = df_subset['Error Rate (%)'].apply(lambda x: f"{x:.2f}%")
+                df_subset['Avg Response Time (ms)'] = df_subset['Avg Response Time (ms)'].apply(lambda x: f"{x:.2f}")
+                df_subset['Min Response Time (ms)'] = df_subset['Min Response Time (ms)'].apply(lambda x: f"{x:.2f}")
+                df_subset['Max Response Time (ms)'] = df_subset['Max Response Time (ms)'].apply(lambda x: f"{x:.2f}")
+                df_subset['90th Percentile (ms)'] = df_subset['90th Percentile (ms)'].apply(lambda x: f"{x:.2f}")
+                
+                # Convert to HTML with custom CSS
+                html_table = df_subset.to_html(index=False, escape=False, classes='custom-table')
+                st.markdown(html_table, unsafe_allow_html=True)
+
+            with tab3:
+                tab3.markdown('<h2 class="tab-subheader">Results Chart</h2>', unsafe_allow_html=True)
+                # Create the base chart with time on the x-axis
+                base = alt.Chart(overlay_df).encode(
+                    x=alt.X('time:T', axis=alt.Axis(
+                        title='Elapsed Time (hh:mm:ss) UTC', titleColor='black', titleFontWeight='bold',
+                        grid=True, gridColor='gray', 
+                        ticks=True, labelColor='black', labelAngle=45,  # Horizontal labels
+                        format='%H:%M:%S'  # <-- This sets military time format
+                    ))
+                )
+
+                # 90th percentile response time line (left Y axis) with points
+                line1 = base.mark_line(color='#5276A7', point=True).encode(
+                    y=alt.Y('pct90_response:Q', axis=alt.Axis(
+                        title='90th Percentile Response Time (ms)', titleColor='#5276A7', titleFontWeight='bold',
+                        grid=True, gridColor='gray',
+                        ticks=True, labelColor='#5276A7'
+                    ))
+                )
+
+                # Virtual users line (right Y axis) with points
+                line2 = base.mark_line(color='#F18727', point=True).encode(
+                    y=alt.Y('vusers:Q', axis=alt.Axis(
+                        title='Virtual Users', titleColor='#F18727', titleFontWeight='bold',
+                        grid=False, ticks=True, labelColor='#F18727'
+                    ))
+                )
+
+                # Layer the two lines with independent Y axes
+                layered_chart = alt.layer(line1, line2).resolve_scale(y='independent')
+
+                st.altair_chart(layered_chart, use_container_width=True)
+
+            with tab4:
+                tab4.markdown('<h2 class="tab-subheader">Time To First Token (TTFT)</h2>', unsafe_allow_html=True)
+                # Display the summary of LLM results
+                if results.get('llm_results'):
+                    llm_results = results['llm_results']
                     st.markdown("### Overview")
                     st.markdown(
-                        f'<div class="overview-row"><span class="overview-label">Duration:</span> <span class="overview-value">{duration_str}</span></div>',
+                        f'<div class="overview-row"><span class="overview-label">Total LLM Requests:</span> <span class="overview-value">{llm_results["total_requests"]}</span></div>',
                         unsafe_allow_html=True,
                     )
                     st.markdown(
-                        f'<div class="overview-row"><span class="overview-label">Start Time:</span> <span class="overview-value">{start_time_str}</span></div>',
+                        f'<div class="overview-row"><span class="overview-label">Avg. Response Time (ms):</span> <span class="overview-value">{llm_results["avg_response_time"]:.2f}</span></div>',
                         unsafe_allow_html=True,
                     )
                     st.markdown(
-                        f'<div class="overview-row"><span class="overview-label">End Time:</span> <span class="overview-value">{end_time_str}</span></div>',
+                        f'<div class="overview-row"><span class="overview-label">Error Rate (%):</span> <span class="overview-value">{llm_results["error_rate"]:.2f}</span></div>',
                         unsafe_allow_html=True,
                     )
+                else:
+                    st.info("No LLM test results available.")
 
-                    # Section 2: Key Metrics
-                    st.markdown("### Key Metrics")
-                    col1, col2, col3, col4 = st.columns(4, border=True)  # Define four columns with borders
-                    col1.metric("Max Virtual Users", int(results['vusers_over_time'].max()))
-                    col2.metric("Avg. Response Time (ms)", f"{results['avg_response_time']:.2f}")
-                    col3.metric("90th % Response Time (ms)", f"{results['pct90_response_time']:.2f}")
-                    col4.metric("Error Rate (%)", f"{results['error_rate']:.2f}")
-
-                    # Section 3: Pass/Fail Summary
-                    st.markdown("### Pass/Fail Summary")
-                    pie_data = pd.DataFrame({
-                        'Result': ['Pass', 'Fail'],
-                        'Percentage': [results['pass_pct'], results['fail_pct']]
-                    })
-
-                    pie_chart = alt.Chart(pie_data).mark_arc(innerRadius=40).encode(
-                        theta=alt.Theta(field="Percentage", type="quantitative"),
-                        color=alt.Color(field="Result", type="nominal",
-                                        scale=alt.Scale(domain=['Pass', 'Fail'], range=['#2ecc40', '#ff4136'])),
-                        tooltip=['Result', 'Percentage']
-                    ).properties(width=250, height=250)
-                    st.altair_chart(pie_chart, use_container_width=False)
-
-                with tab2:
-                    tab2.markdown('<h2 class="tab-subheader">Results Table</h2>', unsafe_allow_html=True)
-
-                    # Convert DataFrame to HTML with custom styling
-                    df_subset = results['agg_table'][['label', 'samples', 'errors', 'error_rate', 'avg', 'min', 'max', 'pct90']].copy()
-                    
-                    # Rename columns for display
-                    df_subset.columns = [
-                        'API Endpoint', 'Total Requests', 'Failed Requests', 'Error Rate (%)', 
-                        'Avg Response Time (ms)', 'Min Response Time (ms)', 
-                        'Max Response Time (ms)', '90th Percentile (ms)'
-                    ]
-
-                    # Format numeric columns
-                    df_subset['Error Rate (%)'] = df_subset['Error Rate (%)'].apply(lambda x: f"{x:.2f}%")
-                    df_subset['Avg Response Time (ms)'] = df_subset['Avg Response Time (ms)'].apply(lambda x: f"{x:.2f}")
-                    df_subset['Min Response Time (ms)'] = df_subset['Min Response Time (ms)'].apply(lambda x: f"{x:.2f}")
-                    df_subset['Max Response Time (ms)'] = df_subset['Max Response Time (ms)'].apply(lambda x: f"{x:.2f}")
-                    df_subset['90th Percentile (ms)'] = df_subset['90th Percentile (ms)'].apply(lambda x: f"{x:.2f}")
-                    
-                    # Convert to HTML with custom CSS
-                    html_table = df_subset.to_html(index=False, escape=False, classes='custom-table')
-                    st.markdown(html_table, unsafe_allow_html=True)
-
-                with tab3:
-                    tab3.markdown('<h2 class="tab-subheader">Results Chart</h2>', unsafe_allow_html=True)
-                    # Create the base chart with time on the x-axis
-                    base = alt.Chart(overlay_df).encode(
-                        x=alt.X('time:T', axis=alt.Axis(
-                            title='Elapsed Time (hh:mm:ss) UTC', titleColor='black', titleFontWeight='bold',
-                            grid=True, gridColor='gray', 
-                            ticks=True, labelColor='black', labelAngle=45,  # Horizontal labels
-                            format='%H:%M:%S'  # <-- This sets military time format
-                        ))
+            with tab5:
+                tab5.markdown('<h2 class="tab-subheader">Time Per Output Token (TPOT)</h2>', unsafe_allow_html=True)
+                # Display the LLM results table if available
+                if results.get('llm_results_table'):
+                    st.dataframe(
+                        results['llm_results_table'],
+                        use_container_width=True,
+                        column_config={
+                            "endpoint": st.column_config.TextColumn("LLM Endpoint", width="None"),
+                            "requests": st.column_config.NumberColumn("Total Requests", format="%d"),
+                            "errors": st.column_config.NumberColumn("Failed Requests", format="%d"),
+                            "error_rate": st.column_config.NumberColumn("Error Rate (%)", format="%.2f%%"),
+                            "avg_response_time": st.column_config.NumberColumn("Avg Response Time (ms)", format="%.2f")
+                        }
                     )
+                else:
+                    st.info("No LLM test results available.")
 
-                    # 90th percentile response time line (left Y axis) with points
-                    line1 = base.mark_line(color='#5276A7', point=True).encode(
-                        y=alt.Y('pct90_response:Q', axis=alt.Axis(
-                            title='90th Percentile Response Time (ms)', titleColor='#5276A7', titleFontWeight='bold',
-                            grid=True, gridColor='gray',
-                            ticks=True, labelColor='#5276A7'
-                        ))
-                    )
-
-                    # Virtual users line (right Y axis) with points
-                    line2 = base.mark_line(color='#F18727', point=True).encode(
-                        y=alt.Y('vusers:Q', axis=alt.Axis(
-                            title='Virtual Users', titleColor='#F18727', titleFontWeight='bold',
-                            grid=False, ticks=True, labelColor='#F18727'
-                        ))
-                    )
-
-                    # Layer the two lines with independent Y axes
-                    layered_chart = alt.layer(line1, line2).resolve_scale(y='independent')
-
-                    st.altair_chart(layered_chart, use_container_width=True)
-
-                with tab4:
-                    tab4.markdown('<h2 class="tab-subheader">Time To First Token (TTFT)</h2>', unsafe_allow_html=True)
-                    # Display the summary of LLM results
-                    if results.get('llm_results'):
-                        llm_results = results['llm_results']
-                        st.markdown("### Overview")
-                        st.markdown(
-                            f'<div class="overview-row"><span class="overview-label">Total LLM Requests:</span> <span class="overview-value">{llm_results["total_requests"]}</span></div>',
-                            unsafe_allow_html=True,
-                        )
-                        st.markdown(
-                            f'<div class="overview-row"><span class="overview-label">Avg. Response Time (ms):</span> <span class="overview-value">{llm_results["avg_response_time"]:.2f}</span></div>',
-                            unsafe_allow_html=True,
-                        )
-                        st.markdown(
-                            f'<div class="overview-row"><span class="overview-label">Error Rate (%):</span> <span class="overview-value">{llm_results["error_rate"]:.2f}</span></div>',
-                            unsafe_allow_html=True,
-                        )
-                    else:
-                        st.info("No LLM test results available.")
-
-                with tab5:
-                    tab5.markdown('<h2 class="tab-subheader">Time Per Output Token (TPOT)</h2>', unsafe_allow_html=True)
-                    # Display the LLM results table if available
-                    if results.get('llm_results_table'):
-                        st.dataframe(
-                            results['llm_results_table'],
-                            use_container_width=True,
-                            column_config={
-                                "endpoint": st.column_config.TextColumn("LLM Endpoint", width="None"),
-                                "requests": st.column_config.NumberColumn("Total Requests", format="%d"),
-                                "errors": st.column_config.NumberColumn("Failed Requests", format="%d"),
-                                "error_rate": st.column_config.NumberColumn("Error Rate (%)", format="%.2f%%"),
-                                "avg_response_time": st.column_config.NumberColumn("Avg Response Time (ms)", format="%.2f")
-                            }
-                        )
-                    else:
-                        st.info("No LLM test results available.")
-
-                with tab6:
+            with tab6:
                     tab6.markdown('<h2 class="tab-subheader">Tokens Per Second (TPS)</h2>', unsafe_allow_html=True)
                     # Create a chart for LLM results if available
                     if results.get('llm_results_chart'):
