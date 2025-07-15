@@ -13,7 +13,7 @@ from src.utils.event_logs import add_jmeter_log, thread_safe_add_log
 # Load configurations
 config = load_config()
 
-#--- JMeter Test Node ---
+#--- JMeter Test Nodes ---
 # This node runs a load test on the selected JMX file.
 def run_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -119,10 +119,25 @@ def analyze_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any])
     ).reset_index()
     agg['error_rate'] = (agg['errors'] / agg['samples']) * 100
 
+    # Calculate test duration in minutes and determine dynamic interval
+    test_duration_minutes = duration.total_seconds() / 60
+    dynamic_interval = calculate_dynamic_interval(test_duration_minutes)
+    
+    # Log the interval being used for transparency
+    thread_safe_add_log(shared_data['logs'], f"📊 Using {dynamic_interval} sampling interval for {test_duration_minutes:.1f} minute test", agent_name="JMeterAgent")
+
     # Prepare data for 90th percentile line chart (aggregate over time)
-    time_group = df.set_index('timeStamp').resample('10s')  # 10s buckets
+    time_group = df.set_index('timeStamp').resample(dynamic_interval)  # Resample based on dynamic interval
+
+    # Calculate 90th percentile over time with forward fill for continuity
     pct90_over_time = time_group['elapsed'].apply(lambda x: np.percentile(x, 90) if len(x) else np.nan)
-    vusers_over_time = time_group['threadName'].nunique()
+    pct90_over_time = pct90_over_time.ffill()  # Forward fill missing values
+
+    # Calculate virtual users over time with forward fill for alignment
+    # Use grpThreads (group threads) or allThreads (all threads) for accurate concurrency
+    # grpThreads represents the active threads in the thread group at request time
+    vusers_over_time = time_group['grpThreads'].min()  # Use min to get concurrency per interval
+    vusers_over_time = vusers_over_time.ffill()  # Forward fill missing values
 
     # Human-readable times
     start_time_str = start_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -139,8 +154,11 @@ def analyze_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any])
     df_overlay = pd.DataFrame({
         'time': pct90_over_time.index,
         'pct90_response': pct90_over_time.values,
-        'vusers': vusers_over_time.values
+        'vusers': vusers_over_time.reindex(pct90_over_time.index, method='ffill').values
     })
+
+    # Remove any remaining NaN values that might cause chart issues
+    df_overlay = df_overlay.dropna()
 
     summary = {
         "status": "success" if failed == 0 else "fail",
@@ -156,6 +174,8 @@ def analyze_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any])
         "pct90_over_time": pct90_over_time,
         "vusers_over_time": vusers_over_time,
         "overlay_df": df_overlay,
+        "sampling_interval": dynamic_interval,
+        "test_duration_minutes": test_duration_minutes
     }
     thread_safe_add_log(shared_data['logs'], f"✅ Load test analysis complete: {summary['status']} ({passed}/{total_samples} passed)", agent_name="JMeterAgent")
     return summary
@@ -182,3 +202,19 @@ def stop_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) ->
     # This could involve sending a shutdown command or killing the process.
     thread_safe_add_log(shared_data['logs'], "🛑 Stopping JMeter test!", agent_name="JMeterAgent")
     return {}
+
+#--- Utility Functions ---
+def calculate_dynamic_interval(test_duration_minutes):
+    """
+    Calculate appropriate sampling interval based on test duration
+    Target: 50-100 data points for optimal visualization
+    """
+    if test_duration_minutes <= 5:
+        return '5s'    # 5-second intervals for short tests
+    elif test_duration_minutes <= 15:
+        return '10s'   # 10-second intervals for medium tests
+    elif test_duration_minutes <= 30:
+        return '30s'   # 30-second intervals for longer tests
+    else:
+        return '1min'  # 1-minute intervals for tests up to 1 hour
+

@@ -35,5 +35,5 @@ jmeter:
   jmeter_path: "C:\\Users\\Jason\\Repos\\_GitHub\\llm-perf-testing\\jmeter"  # Path for JMeter JMX files
   jmeter_results_path: "C:\\Users\\Jason\\Repos\\_GitHub\\llm-perf-testing\\jmeter\\test_results"  # Path for JMeter results files
   use_rag: False  # Whether to use RAG mode in JMeter tests (can be configured in UI)
-  prompt_num: 3   # Number of prompts to use from input JSON file in JMeter tests
+  prompt_num: 5   # Number of prompts to use from input JSON file in JMeter tests
 
