@@ -17,6 +17,7 @@ from src.tools.jmeter_executor import (
     run_jmeter_test_node,
     analyze_jmeter_test_node,
     stop_jmeter_test_node,
+    analyze_llm_metrics_node
 )
 from src.utils.test_state import TestState
 # Import configuration loader
@@ -58,14 +59,30 @@ def __start_jmeter_thread(shared_data, state_snapshot):
 
             # Analyze results in background thread. Only analyze if not stopped
             if not shared_data.get('stop_requested', False):
-                thread_safe_add_log(shared_data['logs'], "🔍 Analyzing load test results...", agent_name="JMeterAgent")
-                analysis_result = analyze_jmeter_test_node(shared_data, state_snapshot)
-                if not analysis_result:
-                    thread_safe_add_log(shared_data['logs'], "⚠️ No analysis results found. Check JTL file.", agent_name="AgentError")
+                # --- JMeter Analysis ---
+                thread_safe_add_log(shared_data['logs'], "🔍 Analyzing JMeter load test results...", agent_name="JMeterAgent")
+                jmeter_analysis_result = analyze_jmeter_test_node(shared_data, state_snapshot)
+                if not jmeter_analysis_result:
+                    thread_safe_add_log(shared_data['logs'], "⚠️ No JMeter analysis results found. Check JTL file.", agent_name="AgentError")
                     shared_data['status'] = TestState.FAILED
+                    return
+
+                thread_safe_add_log(shared_data['logs'], "✅ JMeter load test analysis completed successfully.", agent_name="JMeterAgent")
+
+                # --- LLM Metrics Analysis ---
+                thread_safe_add_log(shared_data['logs'], "🔍 Analyzing LLM token metrics...", agent_name="JMeterAgent")
+                llm_analysis_result = analyze_llm_metrics_node(shared_data, state_snapshot)
+
+                if not llm_analysis_result:
+                    thread_safe_add_log(shared_data['logs'], "⚠️ No LLM metrics found. Test will continue with JMeter results only.", agent_name="JMeterAgent")
+                    # Don't fail the test - LLM metrics are optional
+                    shared_data['analysis'] = jmeter_analysis_result
                 else:
-                    thread_safe_add_log(shared_data['logs'], "✅ Load test analysis completed successfully.", agent_name="JMeterAgent")
-                    shared_data['analysis'] = analysis_result
+                    thread_safe_add_log(shared_data['logs'], "✅ LLM metrics analysis completed successfully.", agent_name="JMeterAgent")
+                    # Combine both analysis results
+                    combined_analysis = {**jmeter_analysis_result, **llm_analysis_result}
+                    shared_data['analysis'] = combined_analysis
+
             else:
                 thread_safe_add_log(shared_data['logs'], "🔍 Skipping analysis - test was stopped.", agent_name="JMeterAgent")
 
