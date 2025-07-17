@@ -22,7 +22,7 @@ def initialize_session_state():
     if "llm_mode" not in st.session_state:
         st.session_state.llm_mode = "ollama"  # Default LLM model ("ollama" or "openai")
     
-    # Initialize the agent logs in session state if not already present
+    # Initialize the JMeter logs in session state if not already present
     if "jmeter_logs" not in st.session_state:
         st.session_state.jmeter_logs = []
     
@@ -76,6 +76,10 @@ def initialize_session_state():
             'analysis': None,
             'stop_requested': False,
         }
+
+    # Initialize the DeepEval logs in session state if not already present
+    if "deepeval_logs" not in st.session_state:
+        st.session_state.deepeval_logs = []
 
 def format_duration(duration):
     """

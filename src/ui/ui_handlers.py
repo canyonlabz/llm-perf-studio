@@ -56,7 +56,7 @@ def __start_jmeter_thread(shared_data, state_snapshot):
             thread_safe_add_log(shared_data['logs'], f"📊🔥 LLM KPIs saved to {result['llm_kpis_path']}", agent_name="JMeterAgent")
             thread_safe_add_log(shared_data['logs'], f"📊🔥 LLM Responses saved to {result['llm_responses_path']}", agent_name="JMeterAgent")
 
-            # Analyze results in background thread# Only analyze if not stopped
+            # Analyze results in background thread. Only analyze if not stopped
             if not shared_data.get('stop_requested', False):
                 thread_safe_add_log(shared_data['logs'], "🔍 Analyzing load test results...", agent_name="JMeterAgent")
                 analysis_result = analyze_jmeter_test_node(shared_data, state_snapshot)

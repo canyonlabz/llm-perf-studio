@@ -203,6 +203,83 @@ def stop_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) ->
     thread_safe_add_log(shared_data['logs'], "🛑 Stopping JMeter test!", agent_name="JMeterAgent")
     return {}
 
+#--- LLM Metrics Nodes ---
+def analyze_llm_metrics_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Analyze LLM metrics from the CSV file.
+    Returns summary of the LLM test results.
+    """
+    llm_kpi_path = shared_data.get('llm_kpis_path', None)
+    llm_kpi_data = None
+    if not llm_kpi_path or not os.path.exists(llm_kpi_path):
+        thread_safe_add_log(shared_data['logs'], "❌ No valid LLM KPI file found. Please run load test first.", agent_name="AgentError")
+        return {}
+
+    # Load LLM KPI data
+    llm_kpi_df = pd.read_csv(llm_kpi_path)
+    if llm_kpi_df.empty:
+        thread_safe_add_log(shared_data['logs'], "❌ LLM KPI file is empty.", agent_name="AgentError")
+        return {}
+
+    # Convert timestamps
+    llm_kpi_df['timeStamp'] = pd.to_datetime(llm_kpi_df['timeStamp'], unit='ms')
+    start_time = llm_kpi_df['timeStamp'].min()
+    end_time = llm_kpi_df['timeStamp'].max()
+    duration = end_time - start_time
+
+    # Calculate test duration in minutes and determine dynamic interval
+    test_duration_minutes = duration.total_seconds() / 60
+    dynamic_interval = calculate_dynamic_interval(test_duration_minutes)
+
+    # Apply same dynamic interval processing
+    llm_time_group = llm_kpi_df.set_index('timeStamp').resample(dynamic_interval)
+    
+    # Process each token metric with forward fill
+    ttft_over_time = llm_time_group['TTFT'].mean().ffill()
+    tpot_over_time = llm_time_group['TPOT'].mean().ffill()
+    tps_over_time = llm_time_group['TPS'].mean().ffill()
+    
+    # Virtual users from LLM data (should match JTL data)
+    llm_vusers_over_time = llm_time_group['allThreads'].min().ffill()
+    
+    # Create overlay dataframes for each metric
+    ttft_overlay_df = pd.DataFrame({
+        'time': ttft_over_time.index,
+        'ttft': ttft_over_time.values,
+        'vusers': llm_vusers_over_time.reindex(ttft_over_time.index, method='ffill').values
+    }).dropna()
+    
+    tpot_overlay_df = pd.DataFrame({
+        'time': tpot_over_time.index,
+        'tpot': tpot_over_time.values,
+        'vusers': llm_vusers_over_time.reindex(tpot_over_time.index, method='ffill').values
+    }).dropna()
+    
+    tps_overlay_df = pd.DataFrame({
+        'time': tps_over_time.index,
+        'tps': tps_over_time.values,
+        'vusers': llm_vusers_over_time.reindex(tps_over_time.index, method='ffill').values
+    }).dropna()
+    
+    llm_kpi_data = {
+        'ttft_overlay_df': ttft_overlay_df,
+        'tpot_overlay_df': tpot_overlay_df,
+        'tps_overlay_df': tps_overlay_df,
+        'ttft_over_time': ttft_over_time,
+        'tpot_over_time': tpot_over_time,
+        'tps_over_time': tps_over_time
+    }
+    thread_safe_add_log(shared_data['logs'], f"✅ LLM KPI data loaded: {len(llm_kpi_df)} token metrics", agent_name="JMeterAgent")
+
+    # Add LLM KPI data to summary
+    summary = {
+        "llm_kpi_data": llm_kpi_data,
+        "has_llm_data": llm_kpi_data is not None
+    }
+    
+    thread_safe_add_log(shared_data['logs'], "✅ LLM metrics analysis completed successfully.", agent_name="JMeterAgent")
+    return summary
+
 #--- Utility Functions ---
 def calculate_dynamic_interval(test_duration_minutes):
     """
