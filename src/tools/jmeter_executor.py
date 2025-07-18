@@ -227,9 +227,38 @@ def analyze_llm_metrics_node(shared_data: Dict[str, Any], state: Dict[str, Any])
     end_time = llm_kpi_df['timeStamp'].max()
     duration = end_time - start_time
 
+    # Calculate LLM Performance Summary
+    total_requests = len(llm_kpi_df)
+    duration_seconds = duration.total_seconds()
+    requests_per_second = total_requests / duration_seconds if duration_seconds > 0 else 0
+
+    # Calculate LLM Aggregate Information 
+    def pct90(x): return np.percentile(x, 90)
+    
+    # TTFT Aggregates
+    ttft_avg = llm_kpi_df['TTFT'].mean()
+    ttft_min = llm_kpi_df['TTFT'].min()
+    ttft_max = llm_kpi_df['TTFT'].max()
+    ttft_90th = pct90(llm_kpi_df['TTFT'])
+    
+    # TPOT Aggregates
+    tpot_avg = llm_kpi_df['TPOT'].mean()
+    tpot_min = llm_kpi_df['TPOT'].min()
+    tpot_max = llm_kpi_df['TPOT'].max()
+    tpot_90th = pct90(llm_kpi_df['TPOT'])
+    
+    # TPS Aggregates
+    tps_avg = llm_kpi_df['TPS'].mean()
+    tps_min = llm_kpi_df['TPS'].min()
+    tps_max = llm_kpi_df['TPS'].max()
+    tps_90th = pct90(llm_kpi_df['TPS'])
+
     # Calculate test duration in minutes and determine dynamic interval
     test_duration_minutes = duration.total_seconds() / 60
     dynamic_interval = calculate_dynamic_interval(test_duration_minutes)
+
+    # Log the interval being used for transparency
+    thread_safe_add_log(shared_data['logs'], f"📊 Using {dynamic_interval} sampling interval for LLM metrics ({test_duration_minutes:.1f} minute test)", agent_name="JMeterAgent")
 
     # Apply same dynamic interval processing
     llm_time_group = llm_kpi_df.set_index('timeStamp').resample(dynamic_interval)
@@ -274,7 +303,32 @@ def analyze_llm_metrics_node(shared_data: Dict[str, Any], state: Dict[str, Any])
     # Add LLM KPI data to summary
     summary = {
         "llm_kpi_data": llm_kpi_data,
-        "has_llm_data": llm_kpi_data is not None
+        "has_llm_data": llm_kpi_data is not None,
+
+        # LLM Performance Summary
+        "llm_total_requests": total_requests,
+        "llm_requests_per_second": requests_per_second,
+        
+        # LLM Aggregate Information
+        "llm_ttft_avg": ttft_avg,
+        "llm_ttft_min": ttft_min,
+        "llm_ttft_max": ttft_max,
+        "llm_ttft_90th": ttft_90th,
+        
+        "llm_tpot_avg": tpot_avg,
+        "llm_tpot_min": tpot_min,
+        "llm_tpot_max": tpot_max,
+        "llm_tpot_90th": tpot_90th,
+        
+        "llm_tps_avg": tps_avg,
+        "llm_tps_min": tps_min,
+        "llm_tps_max": tps_max,
+        "llm_tps_90th": tps_90th,
+        
+        # Additional metadata
+        "llm_test_duration": duration,
+        "llm_start_time": start_time.strftime('%Y-%m-%d %H:%M:%S'),
+        "llm_end_time": end_time.strftime('%Y-%m-%d %H:%M:%S')
     }
     
     thread_safe_add_log(shared_data['logs'], "✅ LLM metrics analysis completed successfully.", agent_name="JMeterAgent")

@@ -73,6 +73,7 @@ def initialize_session_state():
             'jmeter_log_path': "",
             "llm_kpis_path": "",        # Path to LLM KPIs file
             "llm_responses_path": "",   # Path to LLM responses file
+            "run_timestamp": "",
             'analysis': None,
             'stop_requested': False,
         }

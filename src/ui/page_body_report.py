@@ -45,7 +45,7 @@ def render_report_viewer():
             overlay_df = results['overlay_df']  # DataFrame with time, pct90_response, and vusers columns
             duration = results['duration']      # timedelta
             start_time = results['start_time']  # datetime
-            end_time = results['end_time']      # datetime
+            end_time = results['end_time']      # datetime 
 
             # If already string, parse to datetime
             if isinstance(start_time, str):
@@ -170,66 +170,153 @@ def render_report_viewer():
             with tab4:
                 tab4.markdown('<h2 class="tab-subheader">Time To First Token (TTFT)</h2>', unsafe_allow_html=True)
                 # Display the summary of LLM results
-                if results.get('llm_results'):
-                    llm_results = results['llm_results']
-                    st.markdown("### Overview")
-                    st.markdown(
-                        f'<div class="overview-row"><span class="overview-label">Total LLM Requests:</span> <span class="overview-value">{llm_results["total_requests"]}</span></div>',
-                        unsafe_allow_html=True,
-                    )
-                    st.markdown(
-                        f'<div class="overview-row"><span class="overview-label">Avg. Response Time (ms):</span> <span class="overview-value">{llm_results["avg_response_time"]:.2f}</span></div>',
-                        unsafe_allow_html=True,
-                    )
-                    st.markdown(
-                        f'<div class="overview-row"><span class="overview-label">Error Rate (%):</span> <span class="overview-value">{llm_results["error_rate"]:.2f}</span></div>',
-                        unsafe_allow_html=True,
-                    )
+                if results.get('has_llm_data', False):
+                    try:
+                        ttft_data = results['llm_kpi_data']['ttft_overlay_df']
+                        
+                        if ttft_data is not None and not ttft_data.empty:
+                            # Create individual charts first
+                            ttft_chart = alt.Chart(ttft_data).mark_line(
+                                interpolate='linear',
+                                strokeWidth=2,
+                                color='blue'
+                            ).encode(
+                                x=alt.X('time:T', title='Elapsed Time (UTC)'),
+                                y=alt.Y('ttft:Q', title='Time To First Token (ms)', scale=alt.Scale(zero=False))
+                            )
+                            
+                            vusers_chart = alt.Chart(ttft_data).mark_line(
+                                interpolate='linear',
+                                strokeWidth=2,
+                                color='orange'
+                            ).encode(
+                                x=alt.X('time:T'),
+                                y=alt.Y('vusers:Q', title='Virtual Users')
+                            )
+                            
+                            # Layer the charts with proper dual Y-axis configuration
+                            combined_chart = alt.layer(ttft_chart, vusers_chart).resolve_scale(
+                                y='independent'
+                            )
+                            
+                            st.altair_chart(combined_chart, use_container_width=True)
+                            
+                            # Add summary statistics
+                            st.markdown("**TTFT Summary Statistics:**")
+                            col1, col2, col3, col4 = st.columns(4)
+                            with col1:
+                                st.metric("Avg TTFT", f"{results.get('llm_ttft_avg', 0):.0f} ms")
+                            with col2:
+                                st.metric("Min TTFT", f"{results.get('llm_ttft_min', 0):.0f} ms")
+                            with col3:
+                                st.metric("Max TTFT", f"{results.get('llm_ttft_max', 0):.0f} ms")
+                            with col4:
+                                st.metric("90th % TTFT", f"{results.get('llm_ttft_90th', 0):.0f} ms")
+                        else:
+                            st.warning("TTFT data is empty or unavailable")
+                            
+                    except KeyError as e:
+                        st.error(f"Missing data key: {e}")
+                        st.info("Ensure LLM metrics analysis completed successfully")
+                    except Exception as e:
+                        st.error(f"Error rendering TTFT chart: {str(e)}")
+                        
                 else:
-                    st.info("No LLM test results available.")
+                    st.info("🤖 LLM performance metrics not available.")
 
             with tab5:
                 tab5.markdown('<h2 class="tab-subheader">Time Per Output Token (TPOT)</h2>', unsafe_allow_html=True)
                 # Display the LLM results table if available
-                if results.get('llm_results_table'):
-                    st.dataframe(
-                        results['llm_results_table'],
-                        use_container_width=True,
-                        column_config={
-                            "endpoint": st.column_config.TextColumn("LLM Endpoint", width="None"),
-                            "requests": st.column_config.NumberColumn("Total Requests", format="%d"),
-                            "errors": st.column_config.NumberColumn("Failed Requests", format="%d"),
-                            "error_rate": st.column_config.NumberColumn("Error Rate (%)", format="%.2f%%"),
-                            "avg_response_time": st.column_config.NumberColumn("Avg Response Time (ms)", format="%.2f")
-                        }
-                    )
+                if results.get('has_llm_data', False):
+                    try:
+                        tpot_data = results['llm_kpi_data']['tpot_overlay_df']
+                        
+                        if tpot_data is not None and not tpot_data.empty:
+                            tpot_chart = alt.Chart(tpot_data).mark_line(
+                                interpolate='linear',
+                                strokeWidth=2,
+                                color='green'
+                            ).encode(
+                                x=alt.X('time:T', title='Elapsed Time (UTC)'),
+                                y=alt.Y('tpot:Q', title='Time per Output Token (ms)', scale=alt.Scale(zero=False))
+                            )
+                            
+                            vusers_chart = alt.Chart(tpot_data).mark_line(
+                                interpolate='linear',
+                                strokeWidth=2,
+                                color='orange'
+                            ).encode(
+                                x=alt.X('time:T'),
+                                y=alt.Y('vusers:Q', title='Virtual Users', scale=alt.Scale(zero=False))
+                            )
+                            
+                            combined_chart = alt.layer(tpot_chart, vusers_chart).resolve_scale(y='independent')
+                            st.altair_chart(combined_chart, use_container_width=True)
+                            
+                            # Summary statistics
+                            st.markdown("**TPOT Summary Statistics:**")
+                            col1, col2, col3, col4 = st.columns(4)
+                            with col1:
+                                st.metric("Avg TPOT", f"{results.get('llm_tpot_avg', 0):.0f} ms")
+                            with col2:
+                                st.metric("Min TPOT", f"{results.get('llm_tpot_min', 0):.0f} ms")
+                            with col3:
+                                st.metric("Max TPOT", f"{results.get('llm_tpot_max', 0):.0f} ms")
+                            with col4:
+                                st.metric("90th % TPOT", f"{results.get('llm_tpot_90th', 0):.0f} ms")
+                        else:
+                            st.warning("TPOT data is empty or unavailable")
+                    except Exception as e:
+                        st.error(f"Error rendering TPOT chart: {str(e)}")
                 else:
-                    st.info("No LLM test results available.")
+                    st.info("🤖 LLM performance metrics not available.")
 
             with tab6:
                     tab6.markdown('<h2 class="tab-subheader">Tokens Per Second (TPS)</h2>', unsafe_allow_html=True)
                     # Create a chart for LLM results if available
-                    if results.get('llm_results_chart'):
-                        llm_chart_data = results['llm_results_chart']
-                        llm_base = alt.Chart(llm_chart_data).encode(
-                            x=alt.X('time:T', axis=alt.Axis(
-                                title='Elapsed Time (hh:mm:ss) UTC', titleColor='black', titleFontWeight='bold',
-                                grid=True, gridColor='gray', 
-                                ticks=True, labelColor='black', labelAngle=45,  # Horizontal labels
-                                format='%H:%M:%S'  # <-- This sets military time format
-                            ))
-                        )
-
-                        llm_line = llm_base.mark_line(point=True).encode(
-                            y=alt.Y('response_time:Q', axis=alt.Axis(
-                                title='LLM Response Time (ms)', titleColor='#5276A7', titleFontWeight='bold',
-                                grid=True, gridColor='gray',
-                                ticks=True, labelColor='#5276A7'
-                            ))
-                        )
-
-                        st.altair_chart(llm_line, use_container_width=True)
+                    if results.get('has_llm_data', False):
+                        try:
+                            tps_data = results['llm_kpi_data']['tps_overlay_df']
+                            
+                            if tps_data is not None and not tps_data.empty:
+                                tps_chart = alt.Chart(tps_data).mark_line(
+                                    interpolate='linear',
+                                    strokeWidth=2,
+                                    color='red'
+                                ).encode(
+                                    x=alt.X('time:T', title='Elapsed Time (UTC)'),
+                                    y=alt.Y('tps:Q', title='Tokens Per Second', scale=alt.Scale(zero=False))
+                                )
+                                
+                                vusers_chart = alt.Chart(tps_data).mark_line(
+                                    interpolate='linear',
+                                    strokeWidth=2,
+                                    color='orange'
+                                ).encode(
+                                    x=alt.X('time:T'),
+                                    y=alt.Y('vusers:Q', title='Virtual Users', scale=alt.Scale(zero=False))
+                                )
+                                
+                                combined_chart = alt.layer(tps_chart, vusers_chart).resolve_scale(y='independent')
+                                st.altair_chart(combined_chart, use_container_width=True)
+                                
+                                # Summary statistics
+                                st.markdown("**TPS Summary Statistics:**")
+                                col1, col2, col3, col4 = st.columns(4)
+                                with col1:
+                                    st.metric("Avg TPS", f"{results.get('llm_tps_avg', 0):.1f}")
+                                with col2:
+                                    st.metric("Min TPS", f"{results.get('llm_tps_min', 0):.1f}")
+                                with col3:
+                                    st.metric("Max TPS", f"{results.get('llm_tps_max', 0):.1f}")
+                                with col4:
+                                    st.metric("90th % TPS", f"{results.get('llm_tps_90th', 0):.1f}")
+                            else:
+                                st.warning("TPS data is empty or unavailable")
+                        except Exception as e:
+                            st.error(f"Error rendering TPS chart: {str(e)}")
                     else:
-                        st.info("No LLM test results chart available.")   
+                        st.info("🤖 LLM performance metrics not available.")
+
         else:
             st.info("No JMeter test results yet. Please run a JMeter test first.")
