@@ -82,6 +82,47 @@ def initialize_session_state():
     if "deepeval_logs" not in st.session_state:
         st.session_state.deepeval_logs = []
 
+    # Initialize DeepEval test state (mirrors JMeter pattern)
+    if "deepeval_test_state" not in st.session_state:
+        st.session_state.deepeval_test_state = TestState.NOT_STARTED
+
+    # Initialize DeepEval configuration state
+    if "deepeval_state" not in st.session_state:
+        st.session_state.deepeval_state = {
+            "selected_metrics": ["correctness"], # List of selected quality metrics
+            "llm_responses_file": "",            # Path to LLM responses JSON file
+            "deepeval_results_file": "",         # Path to DeepEval results output
+            "run_timestamp": "",                 # Timestamp of last DeepEval run
+            "total_test_cases": 0,               # Total number of test cases analyzed
+            "analysis_complete": False,          # Flag indicating analysis completion
+        }
+
+    # Initialize DeepEval thread data for background processing
+    if 'deepeval_thread_data' not in st.session_state:
+        st.session_state['deepeval_thread_data'] = {
+            'logs': [],                          # Real-time execution logs
+            'status': None,                      # Current execution status
+            'results': None,                     # Raw DeepEval results
+            'analysis': None,                    # Processed analysis for UI display
+            'error_message': "",                 # Error details for troubleshooting
+            'progress': 0,                       # Progress percentage (0-100)
+            'current_test_case': 0,              # Current test case being processed
+            'stop_requested': False,             # Flag for stopping execution
+            'deepeval_files': {                  # DeepEval output file paths
+                'telemetry': "",
+                'cache': "",
+                'latest_run': ""
+            }
+        }
+
+    # Enhanced error tracking for DeepEval
+    if "deepeval_errors" not in st.session_state:
+        st.session_state.deepeval_errors = {
+            "last_error": None,
+            "error_count": 0,
+            "error_history": []
+        }
+
 def format_duration(duration):
     """
     Function to format a duration into a human-readable string

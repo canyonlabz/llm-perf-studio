@@ -684,3 +684,37 @@ def inject_report_viewer_styles():
         }
         </style>
     """, unsafe_allow_html=True)
+
+# --- DeepEval Viewer Styles ---------------------------------------------------
+def inject_deepeval_viewer_styles():
+    """
+    Inject custom CSS styles for the DeepEval Viewer in the Streamlit app.
+    """
+    # Inject custom CSS for styling
+    st.markdown("""
+        <style>
+        *, html {scroll-behavior: smooth !important;}
+        .deepeval-viewer-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .st-key-deepeval_viewer_text {
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            border-color: #4c4e52;  /* Dark grey border */
+            height: 100%;
+        }
+        .stTextArea [data-baseweb=base-input] {
+            background-color: #e8f4f8 !important;   /* Light blue background */
+        }
+        .stTextArea textarea {
+			font-family: 'Courier New', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.4 !important;
+		}
+        .stTextArea textarea[disabled] {
+		    color: #000000 !important;
+		}
+        </style>
+    """, unsafe_allow_html=True)

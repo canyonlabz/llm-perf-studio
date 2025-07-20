@@ -17,10 +17,6 @@ from src.ui.page_utils import (
     format_duration, 
     format_datetime,
 )
-from src.utils.event_logs import (
-    add_jmeter_log,
-    add_deepeval_log,
-)
 from src.utils.test_state import TestState
 
 config = load_config()      # Load the full configuration from config.yaml

@@ -11,7 +11,7 @@ from src.utils.config import load_config  # Importing configuration loader
 from src.ui.page_header import render_page_header  # Importing page header
 from src.ui.page_title import render_deepeval_title  # Importing page body
 from src.ui.page_body_deepeval import (
-    render_page_buttons,  # Importing page buttons
+    render_deepeval_viewer,  # Importing DeepEval viewer area
 )
 
 # --- Load Configuration -----------------------------------------------------
@@ -31,6 +31,7 @@ def render_ui():
     # Set the page configuration for Streamlit
     render_page_header()        # Render the page header
     render_deepeval_title()     # Render the page body (title, subtitle, etc.)
+    render_deepeval_viewer()    # Render the DeepEval viewer area
 
 # --- Main Function ---------------------------------------------------------
 
