@@ -10,7 +10,7 @@ def inject_page_header_styles():
     st.markdown("""
         <style>
         /* Targets the button with key 'exit_app' */
-        .st-key-exit_app button {
+        .st-key-exit_app button, .st-key-clear_session button {
             border: 2px solid #c95000;
             color: #c95000;
             background: transparent;
@@ -24,7 +24,7 @@ def inject_page_header_styles():
             transition: background 0.2s, color 0.2s;
             white-space: nowrap;  /* Prevent text wrapping */
         }
-        .st-key-exit_app button:hover {
+        .st-key-exit_app button:hover, .st-key-clear_session button:hover {
             background: #c95000;
             color: #fff;
         }

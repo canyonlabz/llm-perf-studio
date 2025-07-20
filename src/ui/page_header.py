@@ -16,7 +16,7 @@ def render_page_header():
     inject_page_header_styles()  # Apply custom styles for the header
 
     # Define the header layout with three columns
-    col1, col2, col3 = st.columns([0.15, 0.7, 0.15]) # Define three columns with specified widths and borders
+    col1, col2, col3 = st.columns([0.15, 0.65, 0.20]) # Define three columns with specified widths and borders
 
     with col1:
         st.image("https://img.freepik.com/free-vector/floating-robot_78370-3669.jpg?t=st=1746392177~exp=1746395777~hmac=b087b344ffeaf82d1a5856d4cc4232c2742c20703b0b4f1bb571c580f0aff3b2&w=740", width=75) # Logo
@@ -33,10 +33,16 @@ def render_page_header():
             st.page_link("nav_pages/page_report.py", label="Report", icon="📋")
         
     with col3:
+        tab_clear_session, tab_exit = st.columns([0.5, 0.5], border=False)
         # Exit button with custom CSS class
-        exit_clicked = st.button("🚪 Exit App", key="exit_app")
-        if exit_clicked:
-            print("👋 Goodbye!")
-            os._exit(0)
+        with tab_clear_session:
+            clear_clicked = st.button("🗑️ Clear Session", key="clear_session")
+            if clear_clicked:
+                st.session_state.clear()
+        with tab_exit:
+            exit_clicked = st.button("🚪 Exit App", key="exit_app")
+            if exit_clicked:
+                print("👋 Goodbye!")
+                os._exit(0)
 
     st.divider()
