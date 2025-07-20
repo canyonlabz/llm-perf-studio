@@ -72,7 +72,7 @@ def render_report_viewer():
                 tab1.markdown('<h2 class="tab-subheader">Results Summary</h2>', unsafe_allow_html=True)
                 # Display the summary of results into 3 sections: 1) Overview, 2) Key Metrics, 3) Pass/Fail Summary
                 # Section 1: Overview
-                st.markdown("### Overview")
+                st.markdown('<h4 class="metric_subtitle">Overview</h4>', unsafe_allow_html=True)
                 st.markdown(
                     f'<div class="overview-row"><span class="overview-label">Duration:</span> <span class="overview-value">{duration_str}</span></div>',
                     unsafe_allow_html=True,
@@ -87,7 +87,7 @@ def render_report_viewer():
                 )
 
                 # Section 2: Key Metrics
-                st.markdown("### Key Metrics")
+                st.markdown('<h4 class="metric_subtitle">Key Metrics</h4>', unsafe_allow_html=True)
                 col1, col2, col3, col4 = st.columns(4, border=True)  # Define four columns with borders
                 col1.metric("Max Virtual Users", int(results['vusers_over_time'].max()))
                 col2.metric("Avg. Response Time (ms)", f"{results['avg_response_time']:.2f}")
@@ -95,7 +95,7 @@ def render_report_viewer():
                 col4.metric("Error Rate (%)", f"{results['error_rate']:.2f}")
 
                 # Section 3: Pass/Fail Summary
-                st.markdown("### Pass/Fail Summary")
+                st.markdown("#### Pass/Fail Summary")
                 pie_data = pd.DataFrame({
                     'Result': ['Pass', 'Fail'],
                     'Percentage': [results['pass_pct'], results['fail_pct']]
@@ -176,34 +176,43 @@ def render_report_viewer():
                         
                         if ttft_data is not None and not ttft_data.empty:
                             # Create individual charts first
-                            ttft_chart = alt.Chart(ttft_data).mark_line(
-                                interpolate='linear',
-                                strokeWidth=2,
-                                color='blue'
-                            ).encode(
-                                x=alt.X('time:T', title='Elapsed Time (UTC)'),
-                                y=alt.Y('ttft:Q', title='Time To First Token (ms)', scale=alt.Scale(zero=False))
+                            # Create the base chart with time on the x-axis (matching Tab 3)
+                            base = alt.Chart(ttft_data).encode(
+                                x=alt.X('time:T', axis=alt.Axis(
+                                    title='Elapsed Time (hh:mm:ss) UTC', titleColor='black', titleFontWeight='bold',
+                                    grid=True, gridColor='gray', 
+                                    ticks=True, labelColor='black', labelAngle=45,
+                                    format='%H:%M:%S'  # Military time format matching Tab 3
+                                ))
                             )
-                            
-                            vusers_chart = alt.Chart(ttft_data).mark_line(
-                                interpolate='linear',
-                                strokeWidth=2,
-                                color='orange'
-                            ).encode(
-                                x=alt.X('time:T'),
-                                y=alt.Y('vusers:Q', title='Virtual Users')
+
+                            # TTFT line (left Y axis) with points - using blue color
+                            line1 = base.mark_line(color='#1f77b4', point=True).encode(  # Sea Green for TTFT
+                                y=alt.Y('ttft:Q', axis=alt.Axis(
+                                    title='Time to First Token (ms)', titleColor='#1f77b4', titleFontWeight='bold',
+                                    grid=True, gridColor='gray',
+                                    ticks=True, labelColor='#1f77b4'
+                                ))
+                            )
+
+                            # Virtual users line (right Y axis) with points - matching Tab 3 orange
+                            line2 = base.mark_line(color='#F18727', point=True).encode(
+                                y=alt.Y('vusers:Q', axis=alt.Axis(
+                                    title='Virtual Users', titleColor='#F18727', titleFontWeight='bold',
+                                    grid=False, ticks=True, labelColor='#F18727'
+                                ))
                             )
                             
                             # Layer the charts with proper dual Y-axis configuration
-                            combined_chart = alt.layer(ttft_chart, vusers_chart).resolve_scale(
+                            combined_chart = alt.layer(line1, line2).resolve_scale(
                                 y='independent'
                             )
                             
                             st.altair_chart(combined_chart, use_container_width=True)
                             
                             # Add summary statistics
-                            st.markdown("**TTFT Summary Statistics:**")
-                            col1, col2, col3, col4 = st.columns(4)
+                            st.markdown("<h4 class='metric_subtitle'>TTFT Summary Statistics:</h4>", unsafe_allow_html=True)
+                            col1, col2, col3, col4 = st.columns(4, border=True)
                             with col1:
                                 st.metric("Avg TTFT", f"{results.get('llm_ttft_avg', 0):.0f} ms")
                             with col2:
@@ -232,30 +241,41 @@ def render_report_viewer():
                         tpot_data = results['llm_kpi_data']['tpot_overlay_df']
                         
                         if tpot_data is not None and not tpot_data.empty:
-                            tpot_chart = alt.Chart(tpot_data).mark_line(
-                                interpolate='linear',
-                                strokeWidth=2,
-                                color='green'
-                            ).encode(
-                                x=alt.X('time:T', title='Elapsed Time (UTC)'),
-                                y=alt.Y('tpot:Q', title='Time per Output Token (ms)', scale=alt.Scale(zero=False))
+                            # Create the base chart with time on the x-axis (matching Tab 3)
+                            base = alt.Chart(tpot_data).encode(
+                                x=alt.X('time:T', axis=alt.Axis(
+                                    title='Elapsed Time (hh:mm:ss) UTC', titleColor='black', titleFontWeight='bold',
+                                    grid=True, gridColor='gray', 
+                                    ticks=True, labelColor='black', labelAngle=45,
+                                    format='%H:%M:%S'  # Military time format matching Tab 3
+                                ))
                             )
-                            
-                            vusers_chart = alt.Chart(tpot_data).mark_line(
-                                interpolate='linear',
-                                strokeWidth=2,
-                                color='orange'
-                            ).encode(
-                                x=alt.X('time:T'),
-                                y=alt.Y('vusers:Q', title='Virtual Users', scale=alt.Scale(zero=False))
+
+                            # TPOT line (left Y axis) with points - using deep blue color
+                            line1 = base.mark_line(color='#1f77b4', point=True).encode(  # Deep Blue for TPOT
+                                y=alt.Y('tpot:Q', axis=alt.Axis(
+                                    title='Time per Output Token (ms)', titleColor='#1f77b4', titleFontWeight='bold',
+                                    grid=True, gridColor='gray',
+                                    ticks=True, labelColor='#1f77b4'
+                                ))
                             )
-                            
-                            combined_chart = alt.layer(tpot_chart, vusers_chart).resolve_scale(y='independent')
-                            st.altair_chart(combined_chart, use_container_width=True)
+
+                            # Virtual users line (right Y axis) with points - matching Tab 3 orange
+                            line2 = base.mark_line(color='#F18727', point=True).encode(
+                                y=alt.Y('vusers:Q', axis=alt.Axis(
+                                    title='Virtual Users', titleColor='#F18727', titleFontWeight='bold',
+                                    grid=False, ticks=True, labelColor='#F18727'
+                                ))
+                            )
+
+                            # Layer the two lines with independent Y axes
+                            layered_chart = alt.layer(line1, line2).resolve_scale(y='independent')
+
+                            st.altair_chart(layered_chart, use_container_width=True)
                             
                             # Summary statistics
-                            st.markdown("**TPOT Summary Statistics:**")
-                            col1, col2, col3, col4 = st.columns(4)
+                            st.markdown("<h4 class='metric_subtitle'>TPOT Summary Statistics:</h4>", unsafe_allow_html=True)
+                            col1, col2, col3, col4 = st.columns(4, border=True)
                             with col1:
                                 st.metric("Avg TPOT", f"{results.get('llm_tpot_avg', 0):.0f} ms")
                             with col2:
@@ -279,30 +299,41 @@ def render_report_viewer():
                             tps_data = results['llm_kpi_data']['tps_overlay_df']
                             
                             if tps_data is not None and not tps_data.empty:
-                                tps_chart = alt.Chart(tps_data).mark_line(
-                                    interpolate='linear',
-                                    strokeWidth=2,
-                                    color='red'
-                                ).encode(
-                                    x=alt.X('time:T', title='Elapsed Time (UTC)'),
-                                    y=alt.Y('tps:Q', title='Tokens Per Second', scale=alt.Scale(zero=False))
+                                # Create the base chart with time on the x-axis (matching Tab 3)
+                                base = alt.Chart(tps_data).encode(
+                                    x=alt.X('time:T', axis=alt.Axis(
+                                        title='Elapsed Time (hh:mm:ss) UTC', titleColor='black', titleFontWeight='bold',
+                                        grid=True, gridColor='gray', 
+                                        ticks=True, labelColor='black', labelAngle=45,
+                                        format='%H:%M:%S'  # Military time format matching Tab 3
+                                    ))
                                 )
-                                
-                                vusers_chart = alt.Chart(tps_data).mark_line(
-                                    interpolate='linear',
-                                    strokeWidth=2,
-                                    color='orange'
-                                ).encode(
-                                    x=alt.X('time:T'),
-                                    y=alt.Y('vusers:Q', title='Virtual Users', scale=alt.Scale(zero=False))
+
+                                # TPS line (left Y axis) with points - using crimson color
+                                line1 = base.mark_line(color='#1f77b4', point=True).encode(  # Crimson for TPS
+                                    y=alt.Y('tps:Q', axis=alt.Axis(
+                                        title='Tokens Per Second', titleColor='#1f77b4', titleFontWeight='bold',
+                                        grid=True, gridColor='gray',
+                                        ticks=True, labelColor='#1f77b4'
+                                    ))
                                 )
-                                
-                                combined_chart = alt.layer(tps_chart, vusers_chart).resolve_scale(y='independent')
-                                st.altair_chart(combined_chart, use_container_width=True)
+
+                                # Virtual users line (right Y axis) with points - matching Tab 3 orange
+                                line2 = base.mark_line(color='#F18727', point=True).encode(
+                                    y=alt.Y('vusers:Q', axis=alt.Axis(
+                                        title='Virtual Users', titleColor='#F18727', titleFontWeight='bold',
+                                        grid=False, ticks=True, labelColor='#F18727'
+                                    ))
+                                )
+
+                                # Layer the two lines with independent Y axes
+                                layered_chart = alt.layer(line1, line2).resolve_scale(y='independent')
+
+                                st.altair_chart(layered_chart, use_container_width=True)
                                 
                                 # Summary statistics
-                                st.markdown("**TPS Summary Statistics:**")
-                                col1, col2, col3, col4 = st.columns(4)
+                                st.markdown("<h4 class='metric_subtitle'>TPS Summary Statistics:</h4>", unsafe_allow_html=True)
+                                col1, col2, col3, col4 = st.columns(4, border=True)
                                 with col1:
                                     st.metric("Avg TPS", f"{results.get('llm_tps_avg', 0):.1f}")
                                 with col2:

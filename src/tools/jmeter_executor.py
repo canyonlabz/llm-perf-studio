@@ -298,7 +298,6 @@ def analyze_llm_metrics_node(shared_data: Dict[str, Any], state: Dict[str, Any])
         'tpot_over_time': tpot_over_time,
         'tps_over_time': tps_over_time
     }
-    thread_safe_add_log(shared_data['logs'], f"✅ LLM KPI data loaded: {len(llm_kpi_df)} token metrics", agent_name="JMeterAgent")
 
     # Add LLM KPI data to summary
     summary = {
@@ -331,7 +330,7 @@ def analyze_llm_metrics_node(shared_data: Dict[str, Any], state: Dict[str, Any])
         "llm_end_time": end_time.strftime('%Y-%m-%d %H:%M:%S')
     }
     
-    thread_safe_add_log(shared_data['logs'], "✅ LLM metrics analysis completed successfully.", agent_name="JMeterAgent")
+    thread_safe_add_log(shared_data['logs'], f"✅ LLM KPI data loaded: {len(llm_kpi_df)} token metrics", agent_name="JMeterAgent")
     return summary
 
 #--- Utility Functions ---

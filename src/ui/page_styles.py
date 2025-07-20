@@ -544,8 +544,9 @@ def inject_report_viewer_styles():
         }
         .tab-subheader {
             color: #2d5c7f !important;  /* Darker blue for subheaders */
-            font-weight: 700;
-            margin-bottom: 0.5em;
+            font-weight: 100;
+            font-size: 28px !important;
+            margin-bottom: 0.3em;
         }
         /* Custom styles for tabs */
         .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
@@ -648,6 +649,12 @@ def inject_report_viewer_styles():
             background-color: #e3f2fd;
         }
         /* Report overview section styles */
+        .metric_subtitle {
+            font-size: 1.2rem;
+            border-bottom: 1px solid #e0e0e0; /* Light gray border for separation */
+            padding-bottom: 0.25em !important;
+            margin-bottom: 0.75em !important;
+        }
         .overview-row {
             font-size: 1.1rem;
             margin-bottom: 0.5em;
