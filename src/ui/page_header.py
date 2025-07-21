@@ -28,9 +28,9 @@ def render_page_header():
         with tab_col2:
             st.page_link("nav_pages/page_jmeter.py", label="JMeter", icon="📊")
         with tab_col3:
-            st.page_link("nav_pages/page_deepeval.py", label="DeepEval", icon="📈")
-        with tab_col4:
             st.page_link("nav_pages/page_report.py", label="Report", icon="📋")
+        with tab_col4:
+            st.page_link("nav_pages/page_deepeval.py", label="DeepEval", icon="📈")
         
     with col3:
         tab_clear_session, tab_exit = st.columns([0.5, 0.5], border=False)

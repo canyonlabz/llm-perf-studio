@@ -38,11 +38,11 @@ def render_ui():
     # Set the page configuration for Streamlit
     page_homepage = st.Page("nav_pages/page_homepage.py", title="Home", icon="🏠")
     page_jmeter = st.Page("nav_pages/page_jmeter.py", title="JMeter", icon="📊")
-    page_deepeval = st.Page("nav_pages/page_deepeval.py", title="DeepEval", icon="📈")
     page_report = st.Page("nav_pages/page_report.py", title="Report", icon="📋")
+    page_deepeval = st.Page("nav_pages/page_deepeval.py", title="DeepEval", icon="📈")
 
     pg = st.navigation(
-        pages=[page_homepage, page_jmeter, page_deepeval, page_report],
+        pages=[page_homepage, page_jmeter, page_report, page_deepeval],
         position="sidebar",
     )
     pg.run()

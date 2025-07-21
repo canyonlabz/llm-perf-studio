@@ -12,6 +12,7 @@ from src.utils.config import load_config
 from src.ui.page_utils import initialize_session_state
 from src.ui.page_styles import (
     inject_deepeval_viewer_styles,
+    inject_deepeval_button_styles
 )
 from src.utils.event_logs import (
     add_deepeval_log,
@@ -35,12 +36,35 @@ def get_button_states():
         "clear_deepeval_logs_disabled": state != TestState.COMPLETED
     }
 
+def render_deepeval_configuration():
+    """
+    Render the DeepEval configuration area.
+    This function sets up the Streamlit components for configuring the DeepEval parameters.
+    """
+    col_left, col_center, col_right = st.columns([2, 6, 2], border=False)
+
+    with col_center:
+        st.subheader("DeepEval Configuration")
+
+        # Select metrics for evaluation
+        selected_metrics = st.multiselect(
+            "Select Quality Metrics",
+            options=["correctness", "robustness", "relevance", "coherence"],
+            default=None,  # Default selection
+            help="Choose the quality metrics to evaluate the LLM responses.",
+            key="deepeval_selected_metrics",
+            placeholder="Select metrics to evaluate",
+            label_visibility="collapsed",  # Hide the label for a cleaner look
+        )
+        st.session_state.deepeval_state['selected_metrics'] = selected_metrics
+
 def render_deepeval_viewer():
     """
     Render the DeepEval viewer area.
     This function sets up the Streamlit components for displaying the DeepEval results.
     """
     inject_deepeval_viewer_styles()  # Inject custom styles for the DeepEval viewer
+    inject_deepeval_button_styles()  # Inject custom styles for the DeepEval buttons
 
     # Get current running state
     test_state = get_button_states()
@@ -50,7 +74,7 @@ def render_deepeval_viewer():
     )
 
     # Centered column for the DeepEval viewer
-    col_left, col_deepeval_viewer, col_right = st.columns([0.10, 0.80, 0.10], border=False)
+    col_left, col_deepeval_viewer, col_right = st.columns([2, 6, 2], border=False)
 
     with col_left:
         # Button to start the DeepEval quality assessment
@@ -59,24 +83,33 @@ def render_deepeval_viewer():
                 help="Start the DeepEval quality assessment with the selected configuration.",
                 key="start_deepeval"
             ):
-            # Only allow if not already running
-            if st.session_state.jmeter_test_state != TestState.RUNNING:
+            # Only allow if not already completed
+            if st.session_state.jmeter_test_state == TestState.COMPLETED:
                 add_deepeval_log("🏃‍♂️ Starting DeepEval quality assessment...", agent_name="DeepEvalAgent")
                 add_deepeval_log("Preparing to execute DeepEval with selected configuration.", agent_name="DeepEvalAgent")
 
     # Display the DeepEval results
     with col_deepeval_viewer:
-        st.subheader("DeepEval Results Viewer")
-        
-        # Check if DeepEval results are available in session state
-        if 'deepeval_results' in st.session_state:
-            deepeval_results = st.session_state.deepeval_results
-            
-            if deepeval_results:
-                # Display the results in a table format
-                df = pd.DataFrame(deepeval_results)
-                st.dataframe(df, use_container_width=True)
-            else:
-                st.warning("No DeepEval results available. Please run a JMeter test first.")
-        else:
-            st.info("No DeepEval results found. Please run a JMeter test first.")
+        st.markdown("<div class='deepeval-results-subtitle'>📟 DeepEval Results Viewer</div>", unsafe_allow_html=True)
+
+        # Join all log entries with newlines
+        log_text = "\n".join(st.session_state.deepeval_logs) if st.session_state.deepeval_logs else ""
+        st.text_area(
+            label="DeepEval Activity Logs", 
+            value=log_text, 
+            height=350, 
+            key="deepeval_viewer_text", 
+            disabled=False,
+            label_visibility="collapsed",  # Hides the label visually but keeps it for accessibility
+            placeholder="🚀 No DeepEval activity yet. Please run a JMeter test first then click on an action button to start."  # Placeholder text when no logs are present
+        )
+
+    with col_right:
+        # Button to clear DeepEval logs
+        if st.button("🧹 Clear Logs", 
+                disabled=clear_deepeval_logs_disabled,
+                help="Clear all DeepEval logs and results.",
+                key="clear_deepeval_logs"
+            ):
+            st.session_state.deepeval_logs = []  # Clear the logs
+            add_deepeval_log("🧹 DeepEval logs cleared.", agent_name="DeepEvalAgent")

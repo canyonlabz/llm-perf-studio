@@ -147,3 +147,10 @@ def handle_stop_jmeter_test():
         add_jmeter_log(f"❌ Error stopping JMeter test: {str(e)}", agent_name="AgentError")
         # Mark as stopped even on error to prevent stuck state
         st.session_state.jmeter_test_state = TestState.STOPPED
+
+# ========================== DeepEval UI Handlers =========================
+def __start_deepeval_thread(shared_data, state_snapshot):
+    """Placeholder: Background thread target to run DeepEval and update session state/logs."""
+
+def handle_start_deepeval_assessment():
+    """Placeholder: Handler for starting the DeepEval assessment."""

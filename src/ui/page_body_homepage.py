@@ -56,16 +56,16 @@ def render_chatbot_area():
         # Only enabled if a RAG file is selected
         disabled_state = not st.session_state.get("selected_rag_file", None)
 
+        if st.button("⚙️ Process RAG File", key="process_rag_btn", disabled=disabled_state):
+            # Call the function to handle file upload
+            #handle_process_rag_file(st.session_state.selected_rag_file)
+            ...  # This is where you would handle the file upload logic
+
         # Button to clear the selected RAG file
         if st.button("🗑️ Clear RAG File", key="clear_rag_btn", disabled=disabled_state):
             # Clear the selected RAG file from session state
             st.session_state.selected_rag_file = None
 
-        if st.button("⚙️ Process RAG File", key="process_rag_btn", disabled=disabled_state):
-            # Call the function to handle file upload
-            #handle_process_rag_file(st.session_state.selected_rag_file)
-            ...  # This is where you would handle the file upload logic
-        
     with col_chat:
         # --- Chatbot Section ---
         st.markdown('<div class="chatbot-title">🤖 Chatbot:</div>', unsafe_allow_html=True)

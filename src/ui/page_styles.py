@@ -44,6 +44,8 @@ def inject_page_header_styles():
             display: flex !important;
             gap: 0 !important;
             padding-left: 2rem !important;
+            padding-bottom: 0 !important;  /* Remove bottom padding */
+            margin-bottom: -45px !important;
         }
         /* Base tab style */
         a[data-testid="stPageLink-NavLink"] {
@@ -58,6 +60,7 @@ def inject_page_header_styles():
             z-index: 1 !important;
             transition: all 0.3s ease !important;
             box-shadow: 2px 0 3px rgba(0,0,0,0.1) !important;
+            margin-bottom: -2px !important; 
         }
         /* Active tab (current page) */
         a[data-testid="stPageLink-NavLink"][aria-current="page"] {
@@ -122,11 +125,11 @@ def inject_page_title_styles():
         <style>
         .centered-title {
             text-align: center;
-            font-size: 3rem;
+            font-size: 2rem;
             font-weight: 800;
             font-family: 'Georgia', serif;
-            margin-top: 2rem;
-            margin-bottom: 0.5rem;
+            margin-top: -30px !important;
+            margin-bottom: 0.25rem;
         }
         .centered-subtitle {
             text-align: center;
@@ -275,6 +278,7 @@ def inject_jmeter_viewer_styles():
             font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
+            margin-top: 0.5rem;
         }
         .st-key-jmeter_viewer_text {
             border: 2px solid #ddd;
@@ -340,6 +344,7 @@ def inject_jmeter_button_styles():
         .st-key-start_jmeter button {
             background: #e3f0fc;    /* Light blue background */
             color: #1976d2;         /* Dark blue text */
+            margin-top: 35px;  /* Adjust this value as needed */
         }
         .st-key-start_jmeter button:hover {
             background: #1976d2;    /* Dark blue background on hover */
@@ -716,5 +721,78 @@ def inject_deepeval_viewer_styles():
         .stTextArea textarea[disabled] {
 		    color: #000000 !important;
 		}
+        </style>
+    """, unsafe_allow_html=True)
+
+# --- DeepEval Button Styles ---------------------------------------------------
+def inject_deepeval_button_styles():
+    """
+    Inject custom CSS styles for DeepEval buttons in the Streamlit app.
+    """
+    st.markdown("""
+        <style>
+        .deepeval-results-subtitle {
+            color: #133366; /* dark blue */
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        /* Base style for all DeepEval buttons */
+        .st-key-start_deepeval button,
+        .st-key-clear_deepeval_logs button {
+            width: 160px;
+            height: 44px;
+            font-size: 1.08rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            border-color: #4c4e52;  /* Dark grey border */
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        /* Start DeepEval button */
+        .st-key-start_deepeval {
+            position: relative !important;
+        }
+        .st-key-start_deepeval button {
+            background: #e3f0fc;    /* Light blue background */
+            color: #1976d2;         /* Dark blue text */
+            float: right !important; /* Align to the right */
+            margin-top: 20px;  /* Adjust this value as needed */
+            margin-right: 0.50rem !important;
+            position: absolute !important;
+            right: 0 !important;
+        }
+        .st-key-start_deepeval button:hover {
+            background: #1976d2;    /* Dark blue background on hover */
+            color: #fff;            /* White text on hover */
+            box-shadow: 0 4px 16px rgba(25, 118, 210, 0.16);
+            border-color: #cfd8dc; /* Maintain light grey border */
+        }
+                
+        /* Clear Logs button */
+        .st-key-clear_deepeval_logs {
+            margin-top: 20px;  /* Adjust this value as needed */
+        }
+        .st-key-clear_deepeval_logs button {
+            background: #fff8e1;    /* Light orange background */
+            color: #b26a00;         /* Dark orange text */
+            border: 1px solid #4c4e52;  /* Dark grey border */
+            box-shadow: 0 2px 8px rgba(255, 179, 0, 0.08);
+        }
+        .st-key-clear_deepeval_logs button:hover {
+            background: #ffb300;    /* Dark orange background on hover */
+            color: #fff;            /* White text on hover */
+            box-shadow: 0 4px 16px rgba(255, 179, 0, 0.15);
+            border-color: #4c4e52; /* Maintain dark grey border */
+        }
         </style>
     """, unsafe_allow_html=True)
