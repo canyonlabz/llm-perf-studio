@@ -166,6 +166,13 @@ def inject_chatbot_area_styles():
             border-radius: 6px !important;
             background: #f8f6f2 !important;
             margin-top: 0.5rem;
+            margin-bottom: 0.5rem !important;
+        }
+        .st-key-chat_input input {
+            border: 2px solid #c95000 !important;
+            border-radius: 6px !important;
+            background: #f8f6f2 !important;
+            padding: 0.5rem !important;
         }
         .st-key-clear_chat button {
             border: 2px solid #c95000;
@@ -659,6 +666,10 @@ def inject_report_viewer_styles():
             border-bottom: 1px solid #e0e0e0; /* Light gray border for separation */
             padding-bottom: 0.25em !important;
             margin-bottom: 0.75em !important;
+        }
+        .pass-fail-summary {
+            font-size: 1.1rem;
+            margin-top: 1.5em !important;
         }
         .overview-row {
             font-size: 1.1rem;

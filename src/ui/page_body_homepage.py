@@ -80,7 +80,7 @@ def render_chatbot_area():
         chat_container = st.container(height=320, border=True)
 
         # Get user input FIRST (before displaying messages)
-        user_input = st.chat_input("Ask me about performance testing...")
+        user_input = st.chat_input("Ask me about performance testing...", key="chat_input")
         
         # Process any new user input
         if user_input:

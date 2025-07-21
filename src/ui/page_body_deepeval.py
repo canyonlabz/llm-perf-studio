@@ -113,3 +113,6 @@ def render_deepeval_viewer():
             ):
             st.session_state.deepeval_logs = []  # Clear the logs
             add_deepeval_log("🧹 DeepEval logs cleared.", agent_name="DeepEvalAgent")
+
+    # Auto-refresh every 2 seconds for live updates
+    st_autorefresh(interval=2000, key="deepeval_autorefresh")

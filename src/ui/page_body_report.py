@@ -91,7 +91,7 @@ def render_report_viewer():
                 col4.metric("Error Rate (%)", f"{results['error_rate']:.2f}")
 
                 # Section 3: Pass/Fail Summary
-                st.markdown("#### Pass/Fail Summary")
+                st.markdown('<h4 class="pass-fail-summary">Pass/Fail Summary</h4>', unsafe_allow_html=True)
                 pie_data = pd.DataFrame({
                     'Result': ['Pass', 'Fail'],
                     'Percentage': [results['pass_pct'], results['fail_pct']]
