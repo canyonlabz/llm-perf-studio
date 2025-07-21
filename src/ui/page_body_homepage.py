@@ -3,8 +3,14 @@ import streamlit.components.v1 as components
 from pathlib import Path
 import os
 
+# Import configuration loader
+from src.utils.config import load_config
+from src.ui.page_utils import initialize_session_state
+
 # Importing custom styles for the chatbot area
 from src.ui.page_styles import inject_chatbot_area_styles
+
+initialize_session_state()  # Initialize all session state variables used across the application
 
 # Import chat service for handling chat interactions
 from src.services.chat_service import ChatService
