@@ -161,6 +161,30 @@ def inject_chatbot_area_styles():
             font-weight: bold;
             margin-bottom: 0.5rem;
         }
+        /* Main chat container spacing */
+        .st-key-chat_container {
+            margin-bottom: 6rem !important;
+            padding-bottom: 2rem !important;
+            min-height: 320px;
+        }
+
+        /* Prevent chat input from overlapping */
+        [data-testid="stChatInput"] {
+            position: relative !important;
+            margin-top: 3rem !important;
+            z-index: 1000;
+        }
+
+        /* Add breathing room to the vertical block wrapper */
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            margin-bottom: 4rem !important;
+            padding-bottom: 1rem !important;
+        }
+
+        /* Ensure proper spacing between elements */
+        .stVerticalBlock {
+            gap: 1rem !important;
+        }
         .stChatInput {
             border: 2px solid #c95000 !important;
             border-radius: 6px !important;
@@ -169,7 +193,7 @@ def inject_chatbot_area_styles():
             margin-bottom: 0.5rem !important;
         }
         .st-key-chat_input input {
-            border: 2px solid #c95000 !important;
+            /* border: 2px solid #c95000 !important; */
             border-radius: 6px !important;
             background: #f8f6f2 !important;
             padding: 0.5rem !important;

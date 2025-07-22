@@ -83,7 +83,7 @@ def render_chatbot_area():
             ]
 
         # Create a container with fixed height for ALL chat content
-        chat_container = st.container(height=320, border=True)
+        chat_container = st.container(height=320, border=True, key="chat_container")
 
         # Get user input FIRST (before displaying messages)
         user_input = st.chat_input("Ask me about performance testing...", key="chat_input")
