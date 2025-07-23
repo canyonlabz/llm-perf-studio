@@ -90,6 +90,8 @@ def initialize_session_state():
     if "deepeval_state" not in st.session_state:
         st.session_state.deepeval_state = {
             "selected_metrics": ["correctness"], # List of selected quality metrics
+            "deepeval_test_cases": [],          # List of test cases for DeepEval
+            "deepeval_test_results": {},         # Dictionary to store DeepEval results
             "llm_responses_file": "",            # Path to LLM responses JSON file
             "deepeval_results_file": "",         # Path to DeepEval results output
             "run_timestamp": "",                 # Timestamp of last DeepEval run
