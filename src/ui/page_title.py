@@ -44,6 +44,23 @@ def render_jmeter_title():
         unsafe_allow_html=True
     )
 
+def render_report_title():
+    """ Render the title and subtitle for the report page. """
+    # Inject custom CSS for centering and font styling
+    inject_page_title_styles()
+
+    # Main title (centered, bold)
+    st.markdown('<div class="centered-title">LLM Performance Test Report</div>', unsafe_allow_html=True)
+
+    # Subtitle/description (centered)
+    st.markdown(
+        '<div class="centered-subtitle">'
+        'View and analyze the results of your LLM performance tests.<br>'
+        'Gain insights into LLM system behavior and identify bottlenecks or quality issues in your models.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
 def render_deepeval_title():
     """
     Render the title and subtitle for the DeepEval page.
@@ -63,19 +80,21 @@ def render_deepeval_title():
         unsafe_allow_html=True
     )
 
-def render_report_title():
-    """ Render the title and subtitle for the report page. """
+def render_geval_title():
+    """
+    Render the title and subtitle for the DeepEval report page based upon the GEval metric.
+    """
     # Inject custom CSS for centering and font styling
     inject_page_title_styles()
 
     # Main title (centered, bold)
-    st.markdown('<div class="centered-title">LLM Performance Test Report</div>', unsafe_allow_html=True)
+    st.markdown('<div class="centered-title">DeepEval Quality Report (GEval)</div>', unsafe_allow_html=True)
 
     # Subtitle/description (centered)
     st.markdown(
         '<div class="centered-subtitle">'
-        'View and analyze the results of your LLM performance tests.<br>'
-        'Gain insights into LLM system behavior and identify bottlenecks or quality issues in your models.'
+        'View and analyze the quality of your LLM responses using the GEval metric.<br>'
+        'Gain insights into the quality of LLM responses under various load conditions.'
         '</div>',
         unsafe_allow_html=True
     )

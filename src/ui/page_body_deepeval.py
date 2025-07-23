@@ -23,7 +23,7 @@ config = load_config()      # Load the full configuration from config.yaml
 initialize_session_state()  # Initialize session state for the application
 
 # ============================================================================
-# DeepEval Body: This section contains the main body of the DeepEval report page.
+# DeepEval Body: This section contains the main body of the DeepEval page.
 # ============================================================================
 def get_button_states():
     """
@@ -69,8 +69,8 @@ def render_deepeval_viewer():
     # Get current running state
     test_state = get_button_states()
     start_deepeval_disabled, clear_deepeval_logs_disabled = (
-        test_state["start_deepeval_disabled"],   # True if test is running (prevents duplicate starts)
-        test_state["clear_deepeval_logs_disabled"]  # Disabled if test is running (Clear Logs button)
+        test_state["start_deepeval_disabled"],   # True if test is completed (Start DeepEval button)
+        test_state["clear_deepeval_logs_disabled"]  # True if test is completed (Clear Logs button)
     )
 
     # Centered column for the DeepEval viewer
@@ -83,7 +83,7 @@ def render_deepeval_viewer():
                 help="Start the DeepEval quality assessment with the selected configuration.",
                 key="start_deepeval"
             ):
-            # Only allow if not already completed
+            # Only allow if the JMeter test state is COMPLETED
             if st.session_state.jmeter_test_state == TestState.COMPLETED:
                 add_deepeval_log("🏃‍♂️ Starting DeepEval quality assessment...", agent_name="DeepEvalAgent")
                 add_deepeval_log("Preparing to execute DeepEval with selected configuration.", agent_name="DeepEvalAgent")
