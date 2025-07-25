@@ -107,7 +107,7 @@ def render_deepeval_viewer():
     # Get current running state
     test_state = get_button_states()
     start_deepeval_disabled, clear_deepeval_logs_disabled = (
-        test_state["start_deepeval_disabled"],   # True if test is completed (Start DeepEval button)
+        test_state["start_deepeval_disabled"],      # True if test is completed (Start DeepEval button)
         test_state["clear_deepeval_logs_disabled"]  # True if test is completed (Clear Logs button)
     )
 
@@ -115,16 +115,55 @@ def render_deepeval_viewer():
     col_left, col_deepeval_viewer, col_right = st.columns([2, 6, 2], border=False)
 
     with col_left:
+        # Additional validation: Check if DeepEval is currently running
+        deepeval_running = st.session_state.deepeval_test_state == DeepEvalTestState.RUNNING
+        
+        # Additional validation: Check if metrics are selected
+        selected_metrics = st.session_state.deepeval_state.get('selected_metrics', [])
+        no_metrics_selected = len(selected_metrics) == 0
+        
+        # Determine final button state
+        button_disabled = start_deepeval_disabled or deepeval_running or no_metrics_selected
+
         # Button to start the DeepEval quality assessment
         if st.button("▶️ Start DeepEval", 
-                disabled=start_deepeval_disabled,
+                disabled=button_disabled,
                 help="Start the DeepEval quality assessment with the selected configuration.",
                 key="start_deepeval"
             ):
-            # Only allow if the JMeter test state is COMPLETED
+
+            # Validate prerequisites and log status messages
             if st.session_state.jmeter_test_state == TestState.COMPLETED:
-                add_deepeval_log("🏃‍♂️ Starting DeepEval quality assessment...", agent_name="DeepEvalAgent")
-                add_deepeval_log("Preparing to execute DeepEval with selected configuration.", agent_name="DeepEvalAgent")
+                if selected_metrics:
+                    # Check for running state
+                    if st.session_state.deepeval_test_state == DeepEvalTestState.RUNNING:
+                        add_deepeval_log("⚠️ DeepEval is already running. Please wait for completion.", agent_name="DeepEvalAgent")
+                    else:
+                        # Filter to only supported metrics and log status
+                        supported_metrics = [m for m in selected_metrics if m == "correctness"]
+                        unsupported_metrics = [m for m in selected_metrics if m != "correctness"]
+                        
+                        if supported_metrics:
+                            # Log start messages
+                            add_deepeval_log("🏃♂️ Starting DeepEval quality assessment...", agent_name="DeepEvalAgent")
+                            
+                            if unsupported_metrics:
+                                add_deepeval_log(f"⚠️ Skipping unsupported metrics: {', '.join(unsupported_metrics)}", agent_name="DeepEvalAgent")
+
+                            add_deepeval_log(f"✅ Using supported metrics: {', '.join(supported_metrics)}", agent_name="DeepEvalAgent")
+                            add_deepeval_log("Preparing to execute DeepEval with selected configuration.", agent_name="DeepEvalAgent")
+                            
+                            # Update session state with filtered metrics
+                            st.session_state.deepeval_state['selected_metrics'] = supported_metrics
+                            
+                            # Call the handler function
+                            handle_start_deepeval_assessment()
+                        else:
+                            add_deepeval_log("❌ No supported metrics selected. Please select 'correctness' to proceed.", agent_name="DeepEvalAgent")
+                else:
+                    add_deepeval_log("❌ No metrics selected. Please select at least one quality metric.", agent_name="DeepEvalAgent")
+            else:
+                add_deepeval_log("❌ JMeter test must be completed before starting DeepEval.", agent_name="DeepEvalAgent")
 
     # Display the DeepEval results
     with col_deepeval_viewer:

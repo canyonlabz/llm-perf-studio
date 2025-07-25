@@ -6,7 +6,7 @@ from datetime import datetime
 import streamlit as st
 
 from src.ui.page_styles import inject_jmeter_config_styles
-from src.utils.test_state import TestState
+from src.utils.test_state import TestState, DeepEvalTestState
 
 def initialize_session_state():
     """
@@ -84,7 +84,7 @@ def initialize_session_state():
 
     # Initialize DeepEval test state (mirrors JMeter pattern)
     if "deepeval_test_state" not in st.session_state:
-        st.session_state.deepeval_test_state = TestState.NOT_STARTED
+        st.session_state.deepeval_test_state = DeepEvalTestState.NOT_STARTED
 
     # Initialize DeepEval configuration state
     if "deepeval_state" not in st.session_state:
