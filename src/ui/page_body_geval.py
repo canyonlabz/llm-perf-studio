@@ -16,7 +16,7 @@ from src.ui.page_styles import (
 from src.utils.event_logs import (
     add_deepeval_log,
 )
-from src.utils.test_state import TestState
+from src.utils.test_state import TestState, DeepEvalTestState
 
 config = load_config()      # Load the full configuration from config.yaml
 initialize_session_state()  # Initialize session state for the application

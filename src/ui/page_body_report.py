@@ -17,7 +17,7 @@ from src.ui.page_utils import (
     format_duration, 
     format_datetime,
 )
-from src.utils.test_state import TestState
+from src.utils.test_state import TestState, DeepEvalTestState
 
 config = load_config()      # Load the full configuration from config.yaml
 initialize_session_state()  # Initialize all session state variables used across the application

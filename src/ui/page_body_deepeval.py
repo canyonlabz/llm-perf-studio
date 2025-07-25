@@ -32,10 +32,18 @@ def get_button_states():
     Get the current states of the DeepEval buttons based on the JMeter test state.
     Returns a dictionary with the states of the buttons.
     """
-    state = st.session_state.jmeter_test_state
+    jmeter_state = st.session_state.jmeter_test_state
+    deepeval_state = st.session_state.deepeval_test_state
+    
     return {
-        "start_deepeval_disabled": state != TestState.COMPLETED,
-        "clear_deepeval_logs_disabled": state != TestState.COMPLETED
+        "start_deepeval_disabled": (
+            jmeter_state != TestState.COMPLETED or 
+            deepeval_state == DeepEvalTestState.RUNNING
+        ),
+        "clear_deepeval_logs_disabled": (
+            jmeter_state != TestState.COMPLETED and 
+            len(st.session_state.deepeval_logs) == 0
+        )
     }
 
 def render_deepeval_configuration():
