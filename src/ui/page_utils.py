@@ -36,7 +36,7 @@ def initialize_session_state():
             "ramp_up": None,
             "duration": None,
             "iterations": None,
-            "jmeter_test_results": {},
+            "jmeter_test_results": {},  # Dictionary to store JMeter test results
             "jmeter_jtl_path": "",
             "jmeter_log_path": "",
             "llm_kpis_path": "",        # Path to LLM KPIs file
@@ -90,13 +90,17 @@ def initialize_session_state():
     if "deepeval_state" not in st.session_state:
         st.session_state.deepeval_state = {
             "selected_metrics": ["correctness"], # List of selected quality metrics
-            "deepeval_test_cases": [],          # List of test cases for DeepEval
+            "previous_selected_metrics": [],     # Track previous metric selections to prevent duplicate logging
+            "deepeval_test_cases": [],           # List of test cases for DeepEval
             "deepeval_test_results": {},         # Dictionary to store DeepEval results
             "llm_responses_file": "",            # Path to LLM responses JSON file
             "deepeval_results_file": "",         # Path to DeepEval results output
             "run_timestamp": "",                 # Timestamp of last DeepEval run
             "total_test_cases": 0,               # Total number of test cases analyzed
             "analysis_complete": False,          # Flag indicating analysis completion
+            "backup_files": {},                  # Track renamed old result files for transparency
+            "validation_status": "pending",      # Integrity check: "pending", "valid", "invalid"
+            "question_count_match": False,       # 1-to-1 correlation test between JMeter and DeepEval
         }
 
     # Initialize DeepEval thread data for background processing
@@ -114,7 +118,9 @@ def initialize_session_state():
                 'telemetry': "",
                 'cache': "",
                 'latest_run': ""
-            }
+            },
+            'start_time': None,                  # Start time of the current DeepEval run
+            'end_time': None,                    # End time of the current DeepEval run
         }
 
     # Enhanced error tracking for DeepEval

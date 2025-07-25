@@ -56,7 +56,35 @@ def render_deepeval_configuration():
             placeholder="Select metrics to evaluate",
             label_visibility="collapsed",  # Hide the label for a cleaner look
         )
+
+        # Update session state with selected metrics
         st.session_state.deepeval_state['selected_metrics'] = selected_metrics
+
+        # Log metric selection changes to DeepEval Viewer (only when metrics change)
+        previous_metrics = st.session_state.deepeval_state.get('previous_selected_metrics', [])
+        if selected_metrics != previous_metrics:
+            # Update the previous metrics to avoid duplicate logging
+            st.session_state.deepeval_state['previous_selected_metrics'] = selected_metrics
+            
+            if selected_metrics:
+                # Check for unsupported metrics
+                unsupported_metrics = [metric for metric in selected_metrics if metric != "correctness"]
+                supported_metrics = [metric for metric in selected_metrics if metric == "correctness"]
+                
+                # Log selected metrics
+                add_deepeval_log(f"📋 Metrics selected: {', '.join(selected_metrics)}", agent_name="DeepEvalAgent")
+                
+                if supported_metrics:
+                    add_deepeval_log(f"✅ Supported metrics ready: {', '.join(supported_metrics)}", agent_name="DeepEvalAgent")
+                
+                if unsupported_metrics:
+                    add_deepeval_log(
+                        f"⚠️ Unsupported metrics (will be skipped): {', '.join(unsupported_metrics)}", 
+                        agent_name="DeepEvalAgent"
+                    )
+                    add_deepeval_log("💡 Note: Only 'correctness' metric is currently implemented.", agent_name="DeepEvalAgent")
+            else:
+                add_deepeval_log("📝 No metrics selected. Please select at least one metric to proceed.", agent_name="DeepEvalAgent")
 
 def render_deepeval_viewer():
     """
