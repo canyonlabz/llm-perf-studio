@@ -19,7 +19,7 @@ from src.tools.jmeter_executor import (
     stop_jmeter_test_node,
     analyze_llm_metrics_node
 )
-from src.utils.test_state import TestState
+from src.utils.test_state import TestState, DeepEvalTestState
 # Import configuration loader
 from src.utils.config import load_config
 
@@ -158,14 +158,66 @@ def handle_start_deepeval_assessment():
     This function manages pre-assessment checks, file cleanup, and thread initialization.
     """
     try:
-        # 1. Pre-assessment validation
-        # 2. Session state snapshot creation
-        # 3. File cleanup and backup operations
-        # 4. Thread initialization
-        # 5. Update UI state
-        ...
+        # 1. Pre-assessment validation and logging
+        add_deepeval_log("🔍 Performing pre-assessment validation...", agent_name="DeepEvalAgent")
+        
+        # Check if DeepEval is already running
+        if st.session_state.deepeval_test_state == DeepEvalTestState.RUNNING:
+            add_deepeval_log("⚠️ DeepEval is already running. Please wait for completion.", agent_name="DeepEvalAgent")
+            return
+        
+        # Validate JMeter test completion
+        if st.session_state.jmeter_test_state != TestState.COMPLETED:
+            add_deepeval_log("❌ JMeter test must be completed before starting DeepEval.", agent_name="DeepEvalAgent")
+            return
+        
+        # Validate metrics selection
+        selected_metrics = st.session_state.deepeval_state.get('selected_metrics', [])
+        if not selected_metrics:
+            add_deepeval_log("❌ No metrics selected. Please select at least one quality metric.", agent_name="DeepEvalAgent")
+            return
+        
+        # Validate LLM responses file exists
+        llm_responses_path = st.session_state.jmeter_thread_data.get('llm_responses_path', '')
+        if not llm_responses_path or not os.path.exists(llm_responses_path):
+            add_deepeval_log("❌ LLM responses file not found. Please run JMeter test first.", agent_name="DeepEvalAgent")
+            return
+        
+        add_deepeval_log("✅ Pre-assessment validation completed successfully.", agent_name="DeepEvalAgent")
+        
+        # 2. Create session state snapshot and shared data
+        add_deepeval_log("📸 Creating session state snapshot...", agent_name="DeepEvalAgent")
+        state_snapshot = dict(st.session_state)
+        shared_data = create_shared_data_for_deepeval(state_snapshot)
+        add_deepeval_log("✅ Session state snapshot created successfully.", agent_name="DeepEvalAgent")
+
+        # 3. Update DeepEval test state to RUNNING
+        st.session_state.deepeval_test_state = DeepEvalTestState.RUNNING
+        add_deepeval_log("🔄 DeepEval state updated to RUNNING.", agent_name="DeepEvalAgent")
+
+        # TODO: File cleanup and thread initialization in next steps
+        add_deepeval_log("⏭️ Next: File cleanup and thread initialization...", agent_name="DeepEvalAgent")
         
     except Exception as e:
         # Error handling and user notification
-        pass
+        error_msg = f"❌ Failed to start DeepEval assessment: {str(e)}"
+        add_deepeval_log(error_msg, agent_name="DeepEvalAgent")
+        st.session_state.deepeval_test_state = DeepEvalTestState.FAILED
+        st.session_state.deepeval_errors['last_error'] = str(e)
+        st.session_state.deepeval_errors['error_count'] += 1
 
+def create_shared_data_for_deepeval(state_snapshot):
+    """Create shared data structure for DeepEval thread processing."""
+    return {
+        'logs': [],
+        'status': 'initializing',
+        'deepeval_config': {
+            'selected_metrics': state_snapshot.get('deepeval_state', {}).get('selected_metrics', []),
+            'llm_responses_file': state_snapshot.get('jmeter_thread_data', {}).get('llm_responses_path', ''),
+            'run_timestamp': state_snapshot.get('jmeter_thread_data', {}).get('run_timestamp', ''),
+        },
+        'results': None,
+        'analysis': None,
+        'error_details': None,
+        'stop_requested': False,
+    }
