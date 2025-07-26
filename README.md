@@ -1,152 +1,276 @@
-## 🧪 LLM Performance Testing Framework
+# LLM Performance Testing Framework
 
-A modern, extensible proof-of-concept for performance and quality assessment of Large Language Models (LLMs) using automated load testing, token-level metrics, and advanced response evaluation. Easily benchmark your LLMs, compare results to industry leaderboards, and visualize performance trends—all in a Dockerized, open, and reproducible environment.
+A comprehensive framework for load testing Large Language Models (LLMs) with integrated quality assessment using JMeter and DeepEval.
+
+## 🚀 Overview
+
+This framework combines traditional load testing with AI-specific quality metrics to provide a complete performance evaluation of LLM services. It supports testing both local models (via Ollama) and cloud-based APIs (OpenAI) while measuring both performance and response quality under load.
+
+## ✨ Key Features
+
+- **Dual Testing Approach**: Load testing with JMeter + Quality assessment with DeepEval
+- **Multi-LLM Support**: Ollama (local models) and OpenAI API compatibility
+- **Real-time Monitoring**: Live dashboard with performance metrics and logs
+- **Quality Under Load**: Track accuracy degradation as load increases
+- **Comprehensive Metrics**: TTFT, TPOT, TPS, and traditional HTTP metrics
+- **Interactive UI**: Streamlit-based dashboard for test management
+- **RAG Support**: Test Retrieval-Augmented Generation workflows
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Streamlit UI  │    │  JMeter Engine  │    │  LLM Service    │
+│                 │    │                 │    │                 │
+│ • Test Config   │───▶│ • Load Testing  │───▶│ • Ollama/OpenAI │
+│ • Monitoring    │    │ • Metrics       │    │ • Local/Cloud   │
+│ • Results       │    │ • Logging       │    │ • RAG Enabled   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │              ┌─────────────────┐              │
+         └─────────────▶│  DeepEval QA    │◀─────────────┘
+                        │                 │
+                        │ • Correctness   │
+                        │ • Quality Score │
+                        │ • Category Test │
+                        └─────────────────┘
+```
+
+## 📋 Prerequisites
+
+- **Python 3.8+**
+- **Apache JMeter 5.6.3+**
+- **Java 8+** (for JMeter)
+- **Ollama** (for local model testing)
+- **OpenAI API Key** (for OpenAI testing)
+
+## 🛠️ Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/llm-perf-testing.git
+   cd llm-perf-testing
+   ```
+
+2. **Install Python dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Install JMeter:**
+   - Download from [Apache JMeter](https://jmeter.apache.org/download_jmeter.cgi)
+   - Extract to `C:\opt\apache-jmeter-5.6.3\` (Windows) or `/opt/apache-jmeter-5.6.3/` (Linux/Mac)
+
+4. **Configure environment:**
+   ```bash
+   cp config/config.yaml.example config/config.yaml
+   # Edit config.yaml with your settings
+   ```
+
+5. **Set up Ollama (optional):**
+   ```bash
+   # Install Ollama
+   curl -fsSL https://ollama.ai/install.sh | sh
+   
+   # Pull a model
+   ollama pull llama3.2:1b
+   ```
+
+## ⚙️ Configuration
+
+### Main Configuration (`config/config.yaml`)
+
+```yaml
+llm_services:
+  ollama:
+    base_url: "http://localhost:11434"
+    model: "llama3.2:1b"
+    timeout: 30
+  
+  openai:
+    api_key: "${OPENAI_API_KEY}"
+    model: "gpt-3.5-turbo"
+    timeout: 30
+
+jmeter:
+  bin_path: "C:/opt/apache-jmeter-5.6.3/bin"
+  test_plan: "jmeter/llm_load_test.jmx"
+  
+deepeval:
+  evaluator_model: "gpt-4"
+  correctness_threshold: 0.7
+```
+
+### Environment Variables
+
+```bash
+# .env file
+OPENAI_API_KEY=your_openai_api_key_here
+DEEPEVAL_API_KEY=your_deepeval_api_key_here
+```
+
+## 🚀 Quick Start
+
+1. **Start the dashboard:**
+   ```bash
+   streamlit run streamlit_ui.py
+   ```
+
+2. **Configure your test:**
+   - Select LLM service (Ollama/OpenAI)
+   - Set load parameters (users, duration, ramp-up)
+   - Choose test data and RAG settings
+
+3. **Run performance test:**
+   - Click "Start JMeter Test"
+   - Monitor real-time logs and metrics
+   - View live performance charts
+
+4. **Quality assessment:**
+   - Navigate to "Quality Assessment" tab
+   - Run DeepEval analysis on test responses
+   - Review quality scores and categorized results
+
+## 📊 Metrics & KPIs
+
+### Performance Metrics
+- **Response Time**: Average, Min, Max, 90th percentile
+- **Throughput**: Requests per second
+- **Error Rate**: Failed requests percentage
+- **Concurrent Users**: Virtual user load over time
+
+### LLM-Specific Metrics
+- **TTFT**: Time to First Token
+- **TPOT**: Time Per Output Token  
+- **TPS**: Tokens Per Second
+- **Token Counts**: Input/Output token statistics
+
+### Quality Metrics
+- **Correctness Score**: DeepEval accuracy assessment
+- **Category Performance**: Domain-specific quality tracking
+- **Quality Under Load**: Accuracy vs load correlation
+
+## 📁 Project Structure
+
+```
+llm-perf-testing/
+├── config/
+│   ├── config.yaml              # Main configuration
+│   └── prompts/                 # Test prompt datasets
+├── docs/
+│   ├── KPIs.md                 # Key Performance Indicators
+│   └── architecture.md         # System architecture
+├── jmeter/
+│   ├── llm_load_test.jmx       # JMeter test plan
+│   └── test_results/           # Generated test results
+├── src/
+│   ├── tools/
+│   │   ├── jmeter_executor.py  # JMeter integration
+│   │   └── deepeval_assessment.py # Quality assessment
+│   ├── ui/
+│   │   ├── page_body.py        # Main UI components
+│   │   └── page_styles.py      # UI styling
+│   └── utils/
+│       ├── config.py           # Configuration management
+│       └── test_state.py       # Test state management
+├── streamlit_ui.py             # Main application entry
+└── requirements.txt            # Python dependencies
+```
+
+## 🔧 Usage Examples
+
+### Basic Load Test
+
+```python
+# Configure test parameters
+test_config = {
+    "vusers": 10,
+    "ramp_up": 30,
+    "duration": 300,
+    "llm_mode": "ollama",
+    "model": "llama3.2:1b"
+}
+
+# Run via UI or programmatically
+results = run_jmeter_test(test_config)
+```
+
+### Quality Assessment
+
+```python
+# Run DeepEval analysis on responses
+quality_results = analyze_response_quality(
+    responses_file="test_responses.json",
+    test_cases="prompts/ai_knowledge_qa.json"
+)
+
+print(f"Overall accuracy: {quality_results['pass_rate']}%")
+```
+
+### Combined Performance + Quality
+
+```python
+# Full workflow
+perf_results = run_load_test(config)
+quality_results = assess_quality(perf_results['responses'])
+
+# Analyze correlation
+analyze_performance_quality_correlation(
+    perf_results, quality_results
+)
+```
+
+## 📈 Sample Results
+
+### Performance Test Results
+- **Test Duration**: 5 minutes
+- **Virtual Users**: 10 concurrent
+- **Total Requests**: 1,247
+- **Average Response Time**: 2.3 seconds
+- **90th Percentile**: 4.1 seconds
+- **Error Rate**: 0.2%
+
+### Quality Assessment Results
+- **Total Test Cases**: 25
+- **Overall Accuracy**: 40%
+- **Best Category**: Pre-trained Models (100%)
+- **Worst Category**: AI Technologies (0%)
+- **Evaluation Cost**: $0.04
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit changes (`git commit -am 'Add new feature'`)
+4. Push to branch (`git push origin feature/new-feature`)
+5. Create a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Documentation**: Check the `docs/` directory
+- **Issues**: Report bugs via GitHub Issues
+- **Discussions**: Use GitHub Discussions for questions
+
+## 🔮 Roadmap
+
+- [ ] Support for additional LLM providers (Anthropic, Cohere)
+- [ ] Advanced RAG testing capabilities
+- [ ] Automated performance regression detection
+- [ ] Integration with CI/CD pipelines
+- [ ] Custom quality metrics framework
+- [ ] Multi-region load testing support
+
+## 📚 Related Projects
+
+- [Apache JMeter](https://jmeter.apache.org/) - Load testing framework
+- [DeepEval](https://github.com/confident-ai/deepeval) - LLM evaluation framework
+- [Ollama](https://ollama.ai/) - Local LLM runtime
+- [Streamlit](https://streamlit.io/) - Web app framework
 
 ---
 
-### 🚀 Features
-
-- **Automated Load Testing:** JMeter-driven tests send curated prompts to your LLM, simulating real-world usage at scale.
-- **Live, Responsive UI:** Streamlit-based dashboard with real-time JMeter logs and test status updates, powered by background threading and auto-refresh.
-- **Token Utilization Metrics:** Capture Time to First Token (TTFT), Tokens per Second (TPS), and Time per Output Token (TPOT) for deep performance insights.
-- **Quality Assessment:** Analyze LLM responses against ground truth using DeepEval for objective scoring.
-- **RAG Support:** Integrate ChromaDB for Retrieval-Augmented Generation with your own PDF-based Q&A datasets.
-- **Leaderboard Comparison:** (Planned) Benchmark your local LLM’s quality scores against Hugging Face and other public leaderboards.
-- **Modern UI:** Manage and interact with your LLM stack via OpenWebUI.
-- **Fully Containerized:** One-command setup with Docker Compose for rapid deployment and reproducibility.
-- **BSD 2-Clause Licensed:** Open source, permissive, and ready for community contributions.
-
----
-
-### 📦 Technology Stack
-
-| Component                 | Purpose                                                   |
-|---------------------------|-----------------------------------------------------------|
-| Streamlit                 | Custom UI for live logs, test control, and dashboards     |
-| streamlit-autorefresh     | Enables real-time log and status updates in the UI        |
-| Ollama                    | LLM backend & API interface                               |
-| llama3.2:1b               | Default LLM model (swap for any Ollama-supported model)   |
-| ChromaDB                  | Vector database for RAG, PDF ingestion                    |
-| OpenWebUI                 | Web-based LLM management UI                               |
-| JMeter                    | Load generation, metrics capture, and test orchestration  |
-| DeepEval                  | Python-based quality assessment framework                 |
-| Docker Compose            | Orchestration and persistent environment setup            |
-| Threading (Python)        | Background task execution for non-blocking UI             |
-
----
-
-### 🗂️ Project Structure
-
-```plaintext
-LLM-PERF-TESTING/
-│   demo-llm-llama3-2-1b.jmx
-│   LICENSE
-│   README.md
-│
-├───docker-compose/
-│       docker-compose.yml
-│
-├───testdata_csv/
-│       environment.csv
-│       README.md
-│
-├───testdata_files/
-│       ISTQB_CT-AI_SampleExam-Answers_v1.0.pdf
-│       ISTQB_CT-AI_SampleExam-Questions_v1.0.pdf
-│
-├───testdata_json/
-│       ISTQB_Final_Questions_Answers.json
-│
-├───test_results/
-│       _llm-test-results.csv
-│       _llm-test-results.jtl
-│       _llm_responses.json
-│
-└───tools/
-        deepeval_assessment.py
-```
-
----
-
-### ⚡ Quick Start
-
-#### **Prerequisites**
-
-- [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/) installed
-- Python 3.10+ (for running Streamlit UI and analysis scripts)
-
-
-#### **Setup and Usage**
-
-1. **Clone the repo**
-
-```bash
-git clone https://github.com/yourusername/llm-perf-testing.git
-cd llm-perf-testing
-```
-
-2. **Install Python dependencies**
-
-```bash
-pip install -r requirements.txt
-```
-
-3. **Spin up the stack**
-
-```bash
-docker-compose -f docker-compose/docker-compose.yml up
-```
-
-4. **Run the Streamlit UI**
-
-```bash
-streamlit run src/ui/page_body.py
-```
-
-5. **Run a performance test**
-
-```bash
-jmeter -n -t demo-llm-llama3-2-1b.jmx
-```
-
-6. **Assess quality**
-
-```bash
-python src/tools/deepeval_assessment.py
-```
-
-7. **(Planned) Compare with Leaderboards**
-    - Automated scripts (coming soon!) to benchmark your results against Hugging Face and other public leaderboards.
-
-### 📊 Metrics Captured
-
-- **Time to First Token (TTFT)**
-- **Tokens per Second (TPS)**
-- **Time per Output Token (TPOT)**
-- **DeepEval Quality Score**
-
-
-### 📝 Contributing
-
-Contributions, issues, and feature requests are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-### 📄 License
-
-BSD 2-Clause License (see [LICENSE](LICENSE) for details).
-
-### 🙏 Acknowledgments
-
-- [Streamlit](https://streamlit.io/)
-- [streamlit-autorefresh](https://github.com/streamlit/streamlit-autorefresh)
-- [Ollama](https://ollama.com/)
-- [ChromaDB](https://www.trychroma.com/)
-- [OpenWebUI](https://github.com/open-webui/open-webui)
-- [JMeter](https://jmeter.apache.org/)
-- [DeepEval](https://github.com/confident-ai/deepeval)
-- [Hugging Face Leaderboard](https://huggingface.co/spaces/open-llm-leaderboard)
-
-> 💡 **Tip:** Use your own PDF datasets for custom RAG testing. Swap in any Ollama-supported LLM for broader benchmarking.
-
-### 🌟 Stay tuned for leaderboard integration, advanced visualizations, and more!
-
-*Made with ❤️ for the LLM community.*
+**Built with ❤️ for the LLM testing community**
