@@ -5,6 +5,7 @@ import re
 import streamlit as st
 from datetime import datetime
 from threading import Thread
+import shutil
 
 from torch import res
 
@@ -195,8 +196,25 @@ def handle_start_deepeval_assessment():
         st.session_state.deepeval_test_state = DeepEvalTestState.RUNNING
         add_deepeval_log("🔄 DeepEval state updated to RUNNING.", agent_name="DeepEvalAgent")
 
-        # TODO: File cleanup and thread initialization in next steps
-        add_deepeval_log("⏭️ Next: File cleanup and thread initialization...", agent_name="DeepEvalAgent")
+        # 4. File cleanup and backup operations
+        add_deepeval_log("🧹 Performing file cleanup and backup operations...", agent_name="DeepEvalAgent")
+        perform_deepeval_file_cleanup(shared_data)
+        add_deepeval_log("✅ File cleanup completed successfully.", agent_name="DeepEvalAgent")
+
+        # 5. Initialize thread data
+        add_deepeval_log("⚙️ Initializing thread data...", agent_name="DeepEvalAgent")
+        initialize_deepeval_thread_data()
+        add_deepeval_log("✅ Thread data initialized successfully.", agent_name="DeepEvalAgent")
+
+        # 6. Start background thread
+        add_deepeval_log("🚀 Starting background thread for DeepEval execution...", agent_name="DeepEvalAgent")
+        thread = threading.Thread(
+            target=__start_deepeval_thread,
+            args=(shared_data, state_snapshot),
+            daemon=True
+        )
+        thread.start()
+        add_deepeval_log("✅ DeepEval background thread started successfully.", agent_name="DeepEvalAgent")
         
     except Exception as e:
         # Error handling and user notification
@@ -221,3 +239,50 @@ def create_shared_data_for_deepeval(state_snapshot):
         'error_details': None,
         'stop_requested': False,
     }
+
+def perform_deepeval_file_cleanup(shared_data):
+    """Handle pre-assessment file cleanup and backup operations."""
+    try:
+        # Path to the DeepEval output directory
+        deepeval_dir = os.path.join("src", "tools", ".deepeval")
+        latest_test_run_path = os.path.join(deepeval_dir, ".latest_test_run.json")
+        
+        # Create .old subdirectory if it doesn't exist
+        old_dir = os.path.join(deepeval_dir, ".old")
+        if not os.path.exists(old_dir):
+            os.makedirs(old_dir)
+            add_deepeval_log("📁 Created .old directory for backup files.", agent_name="DeepEvalAgent")
+        
+        # Check if .latest_test_run.json exists
+        if os.path.exists(latest_test_run_path):
+            # Generate backup filename
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            backup_filename = f"backup_{timestamp}_.latest_test_run.json"
+            backup_path = os.path.join(old_dir, backup_filename)
+            
+            # Move existing file to backup
+            shutil.move(latest_test_run_path, backup_path)
+            add_deepeval_log(f"🗂️ Existing .latest_test_run.json backed up to: {backup_filename}", agent_name="DeepEvalAgent")
+            
+            # Track backup in session state
+            st.session_state.deepeval_state['backup_files'][latest_test_run_path] = backup_path
+        else:
+            add_deepeval_log("📝 No existing .latest_test_run.json file found - no cleanup needed.", agent_name="DeepEvalAgent")
+            
+    except Exception as e:
+        add_deepeval_log(f"⚠️ File cleanup warning: {str(e)}", agent_name="DeepEvalAgent")
+        shared_data['error_details'] = f"File cleanup error: {str(e)}"
+
+def initialize_deepeval_thread_data():
+    """Initialize DeepEval thread data with starting values."""
+    st.session_state.deepeval_thread_data.update({
+        'logs': [],
+        'status': 'starting',
+        'results': None,
+        'analysis': None,
+        'error_message': '',
+        'progress': 0,
+        'current_test_case': 0,
+        'start_time': datetime.now(),
+        'end_time': None,
+    })
