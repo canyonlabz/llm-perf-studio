@@ -168,3 +168,6 @@ jmeter/test_results/*
 tmp/results/*
 # Ignore DeepEval test results
 src/tools/.deepeval/*
+# Ignore DeepEval test data
+src/tools/.deepeval/*
+.deepeval/*
