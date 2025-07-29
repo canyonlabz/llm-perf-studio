@@ -165,10 +165,6 @@ def __start_deepeval_thread(shared_data, state_snapshot):
     try:
         # Update status to running in shared data
         shared_data['status'] = DeepEvalTestState.RUNNING
-        shared_data['llm_responses_path'] = shared_data.get('llm_responses_path', '')
-        shared_data['run_timestamp'] = shared_data.get('run_timestamp', '')  
-        shared_data['selected_metrics'] = shared_data.get('selected_metrics', [])
-
         result = run_deepeval_assessment_node(shared_data, state_snapshot)
 
         # If we reach here, it means the test ran successfully

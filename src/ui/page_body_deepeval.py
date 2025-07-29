@@ -128,6 +128,7 @@ def render_deepeval_viewer():
     # Sync results from background thread
     if shared_data.get('results'):
         st.session_state.deepeval_state['llm_responses_path'] = shared_data['results'].get('llm_responses_path', "")
+        st.session_state.deepeval_state['deepeval_test_results'] = shared_data['results']
         shared_data['results'] = None  # Clear after syncing
         
     # Sync analysis results
@@ -154,16 +155,17 @@ def render_deepeval_viewer():
         run_timestamp = st.session_state.jmeter_state.get("run_timestamp", "")
 
         # DEBUG:
-        st.write(f"start_deepeval_disabled: {start_deepeval_disabled}")
-        st.write(f"deepeval_running: {deepeval_running}")
-        st.write(f"selected_metrics: {selected_metrics}")
-        st.write(f"no_metrics_selected: {no_metrics_selected}")
-        st.write(f"button_disabled: {button_disabled}")
-        st.write(f'run_timestamp: {st.session_state.jmeter_state.get("run_timestamp", "")}')
-        st.write(f"llm_responses_path: {st.session_state.jmeter_state.get('llm_responses_path', '')}")
-        st.write(f"JMeter test state: {st.session_state.jmeter_test_state}")
-        st.write(f"DeepEval test state: {st.session_state.deepeval_test_state}")
-        st.write(f"JMeter Test State != TestState.COMPLETED: {str(st.session_state.jmeter_test_state) != str(TestState.COMPLETED)}")
+        #st.write(f"start_deepeval_disabled: {start_deepeval_disabled}")
+        #st.write(f"deepeval_running: {deepeval_running}")
+        #st.write(f"selected_metrics: {selected_metrics}")
+        #st.write(f"no_metrics_selected: {no_metrics_selected}")
+        #st.write(f"button_disabled: {button_disabled}")
+        #st.write(f'run_timestamp: {st.session_state.jmeter_state.get("run_timestamp", "")}')
+        #st.write(f"llm_responses_path: {st.session_state.jmeter_state.get('llm_responses_path', '')}")
+        #st.write(f"JMeter test state: {st.session_state.jmeter_test_state}")
+        #st.write(f"DeepEval test state: {st.session_state.deepeval_test_state}")
+        #st.write(f"JMeter Test State != TestState.COMPLETED: {str(st.session_state.jmeter_test_state) != str(TestState.COMPLETED)}")
+        #st.write(f"DeepEval Test Results: {st.session_state.deepeval_state.get('deepeval_test_results', {})}")
 
         # Button to start the DeepEval quality assessment
         if st.button("▶️ Start DeepEval", 
