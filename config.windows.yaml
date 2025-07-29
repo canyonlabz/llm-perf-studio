@@ -37,3 +37,6 @@ jmeter:
   use_rag: False  # Whether to use RAG mode in JMeter tests (can be configured in UI)
   prompt_num: 5   # Number of prompts to use from input JSON file in JMeter tests
 
+deepeval:
+  deepeval_results_path: "C:\\Users\\Jason\\Repos\\_GitHub\\llm-perf-testing\\.deepeval"  # Path for DeepEval results files
+  

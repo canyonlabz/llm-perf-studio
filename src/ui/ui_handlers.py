@@ -21,7 +21,7 @@ from src.tools.jmeter_executor import (
     analyze_llm_metrics_node
 )
 from src.tools.deepeval_assessment import (
-    run_deepeval_analysis_node,
+    run_deepeval_assessment_node,
     analyze_deepeval_results_node
 )
 from src.utils.test_state import TestState, DeepEvalTestState
@@ -30,7 +30,7 @@ from src.utils.config import load_config
 
 # Load configurations
 config = load_config()
-
+deepeval_config = config.get("deepeval", {})
 #  ========================= JMeter UI Handlers =========================
 def __start_jmeter_thread(shared_data, state_snapshot):
     """Background thread target to run JMeter and update session state/logs."""
@@ -158,32 +158,50 @@ def __start_deepeval_thread(shared_data, state_snapshot):
     """
     Background thread to run DeepEval quality assessment and update session state/logs.
     """
+    # DEBUG:
+    thread_safe_add_log(shared_data['logs'], "DEBUG: Starting DeepEval assessment execution...", agent_name="DeepEvalAgent")
+
+    # DEBUG:
+    try:
+        # Update status to running in shared data
+        shared_data['status'] = DeepEvalTestState.RUNNING
+        shared_data['llm_responses_path'] = shared_data.get('llm_responses_path', '')
+        shared_data['run_timestamp'] = shared_data.get('run_timestamp', '')  
+        shared_data['selected_metrics'] = shared_data.get('selected_metrics', [])
+
+        result = run_deepeval_assessment_node(shared_data, state_snapshot)
+
+        # If we reach here, it means the test ran successfully
+        if result:
+            shared_data['status'] = DeepEvalTestState.COMPLETED
+            shared_data['start_time'] = datetime.now()
+            shared_data['results'] = result
+            thread_safe_add_log(shared_data['logs'], "✅ DEBUG: DeepEval assessment executed successfully.", agent_name="DeepEvalAgent")
+
+    except Exception as e:
+        # Unexpected error handling
+        thread_safe_add_log(shared_data['logs'], f"💥 DeepEval thread error: {str(e)}", agent_name="DeepEvalAgent")
+        shared_data['status'] = DeepEvalTestState.FAILED
+        shared_data['results'] = None
+'''
     try:
         # 1. Start analysis
-        thread_safe_add_log(shared_data['logs'],
-                            "🔄 Running DeepEval analysis node...",
-                            agent_name="DeepEvalAgent")
-        result = run_deepeval_analysis_node(shared_data, state_snapshot)
+        thread_safe_add_log(shared_data['logs'], "🔄 Running DeepEval assessment node...", agent_name="DeepEvalAgent")
+        result = run_deepeval_assessment_node(shared_data, state_snapshot)
 
         # 2. Check for execution errors
         if not result.get('success', False):
             error = result.get('error', 'Unknown error')
-            thread_safe_add_log(shared_data['logs'],
-                                f"❌ DeepEval analysis failed: {error}",
-                                agent_name="DeepEvalAgent")
+            thread_safe_add_log(shared_data['logs'], f"❌ DeepEval assessment failed: {error}", agent_name="DeepEvalAgent")
             # Update shared_data instead of session state directly
             shared_data['status'] = 'failed'
             shared_data['error_message'] = error
             return
 
-        thread_safe_add_log(shared_data['logs'],
-                            "✅ DeepEval analysis node completed.",
-                            agent_name="DeepEvalAgent")
+        thread_safe_add_log(shared_data['logs'], "✅ DeepEval analysis node completed.", agent_name="DeepEvalAgent")
 
         # 3. Process analysis results
-        thread_safe_add_log(shared_data['logs'],
-                            "🔍 Analyzing DeepEval results...",
-                            agent_name="DeepEvalAgent")
+        thread_safe_add_log(shared_data['logs'], "🔍 Analyzing DeepEval results...", agent_name="DeepEvalAgent")
         analysis = analyze_deepeval_results_node(shared_data, state_snapshot)
 
         # 4. Update shared_data and session_state
@@ -192,19 +210,16 @@ def __start_deepeval_thread(shared_data, state_snapshot):
         shared_data['status'] = 'completed'
 
         # 5. Finalize
-        thread_safe_add_log(shared_data['logs'],
-                            "🏁 DeepEval assessment completed successfully.",
-                            agent_name="DeepEvalAgent")
+        thread_safe_add_log(shared_data['logs'], "🏁 DeepEval assessment completed successfully.", agent_name="DeepEvalAgent")
         st.session_state.deepeval_test_state = DeepEvalTestState.COMPLETED
 
     except Exception as e:
         # Unexpected error handling
-        thread_safe_add_log(shared_data['logs'],
-                            f"💥 DeepEval thread error: {str(e)}",
-                            agent_name="DeepEvalAgent")
+        thread_safe_add_log(shared_data['logs'], f"💥 DeepEval thread error: {str(e)}", agent_name="DeepEvalAgent")
         st.session_state.deepeval_test_state = DeepEvalTestState.FAILED
         st.session_state.deepeval_errors['last_error'] = str(e)
-
+'''
+        
 def handle_start_deepeval_assessment():
     """
     Handle the start of DeepEval assessment process.
@@ -215,12 +230,12 @@ def handle_start_deepeval_assessment():
         add_deepeval_log("🔍 Performing pre-assessment validation...", agent_name="DeepEvalAgent")
         
         # Check if DeepEval is already running
-        if st.session_state.deepeval_test_state == DeepEvalTestState.RUNNING:
+        if str(st.session_state.deepeval_test_state) == str(DeepEvalTestState.RUNNING):
             add_deepeval_log("⚠️ DeepEval is already running. Please wait for completion.", agent_name="DeepEvalAgent")
             return
         
         # Validate JMeter test completion
-        if st.session_state.jmeter_test_state != TestState.COMPLETED:
+        if str(st.session_state.jmeter_test_state) != str(TestState.COMPLETED):
             add_deepeval_log("❌ JMeter test must be completed before starting DeepEval.", agent_name="DeepEvalAgent")
             return
         
@@ -240,9 +255,19 @@ def handle_start_deepeval_assessment():
         
         # 2. Create session state snapshot and shared data
         add_deepeval_log("📸 Creating session state snapshot...", agent_name="DeepEvalAgent")
-        state_snapshot = dict(st.session_state)
-        shared_data = create_shared_data_for_deepeval(state_snapshot)
-        add_deepeval_log("✅ Session state snapshot created successfully.", agent_name="DeepEvalAgent")
+        ##state_snapshot = dict(st.session_state)
+        ##shared_data = create_shared_data_for_deepeval(state_snapshot)
+        state = st.session_state.get("deepeval_state", {}).copy()
+        shared_data = st.session_state.get("deepeval_thread_data", {})
+        # Set initial shared data values
+        shared_data['llm_responses_file'] = state.get('llm_responses_path', '')
+        shared_data['selected_metrics'] = state.get('selected_metrics', [])
+        shared_data['run_timestamp'] = state.get('run_timestamp', 'NOT_FOUND')
+        ### DEBUG:
+        add_deepeval_log(f"DEBUG [ui_handlers]: Loaded llm_responses_file: {shared_data['llm_responses_file']}", agent_name="DeepEvalAgent")
+        add_deepeval_log(f"DEBUG [ui_handlers]: Selected metrics: {shared_data['selected_metrics']}", agent_name="DeepEvalAgent")
+        add_deepeval_log(f"DEBUG [ui_handlers]: Run timestamp: {shared_data['run_timestamp']}", agent_name="DeepEvalAgent")
+        add_deepeval_log("DEBUG [ui_handlers]: Session state snapshot created successfully.", agent_name="DeepEvalAgent")
 
         # 3. Update DeepEval test state to RUNNING
         st.session_state.deepeval_test_state = DeepEvalTestState.RUNNING
@@ -255,16 +280,13 @@ def handle_start_deepeval_assessment():
 
         # 5. Initialize thread data
         add_deepeval_log("⚙️ Initializing thread data...", agent_name="DeepEvalAgent")
-        initialize_deepeval_thread_data()
+        ##initialize_deepeval_thread_data()
         add_deepeval_log("✅ Thread data initialized successfully.", agent_name="DeepEvalAgent")
 
         # 6. Start background thread
+        st.session_state.deepeval_shared_data = shared_data
         add_deepeval_log("🚀 Starting background thread for DeepEval execution...", agent_name="DeepEvalAgent")
-        thread = threading.Thread(
-            target=__start_deepeval_thread,
-            args=(shared_data, state_snapshot),
-            daemon=True
-        )
+        thread = threading.Thread(target=__start_deepeval_thread, args=(shared_data, state), daemon=True)
         thread.start()
         add_deepeval_log("✅ DeepEval background thread started successfully.", agent_name="DeepEvalAgent")
         
@@ -296,11 +318,11 @@ def perform_deepeval_file_cleanup(shared_data):
     """Handle pre-assessment file cleanup and backup operations."""
     try:
         # Path to the DeepEval output directory
-        deepeval_dir = os.path.join("src", "tools", ".deepeval")
-        latest_test_run_path = os.path.join(deepeval_dir, ".latest_test_run.json")
-        
+        deepeval_results_path = deepeval_config.get("deepeval_results_path", ".deepeval")
+        latest_test_run_path = os.path.join(deepeval_results_path, ".latest_test_run.json")
+
         # Create .old subdirectory if it doesn't exist
-        old_dir = os.path.join(deepeval_dir, ".old")
+        old_dir = os.path.join(deepeval_results_path, ".old")
         if not os.path.exists(old_dir):
             os.makedirs(old_dir)
             add_deepeval_log("📁 Created .old directory for backup files.", agent_name="DeepEvalAgent")

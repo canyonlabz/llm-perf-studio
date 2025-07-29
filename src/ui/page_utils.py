@@ -93,8 +93,8 @@ def initialize_session_state():
             "previous_selected_metrics": [],     # Track previous metric selections to prevent duplicate logging
             "deepeval_test_cases": [],           # List of test cases for DeepEval
             "deepeval_test_results": {},         # Dictionary to store DeepEval results
-            "llm_responses_file": "",            # Path to LLM responses JSON file
-            "deepeval_results_file": "",         # Path to DeepEval results output
+            "llm_responses_path": "",            # Path to LLM responses JSON file
+            "deepeval_results_path": "",         # Path to DeepEval results output
             "run_timestamp": "",                 # Timestamp of last DeepEval run
             "total_test_cases": 0,               # Total number of test cases analyzed
             "analysis_complete": False,          # Flag indicating analysis completion

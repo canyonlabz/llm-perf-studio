@@ -9,9 +9,16 @@ from deepeval.test_case import LLMTestCaseParams
 from deepeval.metrics import GEval
 from src.utils.event_logs import thread_safe_add_log
 
+# Import configuration loader
+from src.utils.config import load_config
+# Load configurations
+config = load_config()
+deepeval_config = config.get("deepeval", {})
+deepeval_results_path = deepeval_config.get("deepeval_results_path", ".deepeval")
+deepeval_results_file = os.path.join(deepeval_results_path, ".latest_test_run.json")
 # ========================= Framework Node Functions =========================
 
-def run_deepeval_analysis_node(shared_data, state_snapshot):
+def run_deepeval_assessment_node(shared_data, state_snapshot):
     """
     Execute DeepEval quality assessment analysis.
     Combines loading test cases and running evaluation.
@@ -23,33 +30,31 @@ def run_deepeval_analysis_node(shared_data, state_snapshot):
     Returns:
         dict: Results structure with success status, file paths, and metadata
     """
+    # DEBUG:
+    thread_safe_add_log(shared_data['logs'], "DEBUG: Starting function run_deepeval_assessment_node...", agent_name="DeepEvalAgent")
+
     try:
         # Extract configuration from shared_data
-        llm_responses_file = shared_data['deepeval_config']['llm_responses_file']
-        selected_metrics = shared_data['deepeval_config']['selected_metrics']
-        run_timestamp = shared_data['deepeval_config']['run_timestamp']
-        
+        llm_responses_file = shared_data['llm_responses_file']
+        selected_metrics = shared_data['selected_metrics']
+        run_timestamp = shared_data['run_timestamp']
+
+        # DEBUG:
+        thread_safe_add_log(shared_data['logs'], f"DEBUG [deepeval_assessment]: Loaded llm_responses_file: {llm_responses_file}", agent_name="DeepEvalAgent")
+        thread_safe_add_log(shared_data['logs'], f"DEBUG [deepeval_assessment]: Selected metrics: {selected_metrics}", agent_name="DeepEvalAgent")
+        thread_safe_add_log(shared_data['logs'], f"DEBUG [deepeval_assessment]: Run timestamp: {run_timestamp}", agent_name="DeepEvalAgent")
+
         # Load test cases from JMeter JSON output
-        thread_safe_add_log(shared_data['logs'], 
-                           f"📖 Loading test cases from: {os.path.basename(llm_responses_file)}", 
-                           agent_name="DeepEvalAgent")
+        thread_safe_add_log(shared_data['logs'], f"📖 Loading test cases from: {os.path.basename(llm_responses_file)}", agent_name="DeepEvalAgent")
         
         test_cases = load_test_cases_from_jmeter_output(llm_responses_file)
-        
-        thread_safe_add_log(shared_data['logs'], 
-                           f"✅ Loaded {len(test_cases)} test cases successfully.", 
-                           agent_name="DeepEvalAgent")
-        
-        # Execute DeepEval assessment
-        thread_safe_add_log(shared_data['logs'], 
-                           "🔬 Starting DeepEval correctness assessment...", 
-                           agent_name="DeepEvalAgent")
+
+        thread_safe_add_log(shared_data['logs'], f"✅ Loaded {len(test_cases)} test cases successfully.", agent_name="DeepEvalAgent")
+        thread_safe_add_log(shared_data['logs'], "🔬 Starting DeepEval correctness assessment...", agent_name="DeepEvalAgent")
         
         execute_deepeval_assessment(test_cases, shared_data)
-        
-        thread_safe_add_log(shared_data['logs'], 
-                           "✅ DeepEval assessment execution completed.", 
-                           agent_name="DeepEvalAgent")
+
+        thread_safe_add_log(shared_data['logs'], "✅ DeepEval assessment execution completed.", agent_name="DeepEvalAgent")
         
         # Handle file renaming with JMeter timestamp
         deepeval_output_file = rename_deepeval_output_with_timestamp(run_timestamp, shared_data)
@@ -63,9 +68,7 @@ def run_deepeval_analysis_node(shared_data, state_snapshot):
         }
         
     except Exception as e:
-        thread_safe_add_log(shared_data['logs'], 
-                           f"❌ DeepEval analysis failed: {str(e)}", 
-                           agent_name="DeepEvalAgent")
+        thread_safe_add_log(shared_data['logs'], f"❌ DeepEval analysis failed: {str(e)}", agent_name="DeepEvalAgent")
         return {
             'success': False,
             'error': str(e)
@@ -84,27 +87,21 @@ def analyze_deepeval_results_node(shared_data, state_snapshot):
     """
     try:
         # Parse the renamed .latest_test_run.json file
-        thread_safe_add_log(shared_data['logs'], 
-                           "📊 Parsing DeepEval results for UI display...", 
-                           agent_name="DeepEvalAgent")
-        
+        thread_safe_add_log(shared_data['logs'], "📊 Parsing DeepEval results for UI display...", agent_name="DeepEvalAgent")
+
         # Get the renamed file path from shared_data results
         run_timestamp = shared_data['deepeval_config']['run_timestamp']
         deepeval_results = parse_latest_test_run_file(run_timestamp)
         
         # Create comprehensive analysis structure for the 5 UI tabs
         analysis = create_comprehensive_analysis(deepeval_results, shared_data)
-        
-        thread_safe_add_log(shared_data['logs'], 
-                           f"✅ Analysis complete: {analysis['metadata']['pass_count']}/{analysis['metadata']['total_questions']} passed ({analysis['metadata']['overall_pass_rate']:.1f}%)", 
-                           agent_name="DeepEvalAgent")
-        
+        analysis_str = f"✅ Analysis complete: {analysis['metadata']['pass_count']}/{analysis['metadata']['total_questions']} passed ({analysis['metadata']['overall_pass_rate']:.1f}%)"
+        thread_safe_add_log(shared_data['logs'], analysis_str, agent_name="DeepEvalAgent")
+
         return analysis
         
     except Exception as e:
-        thread_safe_add_log(shared_data['logs'], 
-                           f"❌ DeepEval analysis failed: {str(e)}", 
-                           agent_name="DeepEvalAgent")
+        thread_safe_add_log(shared_data['logs'], f"❌ DeepEval analysis failed: {str(e)}", agent_name="DeepEvalAgent")
         return {'error': str(e)}
 
 # ========================= Supporting Utility Functions =========================
@@ -148,16 +145,12 @@ def execute_deepeval_assessment(test_cases, shared_data):
     dataset = EvaluationDataset(test_cases=test_cases)
     
     # Show progress indicator
-    thread_safe_add_log(shared_data['logs'], 
-                       f"🔍 Evaluating {len(test_cases)} test cases with G-Eval correctness metric...", 
-                       agent_name="DeepEvalAgent")
-    
+    thread_safe_add_log(shared_data['logs'], f"🔍 Evaluating {len(test_cases)} test cases with G-Eval correctness metric...", agent_name="DeepEvalAgent")
+
     # Evaluate the test cases using the correctness metric
     evaluation_result = dataset.evaluate([correctness_metric])
-    
-    thread_safe_add_log(shared_data['logs'], 
-                       "✅ G-Eval assessment completed - results saved to .latest_test_run.json", 
-                       agent_name="DeepEvalAgent")
+
+    thread_safe_add_log(shared_data['logs'], "✅ G-Eval assessment completed - results saved to .latest_test_run.json", agent_name="DeepEvalAgent")
     
     return evaluation_result
 
@@ -166,38 +159,30 @@ def rename_deepeval_output_with_timestamp(run_timestamp, shared_data):
     Rename .latest_test_run.json with JMeter timestamp for correlation.
     """
     try:
-        deepeval_dir = os.path.join("src", "tools", ".deepeval")
-        original_file = os.path.join(deepeval_dir, ".latest_test_run.json")
-        timestamped_file = os.path.join(deepeval_dir, f"{run_timestamp}_.latest_test_run.json")
+        original_file = deepeval_results_file
+        timestamped_file = os.path.join(deepeval_results_path, f"{run_timestamp}_.latest_test_run.json")
         
         if os.path.exists(original_file):
             shutil.move(original_file, timestamped_file)
-            thread_safe_add_log(shared_data['logs'], 
-                               f"📁 Results file renamed to: {run_timestamp}_.latest_test_run.json", 
-                               agent_name="DeepEvalAgent")
+            thread_safe_add_log(shared_data['logs'], f"📁 Results file renamed to: {run_timestamp}_.latest_test_run.json", agent_name="DeepEvalAgent")
             return timestamped_file
         else:
-            thread_safe_add_log(shared_data['logs'], 
-                               "⚠️ Warning: .latest_test_run.json not found for renaming", 
-                               agent_name="DeepEvalAgent")
+            thread_safe_add_log(shared_data['logs'], "⚠️ Warning: .latest_test_run.json not found for renaming", agent_name="DeepEvalAgent")
             return None
             
     except Exception as e:
-        thread_safe_add_log(shared_data['logs'], 
-                           f"⚠️ File renaming error: {str(e)}", 
-                           agent_name="DeepEvalAgent")
+        thread_safe_add_log(shared_data['logs'], f"⚠️ File renaming error: {str(e)}", agent_name="DeepEvalAgent")
         return None
 
 def parse_latest_test_run_file(run_timestamp):
     """
     Parse the timestamped DeepEval output file.
     """
-    deepeval_dir = os.path.join("src", "tools", ".deepeval")
-    timestamped_file = os.path.join(deepeval_dir, f"{run_timestamp}_.latest_test_run.json")
+    timestamped_file = os.path.join(deepeval_results_path, f"{run_timestamp}_.latest_test_run.json")
     
     if not os.path.exists(timestamped_file):
         # Fallback to original filename if timestamp version doesn't exist
-        original_file = os.path.join(deepeval_dir, ".latest_test_run.json")
+        original_file = deepeval_results_file
         if os.path.exists(original_file):
             timestamped_file = original_file
         else:

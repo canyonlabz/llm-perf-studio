@@ -186,6 +186,8 @@ def render_jmeter_viewer_area(jmeter_path):
     if shared_data.get('results'):
         st.session_state.jmeter_state['jmeter_jtl_path'] = shared_data['results'].get('jmeter_jtl_path', "")
         st.session_state.jmeter_state['jmeter_log_path'] = shared_data['results'].get('jmeter_log_path', "")
+        st.session_state.jmeter_state['llm_kpis_path'] = shared_data['results'].get('llm_kpis_path', "")
+        st.session_state.jmeter_state['llm_responses_path'] = shared_data['results'].get('llm_responses_path', "")
         shared_data['results'] = None  # Clear after syncing
         
     # Sync analysis results

@@ -34,14 +34,14 @@ def get_button_states():
     """
     jmeter_state = st.session_state.jmeter_test_state
     deepeval_state = st.session_state.deepeval_test_state
-    
+
     return {
         "start_deepeval_disabled": (
-            jmeter_state != TestState.COMPLETED or 
-            deepeval_state == DeepEvalTestState.RUNNING
+            str(jmeter_state) != str(TestState.COMPLETED) and 
+            str(deepeval_state) != str(DeepEvalTestState.RUNNING)
         ),
         "clear_deepeval_logs_disabled": (
-            jmeter_state != TestState.COMPLETED and 
+            str(jmeter_state) != str(TestState.COMPLETED) and 
             len(st.session_state.deepeval_logs) == 0
         )
     }
@@ -111,6 +111,31 @@ def render_deepeval_viewer():
         test_state["clear_deepeval_logs_disabled"]  # True if test is completed (Clear Logs button)
     )
 
+    # === SYNC BACKGROUND THREAD DATA (ADD HERE) ===
+    # Sync background thread data with UI
+    shared_data = st.session_state.get("deepeval_thread_data", {})
+    
+    # Sync logs from background thread
+    if shared_data.get('logs'):
+        st.session_state['deepeval_logs'].extend(shared_data['logs'])
+        shared_data['logs'].clear()
+
+    # Sync status from background thread
+    if shared_data.get('status') and st.session_state.deepeval_test_state != shared_data['status']:
+        st.session_state.deepeval_test_state = shared_data['status']
+        st.rerun()  # Force UI refresh when status changes
+
+    # Sync results from background thread
+    if shared_data.get('results'):
+        st.session_state.deepeval_state['llm_responses_path'] = shared_data['results'].get('llm_responses_path', "")
+        shared_data['results'] = None  # Clear after syncing
+        
+    # Sync analysis results
+    if shared_data.get('analysis'):
+        st.session_state.deepeval_state['deepeval_test_results'] = shared_data['analysis']
+        shared_data['analysis'] = None  # Clear after syncing
+    # === END SYNC SECTION ===
+
     # Centered column for the DeepEval viewer
     col_left, col_deepeval_viewer, col_right = st.columns([2, 6, 2], border=False)
 
@@ -125,6 +150,21 @@ def render_deepeval_viewer():
         # Determine final button state
         button_disabled = start_deepeval_disabled or deepeval_running or no_metrics_selected
 
+        # Capture the run timestamp from JMeter state
+        run_timestamp = st.session_state.jmeter_state.get("run_timestamp", "")
+
+        # DEBUG:
+        st.write(f"start_deepeval_disabled: {start_deepeval_disabled}")
+        st.write(f"deepeval_running: {deepeval_running}")
+        st.write(f"selected_metrics: {selected_metrics}")
+        st.write(f"no_metrics_selected: {no_metrics_selected}")
+        st.write(f"button_disabled: {button_disabled}")
+        st.write(f'run_timestamp: {st.session_state.jmeter_state.get("run_timestamp", "")}')
+        st.write(f"llm_responses_path: {st.session_state.jmeter_state.get('llm_responses_path', '')}")
+        st.write(f"JMeter test state: {st.session_state.jmeter_test_state}")
+        st.write(f"DeepEval test state: {st.session_state.deepeval_test_state}")
+        st.write(f"JMeter Test State != TestState.COMPLETED: {str(st.session_state.jmeter_test_state) != str(TestState.COMPLETED)}")
+
         # Button to start the DeepEval quality assessment
         if st.button("▶️ Start DeepEval", 
                 disabled=button_disabled,
@@ -133,10 +173,10 @@ def render_deepeval_viewer():
             ):
 
             # Validate prerequisites and log status messages
-            if st.session_state.jmeter_test_state == TestState.COMPLETED:
+            if str(st.session_state.jmeter_test_state) == str(TestState.COMPLETED):
                 if selected_metrics:
                     # Check for running state
-                    if st.session_state.deepeval_test_state == DeepEvalTestState.RUNNING:
+                    if str(st.session_state.deepeval_test_state) == str(DeepEvalTestState.RUNNING):
                         add_deepeval_log("⚠️ DeepEval is already running. Please wait for completion.", agent_name="DeepEvalAgent")
                     else:
                         # Filter to only supported metrics and log status
@@ -155,6 +195,8 @@ def render_deepeval_viewer():
                             
                             # Update session state with filtered metrics
                             st.session_state.deepeval_state['selected_metrics'] = supported_metrics
+                            st.session_state.deepeval_state['run_timestamp'] = run_timestamp  # Capture the run timestamp
+                            st.session_state.deepeval_state['llm_responses_path'] = st.session_state.jmeter_state.get('llm_responses_path', "")
                             
                             # Call the handler function
                             handle_start_deepeval_assessment()
