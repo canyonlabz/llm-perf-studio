@@ -121,6 +121,7 @@ def initialize_session_state():
             },
             'start_time': None,                  # Start time of the current DeepEval run
             'end_time': None,                    # End time of the current DeepEval run
+            'run_timestamp': "",                 # Timestamp of the current DeepEval run
         }
 
     # Enhanced error tracking for DeepEval

@@ -55,7 +55,7 @@ def __start_jmeter_thread(shared_data, state_snapshot):
             shared_data['jmeter_log_path'] = result['jmeter_log_path']
             shared_data['llm_kpis_path'] = result.get('llm_kpis_path', "")
             shared_data['llm_responses_path'] = result.get('llm_responses_path', "")
-            shared_data['run_timestamp'] = result.get('run_timestamp', datetime.now().strftime("%Y%m%d_%H%M%S"))
+            shared_data['run_timestamp'] = result.get('run_timestamp', 'NOT_FOUND')
             thread_safe_add_log(shared_data['logs'], f"📊🔥 Load test results saved to {result['jmeter_jtl_path']}", agent_name="JMeterAgent")
             thread_safe_add_log(shared_data['logs'], f"📊🔥 Load test log saved to {result['jmeter_log_path']}", agent_name="JMeterAgent")
             thread_safe_add_log(shared_data['logs'], f"📊🔥 LLM KPIs saved to {result['llm_kpis_path']}", agent_name="JMeterAgent")
@@ -167,6 +167,7 @@ def __start_deepeval_thread(shared_data, state_snapshot):
         if result:
             shared_data['status'] = DeepEvalTestState.COMPLETED
             shared_data['results'] = result
+            shared_data['deepeval_output_file'] = result.get('deepeval_output_file', '')
             thread_safe_add_log(shared_data['logs'], "✅ DeepEval assessment node completed.", agent_name="DeepEvalAgent")
 
             # 2. Process analysis results

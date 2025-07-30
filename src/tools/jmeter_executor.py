@@ -20,7 +20,9 @@ def run_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> 
     Run a JMeter load test: Example - 1 thread, 1 loop, 5 minutes duration.
     Returns paths to the JTL results file and JMeter log file.
     """
-    run_timestamp = state.get("run_timestamp", datetime.now().strftime("%Y%m%d_%H%M%S"))
+    # The run timestamp is used to create unique file names for each test run.
+    # This ensures that results from different runs do not overwrite each other.
+    run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # Define the JMeter command to run the load test which supports both Windows and Mac/Linux.
     cli = config['jmeter']['jmeter_bin_path']

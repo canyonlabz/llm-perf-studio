@@ -188,6 +188,7 @@ def render_jmeter_viewer_area(jmeter_path):
         st.session_state.jmeter_state['jmeter_log_path'] = shared_data['results'].get('jmeter_log_path', "")
         st.session_state.jmeter_state['llm_kpis_path'] = shared_data['results'].get('llm_kpis_path', "")
         st.session_state.jmeter_state['llm_responses_path'] = shared_data['results'].get('llm_responses_path', "")
+        st.session_state.jmeter_state['run_timestamp'] = shared_data['run_timestamp']    # Universal timestamp for all output files
         shared_data['results'] = None  # Clear after syncing
         
     # Sync analysis results
@@ -229,9 +230,6 @@ def render_jmeter_viewer_area(jmeter_path):
             st.session_state.jmeter_state["prompt_num"] = config['jmeter']['prompt_num']
         else:
             st.session_state.jmeter_state["prompt_num"] = 1  # Default to 1 if not specified
-
-        # Set the run timestamp in session state (will overwrite on each run)
-        st.session_state.jmeter_state["run_timestamp"] = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         # Button to start the JMeter test
         if st.button("▶️ Start JMeter", 
