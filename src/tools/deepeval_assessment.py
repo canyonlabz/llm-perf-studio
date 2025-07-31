@@ -93,6 +93,9 @@ def analyze_deepeval_results_node(shared_data, state_snapshot):
         deepeval_output_file = shared_data['deepeval_output_file']
         deepeval_results = parse_latest_test_run_file(deepeval_output_file, shared_data)
         
+        if not deepeval_results:
+            thread_safe_add_log(shared_data['logs'], "❌ No valid DeepEval results found to analyze.", agent_name="DeepEvalAgent")
+            return {'error': "No valid DeepEval results found."}
         # Create comprehensive analysis structure for the 5 UI tabs
         analysis = create_comprehensive_analysis(deepeval_results, shared_data)
         analysis_str = f"✅ Analysis complete: {analysis['metadata']['pass_count']}/{analysis['metadata']['total_questions']} passed ({analysis['metadata']['overall_pass_rate']:.1f}%)"
@@ -189,63 +192,73 @@ def parse_latest_test_run_file(deepeval_output_file, shared_data):
         else:
             thread_safe_add_log(shared_data['logs'], f"DeepEval results file not found: {timestamped_file}", agent_name="DeepEvalAgent")
 
-    thread_safe_add_log(shared_data['logs'], f"📖 Parsing DeepEval results from: {timestamped_file}", agent_name="DeepEvalAgent")
-    with open(timestamped_file, 'r') as file:
-        return json.load(file)
+    try:
+        with open(timestamped_file, 'r') as file:
+            thread_safe_add_log(shared_data['logs'], f"📖 Parsing DeepEval results from: {timestamped_file}", agent_name="DeepEvalAgent")
+            return json.load(file)
+    except json.JSONDecodeError as e:
+        thread_safe_add_log(shared_data['logs'], f"❌ Failed to parse JSON from {timestamped_file}: {e}", agent_name="DeepEvalAgent")
+        return None
 
 def create_comprehensive_analysis(deepeval_results, shared_data):
     """
     Create comprehensive analysis structure for the 5 UI tabs.
     """
-    test_cases = deepeval_results.get('testCases', [])
+    # Safely extract testRunData
+    run_data = deepeval_results.get("testRunData", {})
+    test_cases = run_data.get("testCases", [])
     
-    # Calculate basic statistics
-    total_questions = len(test_cases)
-    pass_count = sum(1 for case in test_cases if case.get('success', False))
-    fail_count = total_questions - pass_count
-    overall_pass_rate = (pass_count / total_questions * 100) if total_questions > 0 else 0
+    # --- Summary Metrics ---
+    # Calculate overall pass/fail rates and scores
+    pass_count = run_data.get("testPassed", 0)
+    fail_count = run_data.get("testFailed", 0)
+    total_questions = pass_count + fail_count
+    overall_pass_rate = (pass_count / total_questions * 100) if total_questions else 0
     
-    # Extract scores for distribution analysis
+    # --- Score Aggregation ---
+    # Extract scores from test cases
     scores = []
     for case in test_cases:
-        metrics_data = case.get('metricsData', [])
-        if metrics_data:
-            score = metrics_data[0].get('score', 0)
-            scores.append(score)
+        for metric in case.get("metricsData", []):
+            score = metric.get("score")
+            if isinstance(score, (int, float)):
+                scores.append(score)
+
+    average_score = sum(scores) / len(scores) if scores else 0
     
     analysis = {
         # Tab 1: DeepEval Summary
-        'summary': {
-            'total_questions': total_questions,
-            'pass_count': pass_count,
-            'fail_count': fail_count,
-            'overall_pass_rate': overall_pass_rate,
-            'average_score': sum(scores) / len(scores) if scores else 0,
-            'total_cost': deepeval_results.get('evaluationCost', 0),
-            'total_duration': deepeval_results.get('runDuration', 0),
-            'run_timestamp': shared_data['run_timestamp']
+        "summary": {
+            "total_questions": total_questions,
+            "pass_count": pass_count,
+            "fail_count": fail_count,
+            "overall_pass_rate": overall_pass_rate,
+            "average_score": average_score,
+            "total_cost": run_data.get("evaluationCost", 0),
+            "total_duration": run_data.get("runDuration", 0),
+            "run_timestamp": shared_data.get("run_timestamp", "N/A")
         },
         
         # Tab 2: Detailed Results Table
-        'detailed_results': create_detailed_results_table(test_cases),
+        "detailed_results": create_detailed_results_table(test_cases),
         
         # Tab 3: Score Distribution Chart
-        'score_distribution': create_score_distribution_data(scores),
+        "score_distribution": create_score_distribution_data(scores),
         
         # Tab 4: Quality Assessment Insights
-        'quality_insights': create_quality_insights(test_cases, deepeval_results),
+        "quality_insights": create_quality_insights(test_cases, run_data),
         
         # Tab 5: Individual Test Cases
-        'individual_cases': create_individual_cases_data(test_cases),
+        "individual_cases": create_individual_cases_data(test_cases),
         
         # Metadata for overall tracking
-        'metadata': {
-            'total_questions': total_questions,
-            'pass_count': pass_count,
-            'fail_count': fail_count,
-            'overall_pass_rate': overall_pass_rate,
-            'total_cost': deepeval_results.get('evaluationCost', 0),
-            'total_duration': deepeval_results.get('runDuration', 0)
+        "metadata": {
+            "total_questions": total_questions,
+            "pass_count": pass_count,
+            "fail_count": fail_count,
+            "overall_pass_rate": overall_pass_rate,
+            "total_cost": run_data.get("evaluationCost", 0),
+            "total_duration": run_data.get("runDuration", 0)
         }
     }
     
@@ -258,10 +271,11 @@ def create_detailed_results_table(test_cases):
         metrics_data = case.get('metricsData', [])
         score = metrics_data[0].get('score', 0) if metrics_data else 0
         reason = metrics_data[0].get('reason', 'No reason provided') if metrics_data else 'No reason provided'
+        input_prompt = case.get('input', '')
         
         results.append({
             'question_number': i,
-            'input_prompt': case.get('input', '')[:100] + '...' if len(case.get('input', '')) > 100 else case.get('input', ''),
+            'input_prompt': input_prompt[:100] + '...' if len(input_prompt) > 100 else input_prompt,
             'expected_output': case.get('expectedOutput', ''),
             'actual_output': case.get('actualOutput', ''),
             'score': score,
@@ -296,8 +310,11 @@ def create_score_distribution_data(scores):
         }
     }
 
-def create_quality_insights(test_cases, deepeval_results):
+def create_quality_insights(test_cases, run_data):
     """Create insights for quality assessment (Tab 4)."""
+    total_duration = run_data.get("runDuration", 0)
+    total_cost = run_data.get("evaluationCost", 0)
+
     insights = {
         'performance_by_score': {
             'excellent': sum(1 for case in test_cases if get_case_score(case) >= 0.9),
@@ -307,9 +324,9 @@ def create_quality_insights(test_cases, deepeval_results):
         },
         'common_failure_patterns': analyze_failure_patterns(test_cases),
         'execution_metrics': {
-            'total_cost': deepeval_results.get('evaluationCost', 0),
-            'average_duration_per_case': deepeval_results.get('runDuration', 0) / len(test_cases) if test_cases else 0,
-            'total_duration': deepeval_results.get('runDuration', 0)
+            'total_cost': total_cost,
+            'average_duration_per_case': total_duration / len(test_cases) if test_cases else 0,
+            'total_duration': total_duration
         }
     }
     return insights
