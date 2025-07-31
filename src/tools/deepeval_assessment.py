@@ -30,8 +30,7 @@ def run_deepeval_assessment_node(shared_data, state_snapshot):
     Returns:
         dict: Results structure with success status, file paths, and metadata
     """
-    # DEBUG:
-    thread_safe_add_log(shared_data['logs'], "DEBUG: Starting function run_deepeval_assessment_node...", agent_name="DeepEvalAgent")
+    thread_safe_add_log(shared_data['logs'], "Starting function run_deepeval_assessment_node...", agent_name="DeepEvalAgent")
 
     try:
         # Extract configuration from shared_data

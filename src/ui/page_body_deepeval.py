@@ -129,7 +129,6 @@ def render_deepeval_viewer():
     if shared_data.get('results'):
         st.session_state.deepeval_state['llm_responses_path'] = shared_data['results'].get('llm_responses_path', "")
         st.session_state.deepeval_state['total_test_cases'] = shared_data['results'].get('test_cases_count', 0)
-        ##st.session_state.deepeval_state['deepeval_test_results'] = shared_data['results']
         shared_data['results'] = None  # Clear after syncing
         
     # Sync analysis results
@@ -154,9 +153,6 @@ def render_deepeval_viewer():
 
         # Capture the run timestamp from JMeter state
         run_timestamp = st.session_state.jmeter_state.get("run_timestamp", "")
-
-        ### DEBUG:
-        st.write(f'run_timestamp: {st.session_state.jmeter_state.get("run_timestamp", "")}')
 
         # Button to start the DeepEval quality assessment
         if st.button("▶️ Start DeepEval", 
