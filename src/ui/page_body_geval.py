@@ -30,19 +30,14 @@ def render_geval_report_viewer():
     """
     inject_report_viewer_styles()  # Inject custom styles for report viewer
 
-    # --- 1. Extract latest DeepEval analysis dict ---
-    analysis = st.session_state.get('deepeval_state', {}).get('deepeval_test_results', {})
-    detailed = analysis.get('detailed_results', [])
-    distribution = analysis.get('score_distribution', {})
-
     # Centered column for the report viewer
     col_left, col_report_viewer, col_right = st.columns([0.10, 0.80, 0.10], border=False)  # Define three columns with specified widths and borders
 
     with col_report_viewer:
         # Create the report viewer section
         if st.session_state.get('deepeval_state', {}).get('deepeval_test_results'):
-
-            # --- 2. Unpack all needed analysis keys once ---
+            # Extract latest DeepEval analysis dict  and unpack all needed analysis keys once
+            analysis = st.session_state.get('deepeval_state', {}).get('deepeval_test_results', {})
             summary = analysis.get('summary', {})
             detailed = analysis.get('detailed_results', [])
             distribution = analysis.get('score_distribution', {})
@@ -83,6 +78,23 @@ def render_geval_report_viewer():
                     f'<div class="overview-row"><span class="overview-label">Mean G-Eval Score:</span> <span class="overview-value">{summary.get("average_score", 0):.2f}</span></div>',
                     unsafe_allow_html=True,
                 )
+
+                # Section 2: Key Metrics (PLACEHOLDER)
+
+                # Section 3: Pass/Fail Summary
+                st.markdown('<h4 class="pass-fail-summary">Pass/Fail Summary</h4>', unsafe_allow_html=True)
+                pie_data = pd.DataFrame({
+                    'Analysis': ['Pass', 'Fail'],
+                    'Percentage': [summary['overall_pass_rate'], summary['overall_fail_rate']]
+                })
+
+                pie_chart = alt.Chart(pie_data).mark_arc(innerRadius=40).encode(
+                    theta=alt.Theta(field="Percentage", type="quantitative"),
+                    color=alt.Color(field="Analysis", type="nominal",
+                                    scale=alt.Scale(domain=['Pass', 'Fail'], range=['#2ecc40', '#ff4136'])),
+                    tooltip=['Analysis', 'Percentage']
+                ).properties(width=250, height=250)
+                st.altair_chart(pie_chart, use_container_width=False)
 
             with tab2:
                 tab2.markdown('<h2 class="tab-subheader">DeepEval Results</h2>', unsafe_allow_html=True)
@@ -150,6 +162,42 @@ def render_geval_report_viewer():
 
             with tab4:
                 tab4.markdown('<h2 class="tab-subheader">Quality Analysis</h2>', unsafe_allow_html=True)
+
+                # Performance bands
+                perf = insights.get('performance_by_score', {})
+                st.subheader("Performance by Score Band")
+                st.markdown(
+                    f"- **Excellent (≥0.9):** {perf.get('excellent', 0)} cases  \n"
+                    f"- **Good (0.7–0.89):** {perf.get('good', 0)} cases  \n"
+                    f"- **Fair (0.5–0.69):** {perf.get('fair', 0)} cases  \n"
+                    f"- **Poor (<0.5):** {perf.get('poor', 0)} cases"
+                )
+
+                # Common failure patterns
+                patterns = (insights.get('common_failure_patterns', {}).get('common_issues')
+                            if isinstance(insights.get('common_failure_patterns', {}), dict)
+                            else insights.get('common_failure_patterns', []))
+
+                st.subheader("Common Failure Patterns")
+                if patterns:
+                    for p in patterns:
+                        st.markdown(f"- {p}")
+                else:
+                    st.write("No common failure patterns identified.")
+
+                # Failure rate if present
+                fail_rate = insights.get('common_failure_patterns', {}).get('failure_rate')
+                if fail_rate is not None:
+                    st.markdown(f"**Failure Rate:** {fail_rate:.1f}%")
+
+                # Execution metrics
+                execm = insights.get('execution_metrics', {})
+                st.subheader("Execution Metrics")
+                st.markdown(
+                    f"- **Total Cost:** ${execm.get('total_cost', 0):.4f}  \n"
+                    f"- **Total Duration:** {execm.get('total_duration', 0):.1f} sec  \n"
+                    f"- **Avg Duration per Case:** {execm.get('average_duration_per_case', 0):.2f} sec"
+                )
 
             with tab5:
                 tab5.markdown('<h2 class="tab-subheader">Test Cases</h2>', unsafe_allow_html=True)

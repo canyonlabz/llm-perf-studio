@@ -213,6 +213,7 @@ def create_comprehensive_analysis(deepeval_results, shared_data):
     fail_count = run_data.get("testFailed", 0)
     total_questions = pass_count + fail_count
     overall_pass_rate = (pass_count / total_questions * 100) if total_questions else 0
+    overall_fail_rate = (fail_count / total_questions * 100) if total_questions else 0
     
     # --- Score Aggregation ---
     # Extract scores from test cases
@@ -232,6 +233,7 @@ def create_comprehensive_analysis(deepeval_results, shared_data):
             "pass_count": pass_count,
             "fail_count": fail_count,
             "overall_pass_rate": overall_pass_rate,
+            "overall_fail_rate": overall_fail_rate,
             "average_score": average_score,
             "total_cost": run_data.get("evaluationCost", 0),
             "total_duration": run_data.get("runDuration", 0),
