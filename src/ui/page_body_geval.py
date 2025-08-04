@@ -79,10 +79,10 @@ def render_geval_report_viewer():
                 # Section 2: Key Metrics
                 st.markdown('<h4 class="metric_subtitle">Key Metrics</h4>', unsafe_allow_html=True)
                 col1, col2, col3, col4 = st.columns(4, border=True)  # Define four columns with borders
-                col1.metric("Pass Rate", f"{summary['overall_pass_rate']:.2f}")
-                col2.metric("Total Duration (sec)", f"{execm.get('total_duration', 0):.1f}")
+                col1.metric("Pass Rate (%)", f"{summary['overall_pass_rate']:.2f}")
+                col2.metric("Assessment Duration (sec)", f"{execm.get('total_duration', 0):.1f}")
                 col3.metric("Avg Duration per Case (sec)", f"{execm.get('average_duration_per_case', 0):.2f}")
-                col4.metric("OpenAI Total Cost", f"${execm.get('total_cost', 0):.2f}")
+                col4.metric("Total Cost", f"${execm.get('total_cost', 0):.2f}")
 
                 # Section 3: Pass/Fail Summary
                 st.markdown('<h4 class="pass-fail-summary">Pass/Fail Summary</h4>', unsafe_allow_html=True)
