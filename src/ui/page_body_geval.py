@@ -43,6 +43,7 @@ def render_geval_report_viewer():
             distribution = analysis.get('score_distribution', {})
             insights = analysis.get('quality_insights', {})
             cases = analysis.get('individual_cases', [])
+            execm = insights.get('execution_metrics', {})
 
             # Create the report viewer section
             st.markdown('<div class="report-viewer-title">📊 DeepEval Quality Assessment:</div>', unsafe_allow_html=True)
@@ -71,15 +72,17 @@ def render_geval_report_viewer():
                     unsafe_allow_html=True,
                 )
                 st.markdown(
-                    f'<div class="overview-row"><span class="overview-label">Pass Rate (%):</span> <span class="overview-value">{summary.get("overall_pass_rate", 0):.2f}</span></div>',
-                    unsafe_allow_html=True,
-                )
-                st.markdown(
                     f'<div class="overview-row"><span class="overview-label">Mean G-Eval Score:</span> <span class="overview-value">{summary.get("average_score", 0):.2f}</span></div>',
                     unsafe_allow_html=True,
                 )
 
-                # Section 2: Key Metrics (PLACEHOLDER)
+                # Section 2: Key Metrics
+                st.markdown('<h4 class="metric_subtitle">Key Metrics</h4>', unsafe_allow_html=True)
+                col1, col2, col3, col4 = st.columns(4, border=True)  # Define four columns with borders
+                col1.metric("Pass Rate", f"{summary['overall_pass_rate']:.2f}")
+                col2.metric("Total Duration (sec)", f"{execm.get('total_duration', 0):.1f}")
+                col3.metric("Avg Duration per Case (sec)", f"{execm.get('average_duration_per_case', 0):.2f}")
+                col4.metric("OpenAI Total Cost", f"${execm.get('total_cost', 0):.2f}")
 
                 # Section 3: Pass/Fail Summary
                 st.markdown('<h4 class="pass-fail-summary">Pass/Fail Summary</h4>', unsafe_allow_html=True)
@@ -189,15 +192,6 @@ def render_geval_report_viewer():
                 fail_rate = insights.get('common_failure_patterns', {}).get('failure_rate')
                 if fail_rate is not None:
                     st.markdown(f"**Failure Rate:** {fail_rate:.1f}%")
-
-                # Execution metrics
-                execm = insights.get('execution_metrics', {})
-                st.subheader("Execution Metrics")
-                st.markdown(
-                    f"- **Total Cost:** ${execm.get('total_cost', 0):.4f}  \n"
-                    f"- **Total Duration:** {execm.get('total_duration', 0):.1f} sec  \n"
-                    f"- **Avg Duration per Case:** {execm.get('average_duration_per_case', 0):.2f} sec"
-                )
 
             with tab5:
                 tab5.markdown('<h2 class="tab-subheader">Test Cases</h2>', unsafe_allow_html=True)
