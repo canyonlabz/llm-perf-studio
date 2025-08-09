@@ -38,7 +38,7 @@ This framework combines traditional load testing with AI-specific quality metric
 
 ## 📋 Prerequisites
 
-- **Python 3.8+**
+- **Python 3.12+**
 - **Apache JMeter 5.6.3+**
 - **Java 8+** (for JMeter)
 - **Ollama** (for local model testing)

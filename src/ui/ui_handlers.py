@@ -6,7 +6,6 @@ import streamlit as st
 from datetime import datetime
 from threading import Thread
 import shutil
-from torch import res
 
 from src.utils.event_logs import (
     add_jmeter_log,
