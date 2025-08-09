@@ -21,19 +21,19 @@ ollama:
 logging:
   log_level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
   verbose_mode: False  # Enable verbose logging for debugging
-  log_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/tmp/logs"  # Update with the actual path
+  log_path: "tmp/logs"  # Update with the actual path
 
 user_interface:
   ui_port: 8501    # Port for the UI; adjust as needed
   enable_debug_button: False  # Enable/disable the debug button (custom setting)
 
 jmeter:
-  jmeter_home: "/opt/apache-jmeter-5.6.3"  # Update with the actual JMeter home path
-  jmeter_bin_path: "/opt/apache-jmeter-5.6.3/bin"  # Update with the actual JMeter bin path
-  jmeter_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/jmeter"  # Path for JMeter JMX files
-  jmeter_results_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/jmeter/test_results"  # Path for JMeter results files
+  jmeter_home: "<root>/apache-jmeter-5.6.3"  # Update with the actual JMeter home path
+  jmeter_bin_path: "<root>/apache-jmeter-5.6.3/bin"  # Update with the actual JMeter bin path
+  jmeter_path: "<root>/llm-perf-testing/jmeter"  # Path for JMeter JMX files
+  jmeter_results_path: "<root>/llm-perf-testing/jmeter/test_results"  # Path for JMeter results files
   use_rag: False  # Whether to use RAG mode in JMeter tests (can be configured in UI)
   prompt_num: 5   # Number of prompts to use from input JSON file in JMeter tests
 
 deepeval:
-  deepeval_results_path: "/Users/jasonsmallcanyon/Repos/_GittHub/llm-perf-testing/.deepeval"  # Path for DeepEval results files
+  deepeval_results_path: "/<root>/llm-perf-testing/.deepeval"  # Path for DeepEval results files
