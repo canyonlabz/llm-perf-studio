@@ -44,7 +44,7 @@ services:
       - RAG_EMBEDDING_ENGINE=ollama
       - RAG_EMBEDDING_MODEL=nomic-embed-text
       - RAG_EMBEDDING_MODEL_TRUST_REMOTE_CODE=True
-      - WEBUI_NAME=NeuroticGeek ChatBot
+      - WEBUI_NAME=LLM PerfTest ChatBot
       - CORS_ALLOW_ORIGIN=*
     restart: unless-stopped
     networks:
