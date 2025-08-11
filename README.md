@@ -111,7 +111,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 1. **Start the dashboard:**
    ```bash
-   streamlit run streamlit_ui.py
+   python app.py
    ```
 
 2. **Configure your test:**
