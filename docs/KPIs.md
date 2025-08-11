@@ -8,21 +8,20 @@ This document defines the key performance indicators used by the LLM Performance
 
 | Metric                  | Definition                                   | QA Performance Version                         | QA Functional Version                        |
 |-------------------------|----------------------------------------------|------------------------------------------------|----------------------------------------------|
+| **API Response Time**   | Min, Avg, Max, 90th percentile response times |
 | **Concurrent Users**    | Max users system can handle concurrently     | Assesses system scalability, bottlenecks       | Ensures core features remain available under load |
 | **Error Rate**          | % of failed or errored requests              | Reliability at scale/under stress              | Detects functional bugs, API misbehavior     |
 
 ---
 
-## 2. LLM Metrics (Runtime & Retrieval KPIs)
+## 2. LLM Metrics (LLM Inference)
 
 | Metric                  | Definition                                   | QA Performance Version                         | QA Functional Version                        |
 |-------------------------|----------------------------------------------|------------------------------------------------|----------------------------------------------|
-| **Token Utilization**   | How many tokens are used per request         | Reveals efficiency and cost scaling            | Ensures all input/outputs are processed      |
-| **Query Latency P95**   | 95th percentile retrieval latency (ms)       | Surfaces tail-latency or spikes under load     | Ensures search/retrieval functionality isn't slow |
-| **Queries Per Second (QPS)** | Maximum similarity searches per sec  | Measures backend throughput under high access  | Verifies ability to handle user queries timely|
-| **Embedding Latency**   | Time to create embedding from input (ms)     | Shows bottlenecks in pipeline, especially for streamed/real-time scenarios | Ensures feature (embedding) works for each case |
-| **Context Relevance**   | Proportion of retrieved context useful to LLM| Monitors degradation under pipeline stress     | Verifies context selection is functionally correct |
-| **Similarity Score**    | Cosine similarity between query & retrieved  | Used to tune search/indexing for speed vs. accuracy | Validates retrieval quality                  |
+| **Time To First Token (TTFT)** | Time from request sent to first token received (ms)              | Detects model/pipeline cold start or backend delays     | Ensures prompt is processed and model responds        |
+| **Time Per Output Token (TPOT)** | Average time to generate each output token (ms/token)           | Surfaces generation slowdowns under load                | Verifies token streaming is functional                |
+| **Tokens Per Second (TPS)**     | Output tokens generated per second (throughput)                 | Measures LLM throughput and scaling                     | Ensures output is not throttled or stuck              |
+| **LLM Requests Per Second (RPS)** | Number of LLM requests processed per second                     | Indicates backend capacity and concurrency              | Verifies system can handle expected query volume       |
 
 ---
 
