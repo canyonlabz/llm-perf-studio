@@ -79,7 +79,7 @@ This framework combines traditional load testing with AI-specific quality metric
 
 ## ⚙️ Configuration
 
-### Main Configuration (`config/config.yaml`)
+### Main Configuration (`~/config.yaml`)
 
 ```yaml
 ollama:
@@ -88,7 +88,6 @@ ollama:
    timeout: 30
   
 openai:
-   api_key: "${OPENAI_API_KEY}"
    model: "gpt-3.5-turbo"
    timeout: 30
 
@@ -233,17 +232,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Additional DeepEval quality metrics
 - [ ] De-couple LLM calculations from JMeter to Python tools. 
 
+## 📚 Related Projects
+
+- [Apache JMeter](https://jmeter.apache.org/) - Load and performance testing tool for web applications and other services.
+- [DeepEval](https://github.com/confident-ai/deepeval) - LLM evaluation framework and platform for testing and evaluating large language models (LLMs).
+- [Ollama](https://ollama.ai/) - Ollama is an open-source platform that lets you run large language models on your device.
+- [ChromaDB](https://docs.trychroma.com/docs/overview/introduction) - Open-source vector database tailored to applications with large language models.
+- [OpenWebUI](https://docs.openwebui.com/) - Extensible, feature-rich, and user-friendly self-hosted AI platform designed to operate entirely offline.
+- [Streamlit](https://streamlit.io/) - Open-source Python framework for data scientists and AI/ML engineers to deliver interactive data apps.
+- [Docker](https://www.docker.com/) - Docker is a tool that helps developers build, share, run, and verify applications using containers.
+- [Unstructured](https://github.com/Unstructured-IO/unstructured-api) - Core library for partitioning, cleaning, and chunking 25+ documents types for LLM applications and connecting to source and destination data source.
+
 ## Author ✍️
 
 **Jason Smallcanyon | [CanyonLabz, LLC](https://canyonlabz.com/)**
 
-## 📚 Related Projects
-
-- [Apache JMeter](https://jmeter.apache.org/) - Load testing framework
-- [DeepEval](https://github.com/confident-ai/deepeval) - LLM evaluation framework
-- [Ollama](https://ollama.ai/) - Local LLM runtime
-- [Streamlit](https://streamlit.io/) - Web app framework
-
 ---
 
-**Built with ❤️ for the LLM testing community**
+**Built with ❤️ for the LLM performance testing community**
