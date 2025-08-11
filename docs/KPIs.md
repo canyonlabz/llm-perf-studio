@@ -1,4 +1,6 @@
+# Key Performance Indicators for LLM Performance Testing
 
+This document defines the key performance indicators used by the LLM Performance Testing Framework and how to interpret them. It groups metrics into three layers—system load/performance (JMeter), LLM runtime/retrieval behavior (tokens, latency, throughput), and output quality (DeepEval)—and also outlines stage-specific KPIs across the pipeline (chunking, embedding, vector search, retrieval assembly). Use these KPIs to compare runs, detect regressions, and tune for both speed and quality under load.
 
 ---
 
@@ -34,3 +36,28 @@
 | **Quality Degradation**       | Change in pass rate/GEval from baseline to load     | Measures if functional accuracy falls as load increases | Functional QA uses as regression signal in updates     |
 
 ---
+
+## 4. Chunking (Segmentation)
+- Chunking Duration (millisecond/document)
+- Chunk Throughput (chunks/sec)
+
+---
+
+## 5. Embedding Generation
+- Query Embedding Latency - Retrieval (Duration in ms.)
+- Document Embedding Latency - Ingestion (Duration per chunk ms.)
+- Embedding Throughput (Embeddings/sec)
+- Embedding Error Rate (Failures/timeouts %)
+
+---
+
+## 6. Vector Query Search
+- Query Latency - Search(latency ms.)
+- QPS (Queries/second)
+- Upsert Latency - Indexing (Duration to write vectors ms.)
+
+---
+
+## 7: Retrieval Assembly
+- Assembly Latency (Duration of prompt assembly ms.)
+- Tokens Assembled (Token count)
