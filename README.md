@@ -22,7 +22,7 @@ This framework combines traditional load testing with AI-specific quality metric
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Streamlit UI  │    │  JMeter Engine  │    │  LLM Service    │
 │                 │    │                 │    │                 │
-│ • Test Config   │───▶│ • Load Testing  │───▶│ • Ollama/OpenAI │
+│ • Test Config   │──▶│ • Load Testing  │───▶│ • Ollama/OpenAI │
 │ • Monitoring    │    │ • Metrics       │    │ • Local/Cloud   │
 │ • Results       │    │ • Logging       │    │ • RAG Enabled   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
@@ -40,7 +40,7 @@ This framework combines traditional load testing with AI-specific quality metric
 
 - **Python 3.12+**
 - **Apache JMeter 5.6.3+**
-- **Java 8+** (for JMeter)
+- **Java 9+** (for JMeter)
 - **Ollama** (for local model testing)
 - **OpenAI API Key** (for OpenAI testing)
 
@@ -66,7 +66,8 @@ This framework combines traditional load testing with AI-specific quality metric
    cp config/config.yaml.example config/config.yaml
    # Edit config.yaml with your settings
    ```
-
+   You can create a `config.windows.yaml` or `config.mac.yaml` file depending on your operating system.
+   The OS-specific YAML file will override the default `config.yaml` settings.
 5. **Set up Ollama (optional):**
    ```bash
    # Install Ollama
@@ -81,21 +82,19 @@ This framework combines traditional load testing with AI-specific quality metric
 ### Main Configuration (`config/config.yaml`)
 
 ```yaml
-llm_services:
-  ollama:
-    base_url: "http://localhost:11434"
-    model: "llama3.2:1b"
-    timeout: 30
+ollama:
+   base_url: "http://localhost:11434"
+   model: "llama3.2:1b"
+   timeout: 30
   
-  openai:
-    api_key: "${OPENAI_API_KEY}"
-    model: "gpt-3.5-turbo"
-    timeout: 30
+openai:
+   api_key: "${OPENAI_API_KEY}"
+   model: "gpt-3.5-turbo"
+   timeout: 30
 
 jmeter:
-  bin_path: "C:/opt/apache-jmeter-5.6.3/bin"
-  test_plan: "jmeter/llm_load_test.jmx"
-  
+  bin_path: "C:/{{jmeter_path}}/apache-jmeter-5.6.3/bin"
+
 deepeval:
   evaluator_model: "gpt-4"
   correctness_threshold: 0.7
@@ -106,7 +105,6 @@ deepeval:
 ```bash
 # .env file
 OPENAI_API_KEY=your_openai_api_key_here
-DEEPEVAL_API_KEY=your_deepeval_api_key_here
 ```
 
 ## 🚀 Quick Start
@@ -154,88 +152,60 @@ DEEPEVAL_API_KEY=your_deepeval_api_key_here
 
 ```
 llm-perf-testing/
-├── config/
-│   ├── config.yaml              # Main configuration
-│   └── prompts/                 # Test prompt datasets
-├── docs/
-│   ├── KPIs.md                 # Key Performance Indicators
-│   └── architecture.md         # System architecture
-├── jmeter/
-│   ├── llm_load_test.jmx       # JMeter test plan
-│   └── test_results/           # Generated test results
-├── src/
-│   ├── tools/
-│   │   ├── jmeter_executor.py  # JMeter integration
-│   │   └── deepeval_assessment.py # Quality assessment
-│   ├── ui/
-│   │   ├── page_body.py        # Main UI components
-│   │   └── page_styles.py      # UI styling
-│   └── utils/
-│       ├── config.py           # Configuration management
-│       └── test_state.py       # Test state management
-├── streamlit_ui.py             # Main application entry
-└── requirements.txt            # Python dependencies
+│   app.py
+│   config.yaml
+│   LICENSE
+│   README.md
+│   requirements.txt
+│
+├───data
+│       ISTQB_CT-AI_SampleExam-Answers_v1.0.pdf
+│       ISTQB_CT-AI_SampleExam-Questions_v1.0.pdf
+│
+├───docker
+│       docker-compose.yml
+│
+├───docs
+│       KPIs.md
+│       JMeter.md
+│       DeepEval.md
+│       Configuration.md
+│
+├───jmeter
+│   │   llm-ollama.jmx
+│   │   llm-openai.jmx
+│   │
+│   ├───testdata_csv
+│   │       environment.csv
+│   │       README.md
+│   │
+│   └───testdata_json
+│           ISTQB_Final_Questions_Answers.json
+└───src
+    │
+    ├───services
+    │       chat_service.py     (Class for LLM chatbot)
+    │
+    ├───tools
+    │   │   deepeval_assessment.py              (Agent Tool for DeepEval quality assessment)
+    │   │   deepeval_assessment_standalone.py   (Standalone tool for DeepEval quality assessment)
+    │   └   jmeter_executor.py                  (Agent Tool for JMeter test execution)
+    │
+    ├───ui
+    │   │   page_body_*.py  (page body rendering)
+    │   │   page_header.py  (page headers rendering)
+    │   │   page_styles.py  (page CSS style rendering)
+    │   │   page_title.py   (page title rendering)
+    │   │   page_utils.py   (page utility functions)
+    │   │   streamlit_ui.py (page rendering function for all components)
+    │   │   ui_handlers.py  (page UI handler functions)
+    │   │
+    │   └───nav_pages
+    │       page_*.py       (Streamlit Pages)
+    │
+    └───utils
+            Common Utilities
 ```
-
-## 🔧 Usage Examples
-
-### Basic Load Test
-
-```python
-# Configure test parameters
-test_config = {
-    "vusers": 10,
-    "ramp_up": 30,
-    "duration": 300,
-    "llm_mode": "ollama",
-    "model": "llama3.2:1b"
-}
-
-# Run via UI or programmatically
-results = run_jmeter_test(test_config)
-```
-
-### Quality Assessment
-
-```python
-# Run DeepEval analysis on responses
-quality_results = analyze_response_quality(
-    responses_file="test_responses.json",
-    test_cases="prompts/ai_knowledge_qa.json"
-)
-
-print(f"Overall accuracy: {quality_results['pass_rate']}%")
-```
-
-### Combined Performance + Quality
-
-```python
-# Full workflow
-perf_results = run_load_test(config)
-quality_results = assess_quality(perf_results['responses'])
-
-# Analyze correlation
-analyze_performance_quality_correlation(
-    perf_results, quality_results
-)
-```
-
-## 📈 Sample Results
-
-### Performance Test Results
-- **Test Duration**: 5 minutes
-- **Virtual Users**: 10 concurrent
-- **Total Requests**: 1,247
-- **Average Response Time**: 2.3 seconds
-- **90th Percentile**: 4.1 seconds
-- **Error Rate**: 0.2%
-
-### Quality Assessment Results
-- **Total Test Cases**: 25
-- **Overall Accuracy**: 40%
-- **Best Category**: Pre-trained Models (100%)
-- **Worst Category**: AI Technologies (0%)
-- **Evaluation Cost**: $0.04
 
 ## 🤝 Contributing
 
@@ -257,12 +227,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔮 Roadmap
 
-- [ ] Support for additional LLM providers (Anthropic, Cohere)
-- [ ] Advanced RAG testing capabilities
-- [ ] Automated performance regression detection
-- [ ] Integration with CI/CD pipelines
-- [ ] Custom quality metrics framework
-- [ ] Multi-region load testing support
+- [ ] Support for additional LLM providers (Anthropic, Google, etc.)
+- [ ] Full RAG support for custom datasets
+- [ ] Docker-based containerization for cross-platform, OS-agnostic deployment
+- [ ] Additional DeepEval quality metrics
+- [ ] De-couple LLM calculations from JMeter to Python tools. 
 
 ## 📚 Related Projects
 
