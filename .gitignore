@@ -171,3 +171,6 @@ src/tools/.deepeval/*
 # Ignore DeepEval test data
 src/tools/.deepeval/*
 .deepeval/*
+# Ignore config.yaml files for Windows or Mac systems (NOTE: These files are specific to OS, but can be re-enabled by commenting out the following lines)
+config.mac.yaml
+config.windows.yaml

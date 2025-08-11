@@ -1,39 +1,39 @@
 general:
-  enable_debug: False  # Enable/disable debug mode
-  enable_logging: True  # Enable/disable logging
-  enable_user_interface: True  # Enable/disable user interface
-  enable_chatbot: True  # Enable/disable chatbot functionality
+  enable_debug: False            # Enable/disable debug mode
+  enable_logging: True           # Enable/disable logging
+  enable_user_interface: True    # Enable/disable user interface (TODO: remove)
+  enable_chatbot: True           # Enable/disable chatbot functionality (TODO: remove)
 
-llm:
+llm:                        # Language model configuration (NOTE: currently not used)
   llm_model: "gpt-4o-mini"  # Model name
   llm_temperature: 0        # Temperature for randomness in responses
 
-openai:
-  openai_model: "gpt-4o-mini"  # Model name for OpenAI
-  openai_temperature: 0.2      # Temperature for randomness in responses
+openai:                         # Used for Chatbot and DeepEval quality assessments
+  openai_model: "gpt-4o-mini"   # Default model name for OpenAI
+  openai_temperature: 0.1       # Temperature for randomness in responses
 
 ollama:
-  ollama_model: "llama3.2:1b"  # Model name for Ollama
-  ollama_temperature: 0.2  # Temperature for randomness in responses
-  ollama_api_url: "http://192.168.1.110:11434"  # API URL for Ollama
-  ollama_api_key: ""  # API key for Ollama, if required
+  ollama_model: "llama3.2:1b"                   # Default model name for Ollama
+  ollama_temperature: 0.1                       # Temperature for randomness in responses
+  ollama_api_url: "http://localhost:11434"      # Default API URL for Ollama
+  ollama_api_key: ""                            # API key for Ollama, if required
 
 logging:
-  log_level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
-  verbose_mode: False  # Enable verbose logging for debugging
+  log_level: "INFO"     # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  verbose_mode: False   # Enable verbose logging for debugging
   log_path: "tmp/logs"  # Update with the actual path
 
 user_interface:
-  ui_port: 8501    # Port for the UI; adjust as needed
+  ui_port: 8501               # Default port for OpenWebUI; adjust as needed
   enable_debug_button: False  # Enable/disable the debug button (custom setting)
 
 jmeter:
-  jmeter_home: "<root>/apache-jmeter-5.6.3"  # Update with the actual JMeter home path
-  jmeter_bin_path: "<root>/apache-jmeter-5.6.3/bin"  # Update with the actual JMeter bin path
-  jmeter_path: "<root>/llm-perf-testing/jmeter"  # Path for JMeter JMX files
-  jmeter_results_path: "<root>/llm-perf-testing/jmeter/test_results"  # Path for JMeter results files
-  use_rag: False  # Whether to use RAG mode in JMeter tests (can be configured in UI)
-  prompt_num: 5   # Number of prompts to use from input JSON file in JMeter tests
+  jmeter_home: "<jmeter_full_path>/apache-jmeter-5.6.3"                    # Update with the actual JMeter home path
+  jmeter_bin_path: "<jmeter_full_path>/apache-jmeter-5.6.3/bin"            # Update with the actual JMeter bin path
+  jmeter_path: "<repo_path>/llm-perf-testing/jmeter"                       # Path for JMeter JMX files
+  jmeter_results_path: "<repo_path>/llm-perf-testing/jmeter/test_results"  # Path for JMeter results files
+  use_rag: False                                                           # Whether to use RAG mode in JMeter tests (can be configured in UI)
+  prompt_num: 5                                                            # Number of prompts to use from input JSON file in JMeter tests
 
 deepeval:
-  deepeval_results_path: "/<root>/llm-perf-testing/.deepeval"  # Path for DeepEval results files
+  deepeval_results_path: "<repo_path>/llm-perf-testing/.deepeval"  # Path for DeepEval results files
