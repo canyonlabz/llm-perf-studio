@@ -8,7 +8,7 @@ This document defines the key performance indicators used by the LLM Performance
 
 | Metric                  | Definition                                   | QA Performance Version                         | QA Functional Version                        |
 |-------------------------|----------------------------------------------|------------------------------------------------|----------------------------------------------|
-| **API Response Time**   | Min, Avg, Max, 90th percentile response times |
+| **API Response Times**   | Min, Avg, Max, 90th percentile response times | Detects latency spikes, slowdowns, and tail-latency under load | Ensures endpoints respond within acceptable SLAs and user experience is not degraded |
 | **Concurrent Users**    | Max users system can handle concurrently     | Assesses system scalability, bottlenecks       | Ensures core features remain available under load |
 | **Error Rate**          | % of failed or errored requests              | Reliability at scale/under stress              | Detects functional bugs, API misbehavior     |
 
