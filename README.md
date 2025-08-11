@@ -233,6 +233,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Additional DeepEval quality metrics
 - [ ] De-couple LLM calculations from JMeter to Python tools. 
 
+## Author ✍️
+
+**Jason Smallcanyon | [CanyonLabz, LLC](https://canyonlabz.com/)**
+
 ## 📚 Related Projects
 
 - [Apache JMeter](https://jmeter.apache.org/) - Load testing framework
