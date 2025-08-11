@@ -37,26 +37,34 @@ This document defines the key performance indicators used by the LLM Performance
 ---
 
 ## 4. Chunking (Segmentation)
-- Chunking Duration (millisecond/document)
-- Chunk Throughput (chunks/sec)
+| Metric                        | Definition                                          | QA Performance Version                                 | QA Functional Version                                 |
+|-------------------------------|-----------------------------------------------------|--------------------------------------------------------|-------------------------------------------------------|
+| **Chunking Duration (millisecond/document)** | Time to split a document into semantic chunks. Impacts pipeline speed as file size grows. | Detects slowdowns in preprocessing as document size increases; helps identify bottlenecks in the chunking pipeline. | Ensures all documents are chunked correctly and within acceptable time for user experience or batch SLAs. |
+| **Chunk Throughput (chunks/sec)** | Number of chunks created per second, reflecting scalability. Higher is better for batch/large-ingest. | Measures system's ability to handle large-scale or batch ingestion; higher throughput means better scalability. | Verifies all expected chunks are produced and no data is lost or skipped during segmentation. |
 
 ---
 
 ## 5. Embedding Generation
-- Query Embedding Latency - Retrieval (Duration in ms.)
-- Document Embedding Latency - Ingestion (Duration per chunk ms.)
-- Embedding Throughput (Embeddings/sec)
-- Embedding Error Rate (Failures/timeouts %)
+| Metric                        | Definition                                          | QA Performance Version                                 | QA Functional Version                                 |
+|-------------------------------|-----------------------------------------------------|--------------------------------------------------------|-------------------------------------------------------|
+| **Query Embedding Latency - Retrieval (Duration in ms.)** | Time to generate a vector for a user query. User sends a query or prompt that is embedded to search the stored vector. | Detects slowdowns in real-time search; high latency impacts user experience and E2E response time. | Ensures every query is embedded and returned within acceptable latency for interactive use. |
+| **Document Embedding Latency - Ingestion (Duration per chunk ms.)** | Time to compute a vector from a chunk (often in batch). Affects ingest speed for content due to processing chunks to store in vector DB. | Measures batch processing speed for large ingests; identifies bottlenecks in content onboarding. | Verifies all chunks are embedded and stored; ensures no data loss or excessive delays during ingestion. |
+| **Embedding Throughput (Embeddings/sec)** | Chunks converted to vectors per second; higher means faster bulk processing. | Indicates system's ability to scale for large datasets; higher throughput means faster onboarding. | Confirms all expected embeddings are produced and stored; checks for completeness in batch jobs. |
+| **Embedding Error Rate (Failures/timeouts %)** | Reliability of conversion; failures disrupt pipeline. | Tracks stability and robustness of embedding service under load; high error rates signal reliability issues. | Ensures all embeddings succeed or errors are handled gracefully; no silent data loss. |
 
 ---
 
 ## 6. Vector Query Search
-- Query Latency - Search(latency ms.)
-- QPS (Queries/second)
-- Upsert Latency - Indexing (Duration to write vectors ms.)
+| Metric                        | Definition                                          | QA Performance Version                                 | QA Functional Version                                 |
+|-------------------------------|-----------------------------------------------------|--------------------------------------------------------|-------------------------------------------------------|
+| **Query Latency - Search(latency ms.)** | Time to complete a semantic search for top-k most similar vectors; higher means slow downstream context for LLM | Detects slowdowns in retrieval pipeline; high latency can bottleneck LLM response time and degrade user experience. | Ensures all search queries return results within acceptable latency; validates search is functional and not timing out. |
+| **QPS (Queries/second)** | System capacity to handle vector searches. Parallel searches DB can serve—throughput for scale. | Measures backend throughput and scalability for concurrent search; higher QPS means better support for multi-user or batch workloads. | Verifies system can handle expected query volume without errors or dropped requests. |
+| **Upsert Latency - Indexing (Duration to write vectors ms.)** | Time to store new vectors in the index. Ingest and index time for new vectors—affects content updates. | Surfaces bottlenecks in content update/refresh; high latency slows onboarding and retraining. | Ensures all new vectors are indexed and available for search promptly; validates no data loss or index corruption. |
 
 ---
 
 ## 7: Retrieval Assembly
-- Assembly Latency (Duration of prompt assembly ms.)
-- Tokens Assembled (Token count)
+| Metric                        | Definition                                          | QA Performance Version                                 | QA Functional Version                                 |
+|-------------------------------|-----------------------------------------------------|--------------------------------------------------------|-------------------------------------------------------|
+| **Assembly Latency (Duration of prompt assembly ms.)** | Time to compile retrieved results into a prompt. Time to aggregate top-k chunks and package prompt for LLM; impacts E2E speed. | Detects bottlenecks in final prompt construction; high latency here slows E2E response even if retrieval is fast. | Ensures all required context is assembled and prompt is built correctly for LLM; validates no missing or duplicated content. |
+| **Tokens Assembled (Token count)** | Total number of tokens added to the final prompt. Ensures prompt fits LLM context; overflow slows or fails LLM inference. Assembled via top-k chunks into prompt. | Monitors prompt size for context overflow; helps tune chunking and retrieval to avoid exceeding LLM limits. | Verifies prompt fits within LLM context window and contains all necessary information; prevents truncation or errors. |
