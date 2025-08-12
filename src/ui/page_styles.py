@@ -2,7 +2,7 @@
 
 import streamlit as st
 
-# --- Page Header Styles ---------------------------------------------------
+# --- Page Header Styles ----------------------------------------------------
 def inject_page_header_styles():
     """
     Inject custom CSS styles for the page header in the Streamlit app.
@@ -116,7 +116,7 @@ def inject_page_header_styles():
         </style>
     """, unsafe_allow_html=True)
 
-# --- Page Title Styles ---------------------------------------------------
+# --- Page Title Styles -----------------------------------------------------
 def inject_page_title_styles():
     """
     Inject custom CSS styles for the page title in the Streamlit app.
@@ -141,7 +141,7 @@ def inject_page_title_styles():
         </style>
     """, unsafe_allow_html=True)
 
-# --- Chatbot Area Styles ---------------------------------------------------
+# --- Chatbot Area Styles ----------------------------------------------------
 def inject_chatbot_area_styles():
     """
     Inject custom CSS styles for the chatbot area in the Streamlit app.
@@ -259,7 +259,7 @@ def inject_chatbot_area_styles():
         </style>
     """, unsafe_allow_html=True)
 
-# --- JMeter Configuration Area Styles ---------------------------------------------------
+# --- JMeter Configuration Area Styles ---------------------------------------
 def inject_jmeter_config_styles():
     """
     Inject custom CSS styles for the JMeter configuration area in the Streamlit app.
@@ -296,7 +296,7 @@ def inject_jmeter_config_styles():
         </style>
     """, unsafe_allow_html=True)
 
-# --- JMeter Viewer Styles ---------------------------------------------------
+# --- JMeter Viewer Styles ----------------------------------------------------
 def inject_jmeter_viewer_styles():
     """
     Inject custom CSS styles for the JMeter Viewer in the Streamlit app.
@@ -342,7 +342,7 @@ def inject_jmeter_viewer_styles():
         </style>
     """, unsafe_allow_html=True)
 
-# --- JMeter Button Styles ---------------------------------------------------
+# --- JMeter Button Styles ----------------------------------------------------
 def inject_jmeter_button_styles():
     """
     Inject custom CSS styles for JMeter buttons in the Streamlit app.
@@ -414,7 +414,7 @@ def inject_jmeter_button_styles():
         </style>
     """, unsafe_allow_html=True)
 
-# --- Action Button Styles ---------------------------------------------------
+# --- Action Button Styles ----------------------------------------------------
 def inject_action_button_styles():
     """
     Inject custom CSS styles for Action buttons (Upload Task File, Run Browser Task, etc) in the Streamlit app.
@@ -469,7 +469,7 @@ def inject_action_button_styles():
         </style>
     """, unsafe_allow_html=True)
 
-# --- The Agent Viewer (Agent Log Activity) Styles ---------------------------------------------------
+# --- The Agent Viewer (Agent Log Activity) Styles ----------------------------
 def inject_agent_viewer_styles():
     """
     Inject custom CSS styles for the Agent Viewer in the Streamlit app.
@@ -558,7 +558,7 @@ def inject_agent_viewer_styles():
         </style>
     """, unsafe_allow_html=True)
 
-# --- Report Viewer Styles ---------------------------------------------------
+# --- Report Viewer Styles ----------------------------------------------------
 def inject_report_viewer_styles():
     """
     Inject custom CSS styles for the Report Viewer section in the Streamlit app.
@@ -828,6 +828,173 @@ def inject_deepeval_button_styles():
             color: #fff;            /* White text on hover */
             box-shadow: 0 4px 16px rgba(255, 179, 0, 0.15);
             border-color: #4c4e52; /* Maintain dark grey border */
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+# --- G-Eval Report Styles -----------------------------------------------------
+def inject_geval_report_styles():
+    """
+    Inject custom CSS styles for the G-Eval Report section in the Streamlit app.
+    """
+    st.markdown("""
+        <style>
+        .report-viewer-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .report-viewer-textarea {
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: #f8f8f8;
+            font-family: monospace;
+            padding: 10px;
+            height: 100%;
+        }
+        .tab-subheader {
+            color: #2d5c7f !important;  /* Darker blue for subheaders */
+            font-weight: 100;
+            font-size: 28px !important;
+            margin-bottom: 0.3em;
+        }
+        /* Custom styles for tabs */
+        .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
+            font-size: 1.1rem !important;
+        }
+        /* Set equal width for all tabs and center content */
+        .stTabs [data-baseweb="tab-list"] button {
+            flex: 1 !important;                           /* Equal width distribution */
+            min-width: 125px !important;                  /* Minimum width for smaller screens */
+            max-width: 175px !important;                  /* Maximum width to prevent too wide tabs */
+            text-align: center !important;                /* Center text horizontally */
+            justify-content: center !important;           /* Center content */
+            display: flex !important;                     /* Flex display for centering */
+            align-items: center !important;               /* Center content vertically */
+            border-radius: 8px 8px 0 0 !important;        /* Rounded top corners */
+            margin-right: 1px !important;                 /* Small gap between tabs */
+            transition: background-color 0.3s ease, color 0.3s ease !important;
+            border: 1px solid #b0b8c1 !important;   /* light grey border */
+        }
+
+        /* Center the markdown container content */
+        .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] {
+            text-align: center !important;
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+
+        /* Center the paragraph text */
+        .stTabs [data-baseweb="tab-list"] button [data-testid="stMarkdownContainer"] p {
+            text-align: center !important;
+            margin: 0 !important;                         /* Remove default margins */
+            padding: 0 !important;                        /* Remove default padding */
+        }                
+
+
+        /* Inactive tab styling */
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="false"] {
+            background-color: #f0f2f6 !important;        /* Light grey background */
+            color: #666666 !important;                    /* Medium grey text */
+            border-bottom: 2px solid transparent !important;
+        }
+
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="false"] [data-testid="stMarkdownContainer"] p {
+            color: #666666 !important;                    /* Medium grey text for content */
+        }
+
+        /* Active tab styling */
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
+            background-color: #7e99b4 !important;        /* Darker blue grey background */
+            color: #ffffff !important;                    /* White text */
+            border-bottom: 2px solid #1565c0 !important; /* Darker blue bottom border */
+        }
+
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] [data-testid="stMarkdownContainer"] p {
+            color: #ffffff !important;                    /* White text for content */
+            /* font-weight: bold !important;                  Bold text for active tab */
+        }
+
+        /* Hover effects for inactive tabs */
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="false"]:hover {
+            background-color: #e3f2fd !important;        /* Light blue on hover */
+            color: #1976d2 !important;                    /* Blue text on hover */
+        }
+
+        .stTabs [data-baseweb="tab-list"] button[aria-selected="false"]:hover [data-testid="stMarkdownContainer"] p {
+            color: #1976d2 !important;                    /* Blue text for content on hover */
+        }
+
+        /* Optional: Add transition effects for smooth color changes */
+        .stTabs [data-baseweb="tab-list"] button {
+            transition: background-color 0.3s ease, color 0.3s ease !important;
+        }
+
+        /* Report table styles */
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+        }
+        .custom-table th {
+            background-color: #2d5c7f; /* Darker blue */
+            color: #ffffff;
+            font-weight: bold;
+            padding: 12px 8px;
+            text-align: left;
+            border: 1px solid #000000;
+        }
+        .custom-table td {
+            padding: 10px 8px;
+            border: 1px solid #000000;
+            background-color: #ffffff;
+        }
+        .custom-table tr:nth-child(even) td {
+            background-color: #f8f9fa;  /* Light gray */
+        }
+        .custom-table tr:hover td {
+            background-color: #e3f2fd;
+        }
+        /* Report overview section styles */
+        .metric_subtitle {
+            font-size: 1.2rem;
+            border-bottom: 1px solid #e0e0e0; /* Light gray border for separation */
+            padding-bottom: 0.25em !important;
+            margin-bottom: 0.75em !important;
+        }
+        .pass-fail-summary {
+            font-size: 1.1rem;
+            margin-top: 1.5em !important;
+        }
+        .overview-row {
+            font-size: 1.1rem;
+            margin-bottom: 0.5em;
+        }
+        .overview-label {
+            font-weight: bold;
+            color: #222;    /* Darker text for labels */
+            margin-right: 0.5em;
+            display: inline-block;
+            min-width: 160px;
+        }
+        .overview-value {
+            color: #687494; /* Cooler gray for values */
+            font-weight: normal;
+        }
+        /* Make metric labels larger and bold */
+        label[data-testid="stMetricLabel"] p {
+            font-size: 1.15rem !important;
+            font-weight: 700 !important;
+            color: #222 !important;
+            margin-bottom: 0.25em;
+            letter-spacing: 0.5px;
+        }
+        /* Change the color of st.metric values */
+        div[data-testid="stMetricValue"] {
+            color: #687494 !important;
         }
         </style>
     """, unsafe_allow_html=True)

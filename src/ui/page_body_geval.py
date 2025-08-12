@@ -10,7 +10,7 @@ import pandas as pd
 from src.utils.config import load_config
 from src.ui.page_utils import initialize_session_state
 from src.ui.page_styles import (
-    inject_report_viewer_styles,
+    inject_geval_report_styles,
 )
 from src.utils.event_logs import (
     add_deepeval_log,
@@ -28,7 +28,7 @@ def render_geval_report_viewer():
     """
     Render the DeepEval Report Viewer area that displays GEval quality assessment metrics and score.
     """
-    inject_report_viewer_styles()  # Inject custom styles for report viewer
+    inject_geval_report_styles()  # Inject custom styles for G-Eval report
 
     # Centered column for the report viewer
     col_left, col_report_viewer, col_right = st.columns([0.10, 0.80, 0.10], border=False)  # Define three columns with specified widths and borders
