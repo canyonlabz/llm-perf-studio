@@ -1,5 +1,7 @@
 # LLM Performance Testing Framework
 
+> **⚠️ This project is under active development. Features, modules, and documentation may change frequently. Use at your own risk and please report any issues or suggestions!**
+
 A comprehensive framework for load testing Large Language Models (LLMs) with integrated quality assessment using JMeter and DeepEval.
 
 ## 🚀 Overview
