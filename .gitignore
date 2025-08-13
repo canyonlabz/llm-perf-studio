@@ -151,24 +151,18 @@ __azurite_db*__.json
 # ignore .sqlite3 database file
 *.sqlite3
 
-# Project-specific ignores
+# =========================================================
+# Repo: llm-perf-testing
 # Ignore the following files and directories
-tools/*.txt
-tools/*.json
-tools/*.log
-testdata_json/ollama_response_generate-api.json
-test_results/*.json
-test_results/*.csv
-test_results/*.jtl
+# =========================================================
 
 # Ignore docker data created by the test suite
 docker/data/*
+# Ignore JMeter test results & test scripts
 jmeter/test_results/*
-# Ignore JMeter test results
-tmp/results/*
+jmeter/llm-ollama-debug.jmx
+jmeter/llm-openai-debug.jmx
 # Ignore DeepEval test results
-src/tools/.deepeval/*
-# Ignore DeepEval test data
 src/tools/.deepeval/*
 .deepeval/*
 # Ignore config.yaml files for Windows or Mac systems (NOTE: These files are specific to OS, but can be re-enabled by commenting out the following lines)
