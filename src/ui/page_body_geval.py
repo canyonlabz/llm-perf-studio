@@ -48,11 +48,11 @@ def render_geval_report_viewer():
             # Create the report viewer section
             st.markdown('<div class="report-viewer-title">📊 DeepEval Quality Assessment:</div>', unsafe_allow_html=True)
             tab1, tab2, tab3, tab4, tab5 = st.tabs([
-                "📋 DeepEval Summary", 
-                "📉 DeepEval Results",  
-                "📈 Score Chart", 
-                "🛠️📈 Quality Analysis", 
-                "🛠️📈 Test Cases"])
+                "📋 Summary", 
+                "📉 Results",  
+                "📊 Score Chart", 
+                "🔍 Quality Analysis", 
+                "🛠️ Test Cases"])
 
             with tab1:
                 tab1.markdown('<h2 class="tab-subheader">DeepEval Results Summary</h2>', unsafe_allow_html=True)
@@ -78,11 +78,12 @@ def render_geval_report_viewer():
 
                 # Section 2: Key Metrics
                 st.markdown('<h4 class="metric_subtitle">Key Metrics</h4>', unsafe_allow_html=True)
-                col1, col2, col3, col4 = st.columns(4, border=True)  # Define four columns with borders
+                col1, col2, col3, col4, col5 = st.columns(5, border=True)  # Define four columns with borders
                 col1.metric("Pass Rate (%)", f"{summary['overall_pass_rate']:.2f}")
-                col2.metric("Assessment Duration (sec)", f"{execm.get('total_duration', 0):.1f}")
-                col3.metric("Avg Duration per Case (sec)", f"{execm.get('average_duration_per_case', 0):.2f}")
-                col4.metric("Total Cost", f"${execm.get('total_cost', 0):.2f}")
+                col2.metric("Fail Rate (%)", f"{summary['overall_fail_rate']:.2f}")
+                col3.metric("Assessment Duration", f"{execm.get('total_duration', 0):.1f} sec.")
+                col4.metric("Avg Duration per Case", f"{execm.get('average_duration_per_case', 0):.2f} sec.")
+                col5.metric("Total Cost", f"${execm.get('total_cost', 0):.2f}")
 
                 # Section 3: Pass/Fail Summary
                 st.markdown('<h4 class="pass-fail-summary">Pass/Fail Summary</h4>', unsafe_allow_html=True)
@@ -150,48 +151,51 @@ def render_geval_report_viewer():
 
                 # Display high-level stats
                 stats = distribution.get('statistics', {})
-                stats_display = f"""
-                - **Mean:** {stats.get('mean', 0):.2f}  
-                - **Min:** {stats.get('min', 0):.2f}  
-                - **Max:** {stats.get('max', 0):.2f}  
-                - **Std Dev:** {stats.get('std', 0):.2f}
-                """
-                st.markdown("#### Score Summary Statistics")
-                st.markdown(stats_display)
+                st.markdown('<h4 class="metric_subtitle">Score Summary Statistics</h4>', unsafe_allow_html=True)
+                st.markdown(
+                    f'<div class="overview-row"><span class="overview-label">Mean:</span> <span class="overview-value">{stats.get('mean', 0):.2f}</span></div>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown(
+                    f'<div class="overview-row"><span class="overview-label">Min:</span> <span class="overview-value">{stats.get('min', 0):.2f}</span></div>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown(
+                    f'<div class="overview-row"><span class="overview-label">Max:</span> <span class="overview-value">{stats.get('max', 0):.2f}</span></div>',
+                    unsafe_allow_html=True,
+                )
+                st.markdown(
+                    f'<div class="overview-row"><span class="overview-label">Std Dev:</span> <span class="overview-value">{stats.get('std', 0):.2f}</span></div>',
+                    unsafe_allow_html=True,
+                )
 
                 # Optionally: List table
-                st.markdown("#### Tests per Score Range")
+                st.markdown('<h4 class="metric_subtitle">Tests per Score Range</h4>', unsafe_allow_html=True)
                 st.table(df.set_index('Score Bin'))
 
             with tab4:
                 tab4.markdown('<h2 class="tab-subheader">Quality Analysis</h2>', unsafe_allow_html=True)
 
-                # Performance bands
+                # Section 1: Performance bands
                 perf = insights.get('performance_by_score', {})
-                st.subheader("Performance by Score Band")
-                st.markdown(
-                    f"- **Excellent (≥0.9):** {perf.get('excellent', 0)} cases  \n"
-                    f"- **Good (0.7–0.89):** {perf.get('good', 0)} cases  \n"
-                    f"- **Fair (0.5–0.69):** {perf.get('fair', 0)} cases  \n"
-                    f"- **Poor (<0.5):** {perf.get('poor', 0)} cases"
-                )
+                st.markdown('<h4 class="metric_subtitle">Performance by Score Band</h4>', unsafe_allow_html=True)
+                col1, col2, col3, col4 = st.columns(4, border=True)  # Define four columns with borders
+                col1.metric("Excellent (≥0.9)", f"{perf.get('excellent', 0)} cases")
+                col2.metric("Good (0.7–0.89)", f"{perf.get('good', 0)} cases")
+                col3.metric("Fair (0.5–0.69)", f"{perf.get('fair', 0)} cases")
+                col4.metric("Poor (<0.5)", f"{perf.get('poor', 0)} cases")
 
-                # Common failure patterns
+                # Section 2: Common failure patterns
+                st.markdown('<h4 class="common-failure-patterns">Common Failure Patterns</h4>', unsafe_allow_html=True)
                 patterns = (insights.get('common_failure_patterns', {}).get('common_issues')
                             if isinstance(insights.get('common_failure_patterns', {}), dict)
                             else insights.get('common_failure_patterns', []))
-
-                st.subheader("Common Failure Patterns")
                 if patterns:
                     for p in patterns:
-                        st.markdown(f"- {p}")
+                        st.markdown(f'<div class="overview-row"><span class="overview-label">Pattern:</span> <span class="overview-value">{p}</span></div>',
+                                    unsafe_allow_html=True)
                 else:
                     st.write("No common failure patterns identified.")
-
-                # Failure rate if present
-                fail_rate = insights.get('common_failure_patterns', {}).get('failure_rate')
-                if fail_rate is not None:
-                    st.markdown(f"**Failure Rate:** {fail_rate:.1f}%")
 
             with tab5:
                 tab5.markdown('<h2 class="tab-subheader">Test Cases</h2>', unsafe_allow_html=True)

@@ -969,6 +969,10 @@ def inject_geval_report_styles():
             font-size: 1.1rem;
             margin-top: 1.5em !important;
         }
+        .common-failure-patterns {
+            font-size: 1.1rem;
+            margin-top: 1.5em !important;
+        }
         .overview-row {
             font-size: 1.1rem;
             margin-bottom: 0.5em;
