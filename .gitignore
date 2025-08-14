@@ -158,10 +158,10 @@ __azurite_db*__.json
 
 # Ignore docker data created by the test suite
 docker/data/*
-# Ignore JMeter test results & test scripts
+# Ignore JMeter test results & modified/updated test scripts
 jmeter/test_results/*
-jmeter/llm-ollama-debug.jmx
-jmeter/llm-openai-debug.jmx
+jmeter/llm-ollama-update.jmx
+jmeter/llm-openai-update.jmx
 # Ignore DeepEval test results
 src/tools/.deepeval/*
 .deepeval/*
