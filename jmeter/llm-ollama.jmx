@@ -91,7 +91,7 @@
         <stringProp name="variableNames">hostname,port</stringProp>
       </CSVDataSet>
       <hashTree/>
-      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group" enabled="true">
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group">
         <intProp name="ThreadGroup.num_threads">1</intProp>
         <intProp name="ThreadGroup.ramp_time">1</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -104,7 +104,7 @@
       <hashTree>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC00_Create LLM KPI Output File" enabled="true"/>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC00_TS01_Create LLM KPI Output File">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC00_TS01_Create LLM KPI Output File" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
@@ -619,25 +619,77 @@ prev.setIgnore()</stringProp>
               <boolProp name="IfController.useExpression">true</boolProp>
             </IfController>
             <hashTree>
-              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS02_Define Prompt Template" enabled="true">
+              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS02_Define Prompt Template">
                 <stringProp name="scriptLanguage">groovy</stringProp>
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>
                 <stringProp name="cacheKey">false</stringProp>
                 <stringProp name="script">import org.apache.commons.lang3.StringEscapeUtils
 
-def promptTemplate = &apos;&apos;&apos;You are an expert in software testing. Answer the following multiple-choice question using only your current knowledge—do not search the internet or use external data. Read the question and the four options carefully, and then respond with only one letter (A, B, C, or D) corresponding to the best answer. Do not include any explanation or extra text—your response should be only the letter.
+def promptTemplate = &apos;&apos;&apos;You are an expert in software testing. Strictly follow these instructions.
+- For each multiple-choice question, analyze all options carefully.
+- Provide a JSON object as your answer, with exactly these four fields (in this order):
 
-Question:
-${question}
+1. &quot;retrieval_status&quot;: Always &quot;FAILED&quot; (since you are not to consult external knowledge).
+2. &quot;retrieved_context&quot;: List 2-3 points either from your internal knowledge or explicit statements of uncertainty/clarification about the options.
+3. &quot;reasoning&quot;:  
+   - Explain why your chosen answer is *best*.
+   - Briefly clarify *why the other options are less suitable*.
+   - If you are unsure, admit this and provide your best guess.
+4. &quot;answer&quot;: A single uppercase letter (&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, or &quot;D&quot;).
 
+- Do NOT copy from the examples. Each reasoning must be specific to the current question.
+
+# Strict Output Requirements
+
+- Your answer *must* be a single, valid JSON object—no extra text or commentary before or after.
+- All four keys (&quot;retrieval_status&quot;, &quot;retrieved_context&quot;, &quot;reasoning&quot;, &quot;answer&quot;) *must* be present, in that order, and appear only once.
+- &quot;retrieved_context&quot; must be an array containing 2–3 distinct points (statements of fact, clarifications, or explicit admissions of uncertainty); do not leave it empty unless you have no relevant knowledge, in which case explain this in the array.
+- &quot;answer&quot; must be a single uppercase letter: &quot;A&quot;, &quot;B&quot;, &quot;C&quot;, or &quot;D&quot;.
+- Do NOT include additional explanations or comments outside the JSON object.
+- Do NOT copy or slightly modify the sample outputs; your response must be specific to the current question.
+
+If you are uncertain, acknowledge this in your reasoning or retrieved_context.
+
+---
+
+### Example 1:
+
+{
+  &quot;retrieval_status&quot;: &quot;FAILED&quot;,
+  &quot;retrieved_context&quot;: [
+    &quot;No direct evidence available; relying on internal knowledge.&quot;,
+    &quot;Option A describes feature X, but the question asks for Y.&quot;,
+    &quot;My best understanding is that C addresses the core of Y.&quot;
+  ],
+  &quot;reasoning&quot;: &quot;Option C directly matches the definition required, while A is incomplete and B or D miss the focus. If unsure, explain your reasoning.&quot;,
+  &quot;answer&quot;: &quot;C&quot;
+}
+
+### Example 2 (Uncertainty):
+
+{
+  &quot;retrieval_status&quot;: &quot;FAILED&quot;,
+  &quot;retrieved_context&quot;: [
+    &quot;I am unfamiliar with term X in this context.&quot;,
+    &quot;Options B and D both seem plausible.&quot;,
+    &quot;Given my limited training, B seems closest to textbook principles.&quot;
+  ],
+  &quot;reasoning&quot;: &quot;While I am not completely certain, B aligns best with what I recall, as D introduces a less common approach.&quot;,
+  &quot;answer&quot;: &quot;B&quot;
+}
+
+---
+
+# Now answer:
+Question: ${question}
 Options:
 A) ${optionA}
 B) ${optionB}
 C) ${optionC}
 D) ${optionD}
 
-Please respond with only the letter that represents your answer.&apos;&apos;&apos;
+(Reminder: Use the above structure and instructions for every response.)&apos;&apos;&apos;
 
 // Properly escape the string for JSON
 String escapedPrompt = StringEscapeUtils.escapeJson(promptTemplate)
@@ -714,6 +766,88 @@ String escapedPrompt = StringEscapeUtils.escapeJson(promptTemplate)
 log.info(&quot;[DEBUG]: escapedPrompt = &quot; + escapedPrompt)
 
 vars.put(&quot;promptTemplate&quot;, escapedPrompt)</stringProp>
+              </JSR223Sampler>
+              <hashTree>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">// Don&apos;t report this Sampler in the results.
+prev.setIgnore()</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+              </hashTree>
+              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS02_Define RAG Prompt Template" enabled="false">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">false</stringProp>
+                <stringProp name="script">import org.apache.commons.lang3.StringEscapeUtils
+
+def promptTemplate = &apos;&apos;&apos;You are an expert in software testing with access to external knowledge sources, including uploaded documents, embeddings, and indexed data. Your task is to answer the following multiple-choice question by prioritizing external (retrieved) knowledge over your internal knowledge.
+
+Before providing your final answer, please do the following:
+1. Retrieve the top three documents or excerpts from your external knowledge base that are most relevant to the question.
+2. List and briefly summarize (in one sentence each) the key points from these retrieved sources.
+3. Based on the retrieved context and your internal expertise, select the best answer from the options below.
+4. Provide a reasoning for the selected answer and why it best fits and why the other answers do not.
+
+## INSTRUCTIONS: 
+Your final response **must** be a fully valid JSON object. Ensure that the JSON object follows the below rules:
+- Starts with `{` and ends with `}`.
+- Contains **all 4 required keys**: 1) `&quot;retrieval_status&quot;`, 2) `&quot;retrieved_context&quot;`, 3) `&quot;reasoning&quot;` and 4) `&quot;answer&quot;`.
+- Return exactly these keys in this order: retrieval_status, retrieved_context, reasoning, answer.
+- Does **not** include any text outside the JSON object.
+- Use a **single uppercase letter (A, B, C, or D)** for `&quot;answer&quot;`, with no additional formatting.
+- For `&quot;reasoning&quot;`, include a concise explanation of why you selected your final answer and include exactly only one `&quot;reasoning&quot;` field, no duplicates.
+- If any required key would be missing, regenerate before responding.
+- Use the below examples for your responses.
+
+### Example #1 Response Format:
+{
+  &quot;retrieval_status&quot;: &quot;SUCCESS&quot;,
+  &quot;retrieved_context&quot;: [
+    &quot;Summary of document 1&quot;,
+    &quot;Summary of document 2&quot;,
+    &quot;Summary of document 3&quot;
+  ],
+  &quot;reasoning&quot;: &quot;Concise, combined explanation and reasoning of why I selected this answer.&quot;
+  &quot;answer&quot;: &quot;C&quot;
+}
+
+### Example #2 Response Format:
+{
+  &quot;retrieval_status&quot;: &quot;FAILED&quot;,
+  &quot;retrieved_context&quot;: [
+    &quot;Summary of document 1&quot;,
+    &quot;Summary of document 2&quot;,
+    &quot;Summary of document 3&quot;
+  ],
+  &quot;reasoning&quot;: &quot;Concise, combined explanation and reasoning of why I selected this answer.&quot;
+  &quot;answer&quot;: &quot;A&quot;
+}
+
+If relevant external information is found, set &quot;retrieval_status&quot;: &quot;SUCCESS&quot;.
+If no relevant external information is found (e.g. from vector database), set &quot;retrieval_status&quot;: &quot;FAILED&quot;, leave the &quot;retrieved_context&quot; array empty, and base your answer solely on your internal knowledge.
+
+Question: ${question}
+
+Options: 
+A) ${optionA} 
+B) ${optionB} 
+C) ${optionC}
+D) ${optionD}
+
+Please strictly follow this format in your response.&apos;&apos;&apos;
+
+// Properly escape the string for JSON
+String escapedPrompt = StringEscapeUtils.escapeJson(promptTemplate)
+
+log.info(&quot;[DEBUG]: escapedPrompt = &quot; + escapedPrompt)
+
+vars.put(&quot;promptTemplate&quot;, escapedPrompt)</stringProp>
+                <stringProp name="TestPlan.comments">VERSION-2.0</stringProp>
               </JSR223Sampler>
               <hashTree>
                 <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
