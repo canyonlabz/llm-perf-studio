@@ -151,3 +151,48 @@ Several environment variables configure behavior of your containers:
     - `WEBUI_NAME=LLM PerfTest ChatBot`
     - `CORS_ALLOW_ORIGIN=*` (not recommended for production)
 - Modify or add variables here to adjust behavior, enable debugging, or switch models.
+
+***
+
+## 🧩 9. Embedding Model Setup \& Troubleshooting
+
+If you plan to use embedding features in OpenWebUI (such as retrieval-augmented generation or vector search), you must ensure that the chosen embedding model is available and loaded in your Ollama container.
+
+### How to Set Up the Embedding Model
+
+1. **Install the Embedding Model via UI:**
+    - Go to OpenWebUI → Settings → Models / Embeddings.
+    - Search for and select `nomic-embed-text` (or your chosen embedding model).
+    - Use the UI to trigger the download.
+    - Once installed and available, embedding features will be enabled.
+2. **Command-line Installation (Optional Advanced):**
+    - Open a shell into your running Ollama container:
+
+```sh
+docker exec -it ollama bash
+```
+
+    - Pull the embedding model manually:
+
+```sh
+ollama pull nomic-embed-text
+```
+
+
+### Troubleshooting
+
+- If you see an error like:
+
+```
+Error generating ollama batch embeddings: 404 Client Error: Not Found for url: http://ollama:11434/api/embed
+```
+
+This means the embedding model is not installed, or Ollama doesn’t have embedding support active.
+- Make sure the model name in your `.env` or Docker Compose file matches the model installed in Ollama.
+
+
+### Tips
+
+- Embedding models must be present in Ollama for `/api/embed` to work.
+- Update or check your embedding model regularly for compatibility with new releases of OpenWebUI or Ollama.
+- After installing the embedding model, you may need to restart your containers to activate the endpoint.
