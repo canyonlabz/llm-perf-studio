@@ -25,7 +25,7 @@ services:
       - appnet
 
   open-webui:
-    image: ghcr.io/open-webui/open-webui:main
+    image: ghcr.io/open-webui/open-webui:v0.6.22
     container_name: open-webui
     depends_on:
       - ollama
