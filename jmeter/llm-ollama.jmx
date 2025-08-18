@@ -16,7 +16,7 @@
         <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
       </CookieManager>
       <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables (Global)" enabled="true">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables (Global)">
         <collectionProp name="Arguments.arguments">
           <elementProp name="timestamp" elementType="Argument">
             <stringProp name="Argument.name">timestamp</stringProp>
@@ -79,7 +79,7 @@
           </elementProp>
           <elementProp name="temperature" elementType="Argument">
             <stringProp name="Argument.name">temperature</stringProp>
-            <stringProp name="Argument.value">0.2</stringProp>
+            <stringProp name="Argument.value">0.1</stringProp>
             <stringProp name="Argument.desc">TODO: Pass value as parameter from command-line (default is 0.8)</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -1076,6 +1076,9 @@ prev.setIgnore()</stringProp>
 	&quot;model&quot;: &quot;${llm_model}&quot;,&#xd;
 	&quot;prompt&quot;: &quot;${promptTemplate}&quot;,&#xd;
 	&quot;format&quot;: &quot;json&quot;,&#xd;
+	&quot;options&quot;: {&#xd;
+		&quot;temperature&quot;: ${temperature}&#xd;
+	},&#xd;
 	&quot;stream&quot;: false&#xd;
 }</stringProp>
                     <stringProp name="Argument.metadata">=</stringProp>
@@ -1301,7 +1304,7 @@ try {
 </stringProp>
               </JSR223PostProcessor>
               <hashTree/>
-              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)">
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="true">
                 <stringProp name="scriptLanguage">groovy</stringProp>
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>
