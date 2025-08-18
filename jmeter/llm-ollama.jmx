@@ -719,7 +719,7 @@ prev.setIgnore()</stringProp>
               <boolProp name="IfController.useExpression">true</boolProp>
             </IfController>
             <hashTree>
-              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS02_Define Prompt Template">
+              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC02_TS02_Define Prompt Template" enabled="true">
                 <stringProp name="scriptLanguage">groovy</stringProp>
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>
@@ -1161,7 +1161,7 @@ prev.setIgnore()</stringProp>
                 <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
               </JSONPostProcessor>
               <hashTree/>
-              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="true">
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="false">
                 <stringProp name="scriptLanguage">groovy</stringProp>
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>
@@ -1269,6 +1269,155 @@ def result = [
     llm_response: llmResponse,
     correct_answer: correctAnswer,
     is_correct: isCorrect,
+    retrieved_context: retrievedContext,
+    reasoning: reasoning
+]
+
+// Define our file path string
+def filePath = scriptPath + &quot;test_results&quot; + File.separator + &quot;${timestamp}_llm_responses.json&quot;
+log.debug(&quot;[DEBUG]:&quot; + threadName + &quot; filePath=&quot; + filePath)
+
+// 2. Detect OS
+def osName = System.getProperty(&quot;os.name&quot;).toLowerCase()
+log.info(&quot;[DEBUG]:&quot; + threadName + &quot; osName=&quot; + osName)
+
+if (osName.contains(&quot;win&quot;)) {
+    filePath = filePath.replace(&quot;\\\\&quot;,&quot;/&quot;)
+    log.info(&quot;[INFO]:&quot; + threadName + &quot; Normalized for Windows → &quot; + filePath)
+} else {
+    log.debug(&quot;[DEBUG]:&quot; + threadName + &quot; Non-Windows OS (${osName}), leaving path as-is&quot;)
+}
+
+// Create a File object from the file path
+def resultsFile = new File(filePath)
+
+// Append result to file with error handling
+try {
+    resultsFile &lt;&lt; JsonOutput.toJson(result) + &quot;\n&quot;
+    log.info(&quot;[INFO]:&quot; + threadName + &quot;  Results successfully written to file: &quot; + resultsFile.getAbsolutePath())
+} catch (Exception e) {
+    log.error(&quot;[ERROR]:&quot; + threadName + &quot;  Failed to write results to file!&quot;, e)
+}
+</stringProp>
+              </JSR223PostProcessor>
+              <hashTree/>
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+
+def threadName = ctx.getThread().getThreadName()
+
+// Extract variables
+def scriptPath = vars.get(&quot;scriptPath&quot;)			// Full path of the JMeter script location
+def questionNumber = vars.get(&quot;question_number&quot;)	// Question number
+def question = vars.get(&quot;question&quot;)			// Question
+def prompt = vars.get(&quot;promptTemplate&quot;)			// Input prompt
+def correctAnswer = vars.get(&quot;correctAnswer&quot;)?.toUpperCase()	// Correct answer (A, B, C, or D)
+def llmRawResponse = vars.get(&quot;llm_answer&quot;)?.trim() ?: &quot;{}&quot;		// Extracted JSON string from API
+def retrievalStatus = &quot;UNKNOWN&quot;
+def llmResponse = &quot;UNKNOWN&quot;					// Default value if extraction fails
+def explanationA = &quot;Explanation A: &quot; + vars.get(&quot;explanationA&quot;)
+def explanationB = &quot;Explanation B: &quot; + vars.get(&quot;explanationB&quot;)
+def explanationC = &quot;Explanation C: &quot; + vars.get(&quot;explanationC&quot;)
+def explanationD = &quot;Explanation D: &quot; + vars.get(&quot;explanationD&quot;)
+def retrievedContext = []
+def reasoning = &quot;&quot;
+
+// Build context array (null-safe, filter out empties if needed)
+def context = [explanationA, explanationB, explanationC, explanationD].findAll { it != null &amp;&amp; it.trim() }
+
+// Remove triple backticks if present
+if (llmRawResponse.startsWith(&quot;```json&quot;)) {
+    llmRawResponse = llmRawResponse.replaceFirst(/^```json\s*/, &quot;&quot;).replaceFirst(/\s*```$/, &quot;&quot;)
+}
+
+// Fix incorrect single quotes inside retrieved_context
+if (llmRawResponse.contains(&quot;&apos;{&quot;) || llmRawResponse.contains(&quot;}&apos;&quot;)) {
+    llmRawResponse = llmRawResponse.replaceAll(/&apos;\{/, &quot;{&quot;).replaceAll(/\}&apos;/, &quot;}&quot;)
+}
+
+// Ensure JSON is well-formed (fix missing quotes around &quot;answer&quot;)
+if (llmRawResponse.contains(&apos;&quot;answer&quot;: &apos;) &amp;&amp; !llmRawResponse.contains(&apos;&quot;answer&quot;: &quot;&apos;)) {
+    llmRawResponse = llmRawResponse.replaceAll(/&quot;answer&quot;:\s*([A-D])/, &apos;&quot;answer&quot;: &quot;$1&quot;&apos;)
+}
+
+// Check for missing closing curly brace at the end
+if (!llmRawResponse.endsWith(&quot;}&quot;)) {
+    log.warn(&quot;[WARN]:&quot; + threadName + &quot; Detected incomplete JSON response. Attempting to auto-fix.&quot;)
+    llmRawResponse += &quot; }&quot; // Append closing brace to fix truncation
+}
+
+// Robust JSON parse and fallback
+try {
+    def jsonResponse = new JsonSlurper().parseText(llmRawResponse)
+    llmResponse = jsonResponse?.answer?.toString()?.trim()?.toUpperCase() ?: &quot;UNKNOWN&quot;
+    llmResponse = llmResponse.replaceAll(/\$\\boxed\{([A-D])\}\$/, &apos;$1&apos;)
+
+    retrievalStatus = jsonResponse?.retrieval_status?.toString()?.trim()?.toUpperCase() ?: &quot;UNKNOWN&quot;
+
+    // Extract retrieved_context
+    if (jsonResponse?.retrieved_context instanceof List) {
+        retrievedContext = jsonResponse.retrieved_context.collect { it?.toString()?.trim() }
+    } else if (jsonResponse?.retrieved_context) {
+        // Handle non-list edge case
+        retrievedContext = [jsonResponse.retrieved_context.toString().trim()]
+    }
+    reasoning = jsonResponse?.reasoning?.toString()?.trim() ?: &quot;&quot;
+} catch (Exception e) {
+    log.error(&quot;[ERROR]:&quot; + threadName + &quot; Failed to parse LLM JSON response. Attempting regex extraction.&quot;, e)
+    
+    // Regex fallback for retrieval_status
+    def match = llmRawResponse =~ /&quot;retrieval_status&quot;\s*:\s*&quot;(\w+)&quot;/
+    if (match) retrievalStatus = match.toUpperCase()[1]
+    
+    // Regex fallback for answer
+    match = llmRawResponse =~ /&quot;answer&quot;\s*:\s*&quot;(\w)&quot;/
+    if (!match) match = llmRawResponse =~ /&quot;answer&quot;\s*:\s*(\w)/
+    if (match) llmResponse = match.toUpperCase()[1]
+    else llmResponse = &quot;UNKNOWN&quot;
+    llmResponse = llmResponse.replaceAll(/\$\\boxed\{([A-D])\}\$/, &apos;$1&apos;)
+    
+    // Regex fallback for retrieved_context (grabs array or string)
+    def ctxMatch = llmRawResponse =~ /&quot;retrieved_context&quot;\s*:\s*($$[^$$]*$$|\{[^\}]*\}|&quot;.*?&quot;)/
+    if (ctxMatch) retrievedContext = [ctxMatch.toString()][1]
+    // Regex fallback for reasoning
+    def reasonMatch = llmRawResponse =~ /&quot;reasoning&quot;\s*:\s*&quot;([^&quot;]*)&quot;/
+    if (reasonMatch) reasoning = reasonMatch.trim()[1]
+}
+
+// Validate LLM answer against correct answer
+def isCorrect = (llmResponse == correctAnswer)
+
+// Validate the LLM answer against correct answer.
+log.info(&quot;[INFO]:&quot; + threadName + &quot;  Question Number [&quot; + questionNumber + &quot;]:  &quot; + question)
+log.info(&quot;[INFO]:&quot; + threadName + &quot;  LLM Response [&quot; + questionNumber + &quot;]:  &quot; + llmResponse.toUpperCase())
+log.info(&quot;[INFO]:&quot; + threadName + &quot;  Retrieval Status: &quot; + retrievalStatus)
+log.debug(&quot;[DEBUG]:&quot; + threadName + &quot; explanationA: &quot; + explanationA)
+log.debug(&quot;[DEBUG]:&quot; + threadName + &quot; explanationB: &quot; + explanationB)
+log.debug(&quot;[DEBUG]:&quot; + threadName + &quot; explanationC: &quot; + explanationC)
+log.debug(&quot;[DEBUG]:&quot; + threadName + &quot; explanationD: &quot; + explanationD)
+log.info(&quot;[DEBUG]: &quot; + threadName + &quot; context = &quot; + JsonOutput.toJson(context))
+
+if (llmResponse == correctAnswer) {
+    log.info(&quot;[INFO]:&quot; + threadName + &quot;  ✅ LLM Answer is CORRECT!&quot;)
+} else {
+    log.warn(&quot;[INFO]:&quot; + threadName + &quot;  ❌ LLM Answer is INCORRECT! Expected: ${correctAnswer.toUpperCase()}, Got: ${llmResponse.toUpperCase()}&quot;)
+}
+
+// Create a map of results
+def result = [
+    question_number: questionNumber,
+    retrieval_status: retrievalStatus,
+    prompt: prompt,
+    question: question,
+    llm_response: llmResponse,
+    correct_answer: correctAnswer,
+    is_correct: isCorrect,
+    context: context,
     retrieved_context: retrievedContext,
     reasoning: reasoning
 ]
