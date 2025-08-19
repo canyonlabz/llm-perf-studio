@@ -35,12 +35,14 @@ def calculate_tps(eval_count: Union[int, pd.Series], total_duration_ms: Union[fl
     Returns 0 if duration or eval_count is zero/invalid.
     """
     duration_sec = total_duration_ms / 1000
-    with pd.option_context('mode.use_inf_as_na', True):
-        tps = (eval_count / duration_sec).replace([float('inf'), -float('inf')], 0) if isinstance(eval_count, pd.Series) else (
-            eval_count / duration_sec if eval_count and duration_sec else 0
-        )
-    if isinstance(tps, pd.Series):
+    if isinstance(eval_count, pd.Series):
+        tps = eval_count.divide(duration_sec).replace([float('inf'), -float('inf')], 0)
         tps = tps.fillna(0)
+    else:
+        if eval_count != 0 and duration_sec > 0:
+            tps = eval_count / duration_sec
+        else:
+            tps = 0
     return tps
 
 def calculate_tpot(total_duration_ms: Union[float, pd.Series], ttft_ms: Union[float, pd.Series], eval_count: Union[int, pd.Series]) -> Union[float, pd.Series]:
@@ -49,10 +51,11 @@ def calculate_tpot(total_duration_ms: Union[float, pd.Series], ttft_ms: Union[fl
     TPOT = (total_duration_ms - ttft_ms) / eval_count
     Returns 0 if eval_count is zero/invalid.
     """
-    valid_eval = (eval_count != 0) if isinstance(eval_count, pd.Series) else eval_count != 0
-    tpot = (total_duration_ms - ttft_ms) / eval_count if valid_eval else 0
-    if isinstance(tpot, pd.Series):
-        tpot = tpot.where(valid_eval, 0).fillna(0)
+    if isinstance(eval_count, pd.Series):
+        valid_eval = eval_count != 0
+        tpot = ((total_duration_ms - ttft_ms) / eval_count).where(valid_eval, 0).fillna(0)
+    else:
+        tpot = (total_duration_ms - ttft_ms) / eval_count if eval_count != 0 else 0
     return tpot
 
 def compute_llm_kpis_from_metrics(metrics_df: pd.DataFrame) -> pd.DataFrame:

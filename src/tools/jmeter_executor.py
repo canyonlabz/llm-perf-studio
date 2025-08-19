@@ -9,6 +9,7 @@ import threading
 from datetime import datetime
 from src.utils.config import load_config
 from src.utils.event_logs import add_jmeter_log, thread_safe_add_log
+from src.tools.llm_kpi_calculator import read_llm_metrics_csv, compute_llm_kpis_from_metrics
 
 # Load configurations
 config = load_config()
@@ -209,29 +210,31 @@ def stop_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) ->
 #--- LLM Metrics Nodes ---
 def analyze_llm_metrics_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Analyze LLM metrics from the CSV file.
+    Analyze LLM metrics from the metrics CSV file using helper functions.
     Returns summary of the LLM test results.
     """
-    llm_kpi_path = shared_data.get('llm_kpis_path', None)
-    llm_kpi_data = None
-    if not llm_kpi_path or not os.path.exists(llm_kpi_path):
-        thread_safe_add_log(shared_data['logs'], "❌ No valid LLM KPI file found. Please run load test first.", agent_name="AgentError")
+    llm_metrics_path = shared_data.get('llm_metrics_path', None)
+    if not llm_metrics_path or not os.path.exists(llm_metrics_path):
+        thread_safe_add_log(shared_data['logs'], "❌ No valid LLM metrics file found. Please run load test first.", agent_name="AgentError")
         return {}
 
-    # Load LLM KPI data
-    llm_kpi_df = pd.read_csv(llm_kpi_path)
-    if llm_kpi_df.empty:
-        thread_safe_add_log(shared_data['logs'], "❌ LLM KPI file is empty.", agent_name="AgentError")
+    # Load and validate metrics DataFrame
+    metrics_df = read_llm_metrics_csv(llm_metrics_path, shared_data, agent_name="LLMKPIAgent")
+    if metrics_df.empty:
+        thread_safe_add_log(shared_data['logs'], "❌ LLM metrics file is empty or missing required columns.", agent_name="AgentError")
         return {}
+
+    # Calculate KPIs for each row: TTFT, TPS, TPOT
+    kpi_df = compute_llm_kpis_from_metrics(metrics_df)
 
     # Convert timestamps
-    llm_kpi_df['timeStamp'] = pd.to_datetime(llm_kpi_df['timeStamp'], unit='ms')
-    start_time = llm_kpi_df['timeStamp'].min()
-    end_time = llm_kpi_df['timeStamp'].max()
+    kpi_df['timestamp'] = pd.to_datetime(kpi_df['timestamp'], unit='ms')
+    start_time = kpi_df['timestamp'].min()
+    end_time = kpi_df['timestamp'].max()
     duration = end_time - start_time
 
     # Calculate LLM Performance Summary
-    total_requests = len(llm_kpi_df)
+    total_requests = len(kpi_df)
     duration_seconds = duration.total_seconds()
     requests_per_second = total_requests / duration_seconds if duration_seconds > 0 else 0
 
@@ -239,32 +242,32 @@ def analyze_llm_metrics_node(shared_data: Dict[str, Any], state: Dict[str, Any])
     def pct90(x): return np.percentile(x, 90)
     
     # TTFT Aggregates
-    ttft_avg = llm_kpi_df['TTFT'].mean()
-    ttft_min = llm_kpi_df['TTFT'].min()
-    ttft_max = llm_kpi_df['TTFT'].max()
-    ttft_90th = pct90(llm_kpi_df['TTFT'])
+    ttft_avg = kpi_df['TTFT'].mean()
+    ttft_min = kpi_df['TTFT'].min()
+    ttft_max = kpi_df['TTFT'].max()
+    ttft_90th = pct90(kpi_df['TTFT'])
     
     # TPOT Aggregates
-    tpot_avg = llm_kpi_df['TPOT'].mean()
-    tpot_min = llm_kpi_df['TPOT'].min()
-    tpot_max = llm_kpi_df['TPOT'].max()
-    tpot_90th = pct90(llm_kpi_df['TPOT'])
-    
+    tpot_avg = kpi_df['TPOT'].mean()
+    tpot_min = kpi_df['TPOT'].min()
+    tpot_max = kpi_df['TPOT'].max()
+    tpot_90th = pct90(kpi_df['TPOT'])
+
     # TPS Aggregates
-    tps_avg = llm_kpi_df['TPS'].mean()
-    tps_min = llm_kpi_df['TPS'].min()
-    tps_max = llm_kpi_df['TPS'].max()
-    tps_90th = pct90(llm_kpi_df['TPS'])
+    tps_avg = kpi_df['TPS'].mean()
+    tps_min = kpi_df['TPS'].min()
+    tps_max = kpi_df['TPS'].max()
+    tps_90th = pct90(kpi_df['TPS'])
 
     # Calculate test duration in minutes and determine dynamic interval
     test_duration_minutes = duration.total_seconds() / 60
     dynamic_interval = calculate_dynamic_interval(test_duration_minutes)
 
     # Log the interval being used for transparency
-    thread_safe_add_log(shared_data['logs'], f"📊 Using {dynamic_interval} sampling interval for LLM metrics ({test_duration_minutes:.1f} minute test)", agent_name="JMeterAgent")
+    thread_safe_add_log(shared_data['logs'], f"📊 Using {dynamic_interval} sampling interval for LLM metrics ({test_duration_minutes:.1f} minute test)", agent_name="LLMKPIAgent")
 
     # Apply same dynamic interval processing
-    llm_time_group = llm_kpi_df.set_index('timeStamp').resample(dynamic_interval)
+    llm_time_group = kpi_df.set_index('timestamp').resample(dynamic_interval)
     
     # Process each token metric with forward fill
     ttft_over_time = llm_time_group['TTFT'].mean().ffill()
@@ -333,7 +336,7 @@ def analyze_llm_metrics_node(shared_data: Dict[str, Any], state: Dict[str, Any])
         "llm_end_time": end_time.strftime('%Y-%m-%d %H:%M:%S')
     }
     
-    thread_safe_add_log(shared_data['logs'], f"✅ LLM KPI data loaded: {len(llm_kpi_df)} token metrics", agent_name="JMeterAgent")
+    thread_safe_add_log(shared_data['logs'], f"✅ LLM KPI data loaded: {len(kpi_df)} token metrics", agent_name="LLMKPIAgent")
     return summary
 
 #--- Utility Functions ---
