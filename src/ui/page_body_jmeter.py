@@ -187,6 +187,7 @@ def render_jmeter_viewer_area(jmeter_path):
         st.session_state.jmeter_state['jmeter_jtl_path'] = shared_data['results'].get('jmeter_jtl_path', "")
         st.session_state.jmeter_state['jmeter_log_path'] = shared_data['results'].get('jmeter_log_path', "")
         st.session_state.jmeter_state['llm_kpis_path'] = shared_data['results'].get('llm_kpis_path', "")
+        st.session_state.jmeter_state['llm_metrics_path'] = shared_data['results'].get('llm_metrics_path', "")
         st.session_state.jmeter_state['llm_responses_path'] = shared_data['results'].get('llm_responses_path', "")
         st.session_state.jmeter_state['run_timestamp'] = shared_data['run_timestamp']    # Universal timestamp for all output files
         shared_data['results'] = None  # Clear after syncing

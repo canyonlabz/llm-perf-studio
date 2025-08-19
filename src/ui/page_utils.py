@@ -40,11 +40,14 @@ def initialize_session_state():
             "jmeter_jtl_path": "",
             "jmeter_log_path": "",
             "llm_kpis_path": "",        # Path to LLM KPIs file
+            "llm_metrics_path": "",     # Path to LLM metrics file
             "llm_responses_path": "",   # Path to LLM responses file
             "run_counts": {},
             "use_rag": False,   # Whether to use RAG mode
             "prompt_num": 1,    # Number of prompts to use from input JSON file
             "run_timestamp": "",
+            "temperature": 0.2, # Default temperature for LLM
+            "model": ""         # Model will be selected in UI
         }
     
     # Initialize the selected RAG file in session state if not already present
@@ -72,6 +75,7 @@ def initialize_session_state():
             'jmeter_jtl_path': "",
             'jmeter_log_path': "",
             "llm_kpis_path": "",        # Path to LLM KPIs file
+            "llm_metrics_path": "",     # Path to LLM metrics file
             "llm_responses_path": "",   # Path to LLM responses file
             "run_timestamp": "",
             'analysis': None,
