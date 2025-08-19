@@ -28,7 +28,7 @@ This framework combines traditional load testing with AI-specific quality metric
 │ • Monitoring    │    │ • Metrics       │    │ • Local/Cloud   │
 │ • Results       │    │ • Logging       │    │ • RAG Enabled   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
+         │                       │                      │
          │             ┌─────────────────┐              │
          └───────────▶│  DeepEval QA    │◀─────────────┘
                        │                 │
@@ -61,11 +61,11 @@ This framework combines traditional load testing with AI-specific quality metric
 
 3. **Install JMeter:**
    - Download from [Apache JMeter](https://jmeter.apache.org/download_jmeter.cgi)
-   - Extract to `C:\opt\apache-jmeter-5.6.3\` (Windows) or `/opt/apache-jmeter-5.6.3/` (Linux/Mac)
+   - Extract locally to folder of your choice. Example: `C:\opt\apache-jmeter-5.6.3\` (Windows) or `/opt/apache-jmeter-5.6.3/` (Linux/Mac)
 
 4. **Configure environment:**
    ```bash
-   cp config/config.yaml.example config/config.yaml
+   cp config.yaml.example config.yaml
    # Edit config.yaml with your settings
    ```
    You can create a `config.windows.yaml` or `config.mac.yaml` file depending on your operating system.
@@ -83,6 +83,9 @@ This framework combines traditional load testing with AI-specific quality metric
 
 ### Main Configuration (`~/config.yaml`)
 
+> 💡 **Note:** For a full breakdown of available configuration options and advanced usage, check out [docs/configuration.md](docs/configuration.md).
+
+**Example:**
 ```yaml
 ollama:
    base_url: "http://localhost:11434"
