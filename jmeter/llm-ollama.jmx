@@ -16,7 +16,7 @@
         <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
       </CookieManager>
       <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables (Global)">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables (Global)" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="timestamp" elementType="Argument">
             <stringProp name="Argument.name">timestamp</stringProp>
@@ -98,7 +98,7 @@
         <stringProp name="variableNames">hostname,port</stringProp>
       </CSVDataSet>
       <hashTree/>
-      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group" enabled="true">
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group">
         <intProp name="ThreadGroup.num_threads">1</intProp>
         <intProp name="ThreadGroup.ramp_time">1</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -187,78 +187,6 @@ def resultsFile = new File(filePath)
 log.info(&quot;[INFO]:[&quot; + threadName + &quot;]:  LLM Metrics File=&quot; + filePath)
 resultsFile.append(headerStr+&quot;\r\n&quot;)
 vars.put(&quot;llm_metrics_file&quot;,filePath)
-
-</stringProp>
-          </JSR223Sampler>
-          <hashTree>
-            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
-              <stringProp name="scriptLanguage">groovy</stringProp>
-              <stringProp name="parameters"></stringProp>
-              <stringProp name="filename"></stringProp>
-              <stringProp name="cacheKey">true</stringProp>
-              <stringProp name="script">// Don&apos;t report this Sampler in the results.
-prev.setIgnore()</stringProp>
-            </JSR223PostProcessor>
-            <hashTree/>
-          </hashTree>
-        </hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC00_Create LLM KPI Output File" enabled="true"/>
-        <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC00_TS01_Create LLM KPI Output File" enabled="true">
-            <stringProp name="scriptLanguage">groovy</stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="cacheKey">false</stringProp>
-            <stringProp name="script">import java.io.IOException
-import java.io.StringWriter
-import java.util.ArrayList
-import java.util.Iterator
-import java.util.List
-import java.nio.file.*
-import com.opencsv.CSVWriter
-
-// Define the folowing
-def threadName = ctx.getThread().getThreadName()
-def scriptPath = vars.get(&quot;scriptPath&quot;)			// Full path of the JMeter script location
-
-/* =================================
- *  Define the LLM KPI headers
- * =================================
- */
-def varList = [&quot;timeStamp&quot;,&quot;question_number&quot;,&quot;TTFT&quot;,&quot;TPS&quot;,&quot;TPOT&quot;,&quot;allThreads&quot;]
-
-def tmpStr = &quot;&quot;
-varList.eachWithIndex { item, index -&gt;
-	tmpStr = tmpStr + item + &quot;,&quot;
-}
-def headerStr = tmpStr.substring(0, tmpStr.length() - 1)  // truncate the ending comma
-
-log.info(&quot;[DEBUG]:[&quot; + threadName + &quot;]:  LLM KPI Headers=&quot; + headerStr)
-
-/* =================================
- *  Define the LLM KPI output file
- * =================================
- */
-
-// Define our file path string
-def filePath = scriptPath + &quot;test_results&quot; + File.separator + &quot;${timestamp}_llm_kpis.csv&quot;
-log.debug(&quot;[DEBUG]:[&quot; + threadName + &quot;]:  LLM KPI FilePath=&quot; + filePath)
-
-// Detect OS
-def osName = System.getProperty(&quot;os.name&quot;).toLowerCase()
-log.info(&quot;[DEBUG]:[&quot; + threadName + &quot;]:  osName=&quot; + osName)
-
-if (osName.contains(&quot;win&quot;)) {
-    filePath = filePath.replace(&quot;\\\\&quot;,&quot;/&quot;)
-    log.info(&quot;[INFO]:[&quot; + threadName + &quot;]:  Normalized for Windows → &quot; + filePath)
-} else {
-    log.debug(&quot;[DEBUG]:[&quot; + threadName + &quot;]:  Non-Windows OS (${osName}), leaving path as-is&quot;)
-}
-
-def resultsFile = new File(filePath)
-log.info(&quot;[INFO]:[&quot; + threadName + &quot;]:  LLM KPI File=&quot; + filePath)
-resultsFile.append(headerStr+&quot;\r\n&quot;)
-vars.put(&quot;llm_kpi_file&quot;,filePath)
 
 </stringProp>
           </JSR223Sampler>
@@ -1164,147 +1092,7 @@ prev.setIgnore()</stringProp>
                 <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
               </JSONPostProcessor>
               <hashTree/>
-              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="false">
-                <stringProp name="scriptLanguage">groovy</stringProp>
-                <stringProp name="parameters"></stringProp>
-                <stringProp name="filename"></stringProp>
-                <stringProp name="cacheKey">true</stringProp>
-                <stringProp name="script">import groovy.json.JsonSlurper
-import groovy.json.JsonOutput
-
-def threadName = ctx.getThread().getThreadName()
-
-// Extract variables
-def scriptPath = vars.get(&quot;scriptPath&quot;)			// Full path of the JMeter script location
-def questionNumber = vars.get(&quot;question_number&quot;)	// Question number
-def question = vars.get(&quot;question&quot;)			// Question
-def prompt = vars.get(&quot;promptTemplate&quot;)			// Input prompt
-def correctAnswer = vars.get(&quot;correctAnswer&quot;)?.toUpperCase()	// Correct answer (A, B, C, or D)
-def llmRawResponse = vars.get(&quot;llm_answer&quot;)?.trim() ?: &quot;{}&quot;		// Extracted JSON string from API
-def retrievalStatus = &quot;UNKNOWN&quot;
-def llmResponse = &quot;UNKNOWN&quot;					// Default value if extraction fails
-def explanationA = vars.get(&quot;explanationA&quot;)
-def explanationB = vars.get(&quot;explanationB&quot;)
-def explanationC = vars.get(&quot;explanationC&quot;)
-def explanationD = vars.get(&quot;explanationD&quot;)
-def retrievedContext = []
-def reasoning = &quot;&quot;
-
-// Remove triple backticks if present
-if (llmRawResponse.startsWith(&quot;```json&quot;)) {
-    llmRawResponse = llmRawResponse.replaceFirst(/^```json\s*/, &quot;&quot;).replaceFirst(/\s*```$/, &quot;&quot;)
-}
-
-// Fix incorrect single quotes inside retrieved_context
-if (llmRawResponse.contains(&quot;&apos;{&quot;) || llmRawResponse.contains(&quot;}&apos;&quot;)) {
-    llmRawResponse = llmRawResponse.replaceAll(/&apos;\{/, &quot;{&quot;).replaceAll(/\}&apos;/, &quot;}&quot;)
-}
-
-// Ensure JSON is well-formed (fix missing quotes around &quot;answer&quot;)
-if (llmRawResponse.contains(&apos;&quot;answer&quot;: &apos;) &amp;&amp; !llmRawResponse.contains(&apos;&quot;answer&quot;: &quot;&apos;)) {
-    llmRawResponse = llmRawResponse.replaceAll(/&quot;answer&quot;:\s*([A-D])/, &apos;&quot;answer&quot;: &quot;$1&quot;&apos;)
-}
-
-// Check for missing closing curly brace at the end
-if (!llmRawResponse.endsWith(&quot;}&quot;)) {
-    log.warn(&quot;[WARN]:&quot; + threadName + &quot; Detected incomplete JSON response. Attempting to auto-fix.&quot;)
-    llmRawResponse += &quot; }&quot; // Append closing brace to fix truncation
-}
-
-// Robust JSON parse and fallback
-try {
-    def jsonResponse = new JsonSlurper().parseText(llmRawResponse)
-    llmResponse = jsonResponse?.answer?.toString()?.trim()?.toUpperCase() ?: &quot;UNKNOWN&quot;
-    llmResponse = llmResponse.replaceAll(/\$\\boxed\{([A-D])\}\$/, &apos;$1&apos;)
-
-    retrievalStatus = jsonResponse?.retrieval_status?.toString()?.trim()?.toUpperCase() ?: &quot;UNKNOWN&quot;
-
-    // Extract retrieved_context
-    if (jsonResponse?.retrieved_context instanceof List) {
-        retrievedContext = jsonResponse.retrieved_context.collect { it?.toString()?.trim() }
-    } else if (jsonResponse?.retrieved_context) {
-        // Handle non-list edge case
-        retrievedContext = [jsonResponse.retrieved_context.toString().trim()]
-    }
-    reasoning = jsonResponse?.reasoning?.toString()?.trim() ?: &quot;&quot;
-} catch (Exception e) {
-    log.error(&quot;[ERROR]:&quot; + threadName + &quot; Failed to parse LLM JSON response. Attempting regex extraction.&quot;, e)
-    
-    // Regex fallback for retrieval_status
-    def match = llmRawResponse =~ /&quot;retrieval_status&quot;\s*:\s*&quot;(\w+)&quot;/
-    if (match) retrievalStatus = match.toUpperCase()[1]
-    
-    // Regex fallback for answer
-    match = llmRawResponse =~ /&quot;answer&quot;\s*:\s*&quot;(\w)&quot;/
-    if (!match) match = llmRawResponse =~ /&quot;answer&quot;\s*:\s*(\w)/
-    if (match) llmResponse = match.toUpperCase()[1]
-    else llmResponse = &quot;UNKNOWN&quot;
-    llmResponse = llmResponse.replaceAll(/\$\\boxed\{([A-D])\}\$/, &apos;$1&apos;)
-    
-    // Regex fallback for retrieved_context (grabs array or string)
-    def ctxMatch = llmRawResponse =~ /&quot;retrieved_context&quot;\s*:\s*($$[^$$]*$$|\{[^\}]*\}|&quot;.*?&quot;)/
-    if (ctxMatch) retrievedContext = [ctxMatch.toString()][1]
-    // Regex fallback for reasoning
-    def reasonMatch = llmRawResponse =~ /&quot;reasoning&quot;\s*:\s*&quot;([^&quot;]*)&quot;/
-    if (reasonMatch) reasoning = reasonMatch.trim()[1]
-}
-
-// Validate LLM answer against correct answer
-def isCorrect = (llmResponse == correctAnswer)
-
-// Validate the LLM answer against correct answer.
-log.info(&quot;[INFO]:&quot; + threadName + &quot;  Question Number [&quot; + questionNumber + &quot;]:  &quot; + question)
-log.info(&quot;[INFO]:&quot; + threadName + &quot;  LLM Response [&quot; + questionNumber + &quot;]:  &quot; + llmResponse.toUpperCase())
-log.info(&quot;[INFO]:&quot; + threadName + &quot;  Retrieval Status: &quot; + retrievalStatus)
-
-if (llmResponse == correctAnswer) {
-    log.info(&quot;[INFO]:&quot; + threadName + &quot;  ✅ LLM Answer is CORRECT!&quot;)
-} else {
-    log.warn(&quot;[INFO]:&quot; + threadName + &quot;  ❌ LLM Answer is INCORRECT! Expected: ${correctAnswer.toUpperCase()}, Got: ${llmResponse.toUpperCase()}&quot;)
-}
-
-// Create a map of results
-def result = [
-    question_number: questionNumber,
-    retrieval_status: retrievalStatus,
-    prompt: prompt,
-    question: question,
-    llm_response: llmResponse,
-    correct_answer: correctAnswer,
-    is_correct: isCorrect,
-    retrieved_context: retrievedContext,
-    reasoning: reasoning
-]
-
-// Define our file path string
-def filePath = scriptPath + &quot;test_results&quot; + File.separator + &quot;${timestamp}_llm_responses.json&quot;
-log.debug(&quot;[DEBUG]:&quot; + threadName + &quot; filePath=&quot; + filePath)
-
-// 2. Detect OS
-def osName = System.getProperty(&quot;os.name&quot;).toLowerCase()
-log.info(&quot;[DEBUG]:&quot; + threadName + &quot; osName=&quot; + osName)
-
-if (osName.contains(&quot;win&quot;)) {
-    filePath = filePath.replace(&quot;\\\\&quot;,&quot;/&quot;)
-    log.info(&quot;[INFO]:&quot; + threadName + &quot; Normalized for Windows → &quot; + filePath)
-} else {
-    log.debug(&quot;[DEBUG]:&quot; + threadName + &quot; Non-Windows OS (${osName}), leaving path as-is&quot;)
-}
-
-// Create a File object from the file path
-def resultsFile = new File(filePath)
-
-// Append result to file with error handling
-try {
-    resultsFile &lt;&lt; JsonOutput.toJson(result) + &quot;\n&quot;
-    log.info(&quot;[INFO]:&quot; + threadName + &quot;  Results successfully written to file: &quot; + resultsFile.getAbsolutePath())
-} catch (Exception e) {
-    log.error(&quot;[ERROR]:&quot; + threadName + &quot;  Failed to write results to file!&quot;, e)
-}
-</stringProp>
-              </JSR223PostProcessor>
-              <hashTree/>
-              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="true">
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)">
                 <stringProp name="scriptLanguage">groovy</stringProp>
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>
@@ -1551,86 +1339,6 @@ def metricStr = [
 ].join(&apos;,&apos;)
 
 resultsFile.append(metricStr+&quot;\r\n&quot;)
-
-</stringProp>
-              </JSR223PostProcessor>
-              <hashTree/>
-              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM KPIs)" enabled="true">
-                <stringProp name="scriptLanguage">groovy</stringProp>
-                <stringProp name="parameters"></stringProp>
-                <stringProp name="filename"></stringProp>
-                <stringProp name="cacheKey">true</stringProp>
-                <stringProp name="script">// Define the following
-def threadName = ctx.getThread().getThreadName()
-def scriptPath = vars.get(&quot;scriptPath&quot;)			// Full path of the JMeter script location
-def questionNumber = vars.get(&quot;question_number&quot;)	// Question number
-
-// Convert values from JMeter JSON Extractors
-def totalDurationNano = vars.get(&quot;total_duration&quot;) as long		// Total request duration (nanoseconds)
-def loadDurationNano = vars.get(&quot;load_duration&quot;) as long		// Model loading duration (nanoseconds)
-def promptEvalNano = vars.get(&quot;prompt_eval_duration&quot;) as long	// Prompt evaluation duration (nanoseconds)
-def evalCount = vars.get(&quot;eval_count&quot;) as long				// Number of generated tokens
-def evalDurationNano = vars.get(&quot;eval_duration&quot;) as long		// Token generation duration (nanoseconds)
-
-// Convert durations from nanoseconds to milliseconds
-def totalDurationMs = totalDurationNano / 1e6
-def loadDurationMs = loadDurationNano / 1e6
-def promptEvalMs = promptEvalNano / 1e6
-def evalDurationMs = evalDurationNano / 1e6
-
-// Calculate KPIs
-def ttftMs = loadDurationMs + promptEvalMs							// Time to First Token
-def tps = evalCount &gt; 0 ? (evalCount / (totalDurationNano / 1e9)) : 0		// Tokens per second
-def tpot = evalCount &gt; 0 ? ((totalDurationMs - ttftMs) / evalCount) : 0	// Time per output token
-
-// Log KPIs
-log.info(&quot;[INFO]:&quot; + threadName + &quot;  TTFT (ms): ${ttftMs}&quot;)
-log.info(&quot;[INFO]:&quot; + threadName + &quot;  TPS (tokens/sec): ${tps}&quot;)
-log.info(&quot;[INFO]:&quot; + threadName + &quot;  TPOT (ms/token): ${tpot}&quot;)
-
-// Store KPIs as JMeter variables for later use
-vars.put(&quot;TTFT&quot;, ttftMs.toString())
-vars.put(&quot;TPS&quot;, tps.toString())
-vars.put(&quot;TPOT&quot;, tpot.toString())
-
-/* =================================
- *  Get the following SampleResult &amp; JMeterContext details
- * =================================
- */
-def timestamp = prev.getTimeStamp()          // returns a long
-def timestampStr = timestamp.toString()      // convert to string
-def grpThreads = prev.getGroupThreads().toString()
-def allThreads = prev.getAllThreads().toString()
-def elapsedMs = prev.getTime()               // total request time (ms)
-def latencyMs = prev.getLatency()            // time to first byte (ms)
-def connectMs = prev.getConnectTime()		// TCP connect time (ms).
-
-/* =================================
- *  Define the LLM metrics output file
- * =================================
- */
-
-// Define our file path string
-def filePath = scriptPath + &quot;test_results&quot; + File.separator + &quot;${timestamp}_llm_kpis.csv&quot;
-log.debug(&quot;[DEBUG]:[&quot; + threadName + &quot;]:  LLM KPI FilePath=&quot; + filePath)
-
-// Detect OS
-def osName = System.getProperty(&quot;os.name&quot;).toLowerCase()
-log.info(&quot;[DEBUG]:[&quot; + threadName + &quot;]:  osName=&quot; + osName)
-
-if (osName.contains(&quot;win&quot;)) {
-    filePath = filePath.replace(&quot;\\\\&quot;,&quot;/&quot;)
-    log.info(&quot;[INFO]:[&quot; + threadName + &quot;]:  Normalized for Windows → &quot; + filePath)
-} else {
-    log.debug(&quot;[DEBUG]:[&quot; + threadName + &quot;]:  Non-Windows OS (${osName}), leaving path as-is&quot;)
-}
-
-def resultsFile = new File(filePath)
-log.info(&quot;[INFO]:[&quot; + threadName + &quot;]:  LLM KPI File=&quot; + filePath)
-
-// Get the metrics and output to file.
-def kpiStr = timestampStr + &quot;,&quot; + questionNumber + &quot;,&quot; + ttftMs.toString() + &quot;,&quot; + tps.toString() + &quot;,&quot; + tpot.toString() + &quot;,&quot; + allThreads
-resultsFile.append(kpiStr+&quot;\r\n&quot;)
 
 </stringProp>
               </JSR223PostProcessor>
