@@ -155,7 +155,7 @@ __azurite_db*__.json
 # Repo: llm-perf-testing
 # Ignore the following files and directories
 # =========================================================
-
+.env
 # Ignore docker data created by the test suite
 docker/data/*
 # Ignore JMeter test results & modified/updated test scripts
