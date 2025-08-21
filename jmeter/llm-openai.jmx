@@ -87,12 +87,18 @@
             <stringProp name="Argument.name">OPENAI_API_KEY</stringProp>
             <stringProp name="Argument.value"></stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">TODO: Read api key from OS environment variable.</stringProp>
+            <stringProp name="Argument.desc">Default is empty string. Key is pulled in setUp Thread Group.</stringProp>
+          </elementProp>
+          <elementProp name="api_key_found" elementType="Argument">
+            <stringProp name="Argument.name">api_key_found</stringProp>
+            <stringProp name="Argument.value">false</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Default is false. If OPENAI_API_KEY is found will be set to true in setUp Thread Group.</stringProp>
           </elementProp>
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config (Environment)">
+      <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config (Environment)" enabled="true">
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding"></stringProp>
         <stringProp name="filename">testdata_csv/environment_openai.csv</stringProp>
@@ -104,7 +110,7 @@
         <stringProp name="variableNames">hostname,port</stringProp>
       </CSVDataSet>
       <hashTree/>
-      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group" enabled="true">
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group">
         <intProp name="ThreadGroup.num_threads">1</intProp>
         <intProp name="ThreadGroup.ramp_time">1</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -115,7 +121,7 @@
         </elementProp>
       </SetupThreadGroup>
       <hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC00_Create LLM Metric Output File" enabled="true"/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC00_Create LLM Metric Output File"/>
         <hashTree>
           <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC00_TS01_Create LLM Metric Output File" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
@@ -208,8 +214,77 @@ prev.setIgnore()</stringProp>
             <hashTree/>
           </hashTree>
         </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC00_Get Api Key From OS Environment" enabled="true"/>
+        <hashTree>
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC00_TS02_Get Api Key From OS Environment">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">// Define the folowing
+def threadName = ctx.getThread().getThreadName()
+
+// Read from OS environment
+def apiKey = System.getenv(&quot;OPENAI_API_KEY&quot;)
+
+if (apiKey &amp;&amp; apiKey.trim()) {
+	// Store in both vars (local) and props (global)
+	vars.put(&quot;OPENAI_API_KEY&quot;, apiKey)
+	props.put(&quot;OPENAI_API_KEY&quot;, apiKey)
+
+	vars.put(&quot;api_key_found&quot;, &quot;true&quot;)
+	props.put(&quot;api_key_found&quot;, &quot;true&quot;)
+
+	log.info(&quot;[INFO]:[&quot; + threadName + &quot;]:  OPENAI_API_KEY found! Key imported as: &quot; + apiKey)
+} else {
+	vars.put(&quot;OPENAI_API_KEY&quot;, &quot;&quot;)
+	props.put(&quot;OPENAI_API_KEY&quot;, &quot;&quot;)
+    
+	vars.put(&quot;api_key_found&quot;, &quot;false&quot;)
+	props.put(&quot;api_key_found&quot;, &quot;false&quot;)
+
+	log.warn(&quot;[WARNING]:[&quot; + threadName + &quot;]:  OPENAI_API_KEY not found in environment. Did you export/set it?&quot;)
+}
+</stringProp>
+          </JSR223Sampler>
+          <hashTree>
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})">
+              <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="script">// Don&apos;t report this Sampler in the results.
+prev.setIgnore()</stringProp>
+            </JSR223PostProcessor>
+            <hashTree/>
+          </hashTree>
+          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller (api_key_found == &quot;false&quot;)">
+            <stringProp name="IfController.condition">${__groovy( (&quot;${api_key_found}&quot; == &quot;false&quot;) )}</stringProp>
+            <boolProp name="IfController.evaluateAll">false</boolProp>
+            <boolProp name="IfController.useExpression">true</boolProp>
+          </IfController>
+          <hashTree>
+            <TestAction guiclass="TestActionGui" testclass="TestAction" testname="TC00_TS03_Stop Test - Api Key Not Found">
+              <intProp name="ActionProcessor.action">2</intProp>
+              <intProp name="ActionProcessor.target">2</intProp>
+              <stringProp name="ActionProcessor.duration">0</stringProp>
+            </TestAction>
+            <hashTree>
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">def threadName = ctx.getThread().getThreadName()
+
+log.info(&quot;[WARNING]:[&quot; + threadName + &quot;]:  Stopping test as OPENAI_API_KEY was NOT FOUND!!!&quot;)</stringProp>
+              </JSR223PostProcessor>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+        </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group - LLM APIs" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group - LLM APIs">
         <stringProp name="TestPlan.comments">NOTE:  Thread Loop Count will continue to loop over the number of prompts you set in the &quot;Global&quot; User Defined Variables which is set by the variable &quot;promptNum&quot;.</stringProp>
         <stringProp name="ThreadGroup.num_threads">${vusers}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${rampUp}</stringProp>
@@ -992,7 +1067,7 @@ prev.setIgnore()</stringProp>
             <stringProp name="TestPlan.comments">Use for single, stateless completions.</stringProp>
           </GenericController>
           <hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC02_TS03_/v1/chat/completions" enabled="true">
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TC02_TS03_/v1/chat/completions">
               <intProp name="HTTPSampler.concurrentPool">6</intProp>
               <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
               <stringProp name="HTTPSampler.port">${port}</stringProp>
@@ -1028,7 +1103,7 @@ prev.setIgnore()</stringProp>
               </elementProp>
             </HTTPSamplerProxy>
             <hashTree>
-              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager">
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header manager" enabled="true">
                 <collectionProp name="HeaderManager.headers">
                   <elementProp name="" elementType="Header">
                     <stringProp name="Header.name">Accept</stringProp>
@@ -1052,6 +1127,21 @@ prev.setIgnore()</stringProp>
                   </elementProp>
                 </collectionProp>
               </HeaderManager>
+              <hashTree/>
+              <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor (Get Api Key)">
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+                <stringProp name="script">// PreProcessor code
+def apiKey = props.get(&quot;OPENAI_API_KEY&quot;) ?: &quot;&quot;
+vars.put(&quot;OPENAI_API_KEY&quot;, apiKey)
+
+if (!apiKey) {
+    log.error(&quot;OPENAI_API_KEY not set in properties. This request will likely fail.&quot;)
+}
+</stringProp>
+              </JSR223PreProcessor>
               <hashTree/>
               <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor (model_name)" enabled="true">
                 <stringProp name="JSONPostProcessor.referenceNames">model_name</stringProp>
