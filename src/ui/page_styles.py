@@ -311,6 +311,13 @@ def inject_jmeter_viewer_styles():
             margin-bottom: 0.5rem;
             margin-top: 0.5rem;
         }
+        .jmeter-config-subtitle {
+            font-size: 1.18rem;
+            color: #133366; /* dark blue */
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.2px;
+        }
         .st-key-jmeter_viewer_text {
             border: 2px solid #ddd;
             border-radius: 6px;

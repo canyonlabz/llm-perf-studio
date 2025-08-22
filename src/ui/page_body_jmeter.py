@@ -209,6 +209,19 @@ def render_jmeter_viewer_area(jmeter_path):
         if jmx_filename is not None:
             st.session_state.jmeter_state["jmx_path"] = jmx_filename
 
+        # Slider to select LLM temperature
+        st.markdown('<div class="jmeter-config-subtitle">Select LLM Temperature</div>', unsafe_allow_html=True)
+        llm_temperature = st.slider(
+            label="LLM Temperature",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.5,
+            step=0.1,
+            key="llm_temperature",
+            label_visibility="collapsed",
+        )
+        st.session_state.jmeter_state["temperature"] = llm_temperature
+
     with col_viewer:
         # Create the JMeter section
         st.markdown('<div class="jmeter-viewer-title">📊 JMeter Performance Test Viewer</div>', unsafe_allow_html=True)
