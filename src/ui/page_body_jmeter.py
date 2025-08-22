@@ -215,7 +215,7 @@ def render_jmeter_viewer_area(jmeter_path):
             label="LLM Temperature",
             min_value=0.0,
             max_value=1.0,
-            value=0.5,
+            value=st.session_state.jmeter_state.get("temperature", 0.5),
             step=0.1,
             key="llm_temperature",
             label_visibility="collapsed",

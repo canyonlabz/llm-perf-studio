@@ -58,7 +58,6 @@ def __start_jmeter_thread(shared_data, state_snapshot):
             shared_data['run_timestamp'] = result.get('run_timestamp', 'NOT_FOUND')
             thread_safe_add_log(shared_data['logs'], f"📊🔥 Load test results saved to {result['jmeter_jtl_path']}", agent_name="JMeterAgent")
             thread_safe_add_log(shared_data['logs'], f"📊🔥 Load test log saved to {result['jmeter_log_path']}", agent_name="JMeterAgent")
-            thread_safe_add_log(shared_data['logs'], f"📊🔥 LLM KPIs saved to {result['llm_kpis_path']}", agent_name="JMeterAgent")
             thread_safe_add_log(shared_data['logs'], f"📊🔥 LLM Metrics saved to {result['llm_metrics_path']}", agent_name="JMeterAgent")
             thread_safe_add_log(shared_data['logs'], f"📊🔥 LLM Responses saved to {result['llm_responses_path']}", agent_name="JMeterAgent")
 

@@ -40,11 +40,12 @@ def run_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> 
 
     # Get the JMeter settings from the session state
     vusers = state.get("vusers", 1)
-    ramp_up = state.get("ramp_up", 60)  # Default to 60 seconds if not set
-    iterations = state.get("iterations", 1)  # Default to 1 iteration if not set
-    duration = state.get("duration", 300)  # Default to 5 minutes if not set
-    use_rag = state.get("use_rag", False)  # Whether to use RAG mode
-    prompt_num = state.get("prompt_num", 5)  # Number of prompts to use from input JSON file
+    ramp_up = state.get("ramp_up", 60)              # Default to 60 seconds if not set
+    iterations = state.get("iterations", 1)         # Default to 1 iteration if not set
+    duration = state.get("duration", 300)           # Default to 5 minutes if not set
+    use_rag = state.get("use_rag", False)           # Whether to use RAG mode
+    prompt_num = state.get("prompt_num", 5)         # Number of prompts to use from input JSON file
+    temperature = state.get("temperature", 0.2)     # Default temperature for LLM
 
     jmeter_jtl = os.path.join(jmeter_results_path, f"{run_timestamp}_jmeter_test.jtl")
     jmeter_log = os.path.join(jmeter_results_path, f"{run_timestamp}_jmeter_test.log")
@@ -62,10 +63,13 @@ def run_jmeter_test_node(shared_data: Dict[str, Any], state: Dict[str, Any]) -> 
         '-Jduration={}'.format(duration),       # Ramp-up time in seconds
         '-Juse_rag={}'.format(use_rag),         # Use RAG mode
         '-Jprompt_num={}'.format(prompt_num),   # Number of prompts to use
+        '-Jtemperature={}'.format(temperature), # Temperature for LLM
         '-Jrun_timestamp={}'.format(run_timestamp)  # Run timestamp for unique file names
     ]
 
     try:
+        thread_safe_add_log(shared_data['logs'], f"🛠️ Preparing to run JMeter test with {vusers} users for {duration} seconds", agent_name="JMeterAgent")
+        thread_safe_add_log(shared_data['logs'], f"🛠️ LLM parameters: {prompt_num} prompts, {temperature} temperature, RAG mode: {use_rag}", agent_name="JMeterAgent")
         thread_safe_add_log(shared_data['logs'], f"🏃‍♂️ Running JMeter: {' '.join(cmd)}", agent_name="JMeterAgent")
         subprocess.run(cmd, check=True)
     except subprocess.CalledProcessError as e:
