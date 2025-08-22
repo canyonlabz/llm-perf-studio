@@ -71,17 +71,17 @@
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">The number of prompts to send to the LLM. Max is based upon the JSON input file.</stringProp>
           </elementProp>
+          <elementProp name="temperature" elementType="Argument">
+            <stringProp name="Argument.name">temperature</stringProp>
+            <stringProp name="Argument.value">${__P(temperature,0.1)}</stringProp>
+            <stringProp name="Argument.desc">Sets the temperature for the LLM. Values can be 0-1 in 0.1 increments.</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="llm_model" elementType="Argument">
             <stringProp name="Argument.name">llm_model</stringProp>
             <stringProp name="Argument.value">gpt-4o-mini</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">TODO: Pass value as parameter from command-line</stringProp>
-          </elementProp>
-          <elementProp name="temperature" elementType="Argument">
-            <stringProp name="Argument.name">temperature</stringProp>
-            <stringProp name="Argument.value">0.1</stringProp>
-            <stringProp name="Argument.desc">TODO: Pass value as parameter from command-line (default is 0.8)</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="OPENAI_API_KEY" elementType="Argument">
             <stringProp name="Argument.name">OPENAI_API_KEY</stringProp>
@@ -110,7 +110,7 @@
         <stringProp name="variableNames">hostname,port</stringProp>
       </CSVDataSet>
       <hashTree/>
-      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group">
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group" enabled="true">
         <intProp name="ThreadGroup.num_threads">1</intProp>
         <intProp name="ThreadGroup.ramp_time">1</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -121,7 +121,7 @@
         </elementProp>
       </SetupThreadGroup>
       <hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC00_Create LLM Metric Output File"/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC00_Create LLM Metric Output File" enabled="true"/>
         <hashTree>
           <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC00_TS01_Create LLM Metric Output File" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
@@ -216,7 +216,7 @@ prev.setIgnore()</stringProp>
         </hashTree>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="TC00_Get Api Key From OS Environment" enabled="true"/>
         <hashTree>
-          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC00_TS02_Get Api Key From OS Environment">
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TC00_TS02_Get Api Key From OS Environment" enabled="true">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
@@ -248,7 +248,7 @@ if (apiKey &amp;&amp; apiKey.trim()) {
 </stringProp>
           </JSR223Sampler>
           <hashTree>
-            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})">
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (${__samplerName()})" enabled="true">
               <stringProp name="scriptLanguage">groovy</stringProp>
               <stringProp name="parameters"></stringProp>
               <stringProp name="filename"></stringProp>
@@ -258,19 +258,19 @@ prev.setIgnore()</stringProp>
             </JSR223PostProcessor>
             <hashTree/>
           </hashTree>
-          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller (api_key_found == &quot;false&quot;)">
+          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller (api_key_found == &quot;false&quot;)" enabled="true">
             <stringProp name="IfController.condition">${__groovy( (&quot;${api_key_found}&quot; == &quot;false&quot;) )}</stringProp>
             <boolProp name="IfController.evaluateAll">false</boolProp>
             <boolProp name="IfController.useExpression">true</boolProp>
           </IfController>
           <hashTree>
-            <TestAction guiclass="TestActionGui" testclass="TestAction" testname="TC00_TS03_Stop Test - Api Key Not Found">
+            <TestAction guiclass="TestActionGui" testclass="TestAction" testname="TC00_TS03_Stop Test - Api Key Not Found" enabled="true">
               <intProp name="ActionProcessor.action">2</intProp>
               <intProp name="ActionProcessor.target">2</intProp>
               <stringProp name="ActionProcessor.duration">0</stringProp>
             </TestAction>
             <hashTree>
-              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor">
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
                 <stringProp name="scriptLanguage">groovy</stringProp>
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>
@@ -284,7 +284,7 @@ log.info(&quot;[WARNING]:[&quot; + threadName + &quot;]:  Stopping test as OPENA
           </hashTree>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group - LLM APIs">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group - LLM APIs" enabled="true">
         <stringProp name="TestPlan.comments">NOTE:  Thread Loop Count will continue to loop over the number of prompts you set in the &quot;Global&quot; User Defined Variables which is set by the variable &quot;promptNum&quot;.</stringProp>
         <stringProp name="ThreadGroup.num_threads">${vusers}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${rampUp}</stringProp>
@@ -1128,7 +1128,7 @@ prev.setIgnore()</stringProp>
                 </collectionProp>
               </HeaderManager>
               <hashTree/>
-              <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor (Get Api Key)">
+              <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="JSR223 PreProcessor (Get Api Key)" enabled="true">
                 <stringProp name="scriptLanguage">groovy</stringProp>
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>

@@ -16,7 +16,7 @@
         <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
       </CookieManager>
       <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables (Global)" enabled="true">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables (Global)">
         <collectionProp name="Arguments.arguments">
           <elementProp name="timestamp" elementType="Argument">
             <stringProp name="Argument.name">timestamp</stringProp>
@@ -71,17 +71,17 @@
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">The number of prompts to send to the LLM. Max is based upon the JSON input file.</stringProp>
           </elementProp>
+          <elementProp name="temperature" elementType="Argument">
+            <stringProp name="Argument.name">temperature</stringProp>
+            <stringProp name="Argument.value">${__P(temperature,0.1)}</stringProp>
+            <stringProp name="Argument.desc">Sets the temperature for the LLM. Values can be 0-1 in 0.1 increments.</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="llm_model" elementType="Argument">
             <stringProp name="Argument.name">llm_model</stringProp>
             <stringProp name="Argument.value">llama3.2:1b</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">TODO: Pass value as parameter from command-line</stringProp>
-          </elementProp>
-          <elementProp name="temperature" elementType="Argument">
-            <stringProp name="Argument.name">temperature</stringProp>
-            <stringProp name="Argument.value">0.1</stringProp>
-            <stringProp name="Argument.desc">TODO: Pass value as parameter from command-line (default is 0.8)</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
       </Arguments>
@@ -98,7 +98,7 @@
         <stringProp name="variableNames">hostname,port</stringProp>
       </CSVDataSet>
       <hashTree/>
-      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group">
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group" enabled="true">
         <intProp name="ThreadGroup.num_threads">1</intProp>
         <intProp name="ThreadGroup.ramp_time">1</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -1092,7 +1092,7 @@ prev.setIgnore()</stringProp>
                 <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND</stringProp>
               </JSONPostProcessor>
               <hashTree/>
-              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)">
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor (LLM Response Validation)" enabled="true">
                 <stringProp name="scriptLanguage">groovy</stringProp>
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>
