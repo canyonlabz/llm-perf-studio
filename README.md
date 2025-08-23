@@ -30,7 +30,7 @@ This framework combines traditional load testing with AI-specific quality metric
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                      │
          │             ┌─────────────────┐              │
-         └───────────▶│  DeepEval QA    │◀─────────────┘
+         └───────────▶ │  DeepEval QA    │◀─────────────┘
                        │                 │
                        │ • Correctness   │
                        │ • Quality Score │
