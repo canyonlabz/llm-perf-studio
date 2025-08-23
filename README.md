@@ -1,4 +1,4 @@
-# LLM Performance Testing Framework
+# LLM Performance Test Studio
 
 > **⚠️ This project is under active development. Features, modules, and documentation may change frequently. Use at your own risk and please report any issues or suggestions!**
 
