@@ -24,13 +24,13 @@ This framework combines traditional load testing with AI-specific quality metric
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Streamlit UI  │    │  JMeter Engine  │    │  LLM Service    │
 │                 │    │                 │    │                 │
-│ • Test Config   │──▶ │ • Load Testing  │───▶│ • Ollama/OpenAI │
+│ • Test Config   │──▶ │ • Load Testing │───▶│ • Ollama/OpenAI │
 │ • Monitoring    │    │ • Metrics       │    │ • Local/Cloud   │
 │ • Results       │    │ • Logging       │    │ • RAG Enabled   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                      │
          │             ┌─────────────────┐              │
-         └───────────▶ │  DeepEval QA    │◀─────────────┘
+         └───────────▶│  DeepEval QA    │ ◀────────────┘
                        │                 │
                        │ • Correctness   │
                        │ • Quality Score │
@@ -50,7 +50,7 @@ This framework combines traditional load testing with AI-specific quality metric
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/llm-perf-testing.git
+   git clone https://github.com/your-username/llm-perf-studio.git
    cd llm-perf-testing
    ```
 
@@ -155,7 +155,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 ## 📁 Project Structure
 
 ```
-llm-perf-testing/
+llm-perf-studio/
 │   app.py
 │   config.yaml
 │   LICENSE
