@@ -24,7 +24,7 @@ This framework combines traditional load testing with AI-specific quality metric
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Streamlit UI  │    │  JMeter Engine  │    │  LLM Service    │
 │                 │    │                 │    │                 │
-│ • Test Config   │──▶│ • Load Testing  │───▶│ • Ollama/OpenAI │
+│ • Test Config   │──▶ │ • Load Testing  │───▶│ • Ollama/OpenAI │
 │ • Monitoring    │    │ • Metrics       │    │ • Local/Cloud   │
 │ • Results       │    │ • Logging       │    │ • RAG Enabled   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
@@ -170,17 +170,17 @@ llm-perf-testing/
 │       docker-compose.yml
 │
 ├───docs
-│       KPIs.md
-│       JMeter.md
-│       DeepEval.md
-│       Configuration.md
+|       analysis.md
+|       docker.md
+│       kpis.md
 │
 ├───jmeter
 │   │   llm-ollama.jmx
 │   │   llm-openai.jmx
 │   │
 │   ├───testdata_csv
-│   │       environment.csv
+│   │       environment_ollama.csv
+|   |       environment_openai.csv
 │   │       README.md
 │   │
 │   └───testdata_json
@@ -192,8 +192,8 @@ llm-perf-testing/
     │
     ├───tools
     │   │   deepeval_assessment.py              (Agent Tool for DeepEval quality assessment)
-    │   │   deepeval_assessment_standalone.py   (Standalone tool for DeepEval quality assessment)
-    │   └   jmeter_executor.py                  (Agent Tool for JMeter test execution)
+    │   │   jmeter_executor.py                  (Agent tool for JMeter test execution)
+    │   └   llm_kpi_calculations.py             (Agent Tool for calculating LLM KPI metrics)
     │
     ├───ui
     │   │   page_body_*.py  (page body rendering)
@@ -235,7 +235,7 @@ This project is licensed under the BSD-3-Clause License - see the [LICENSE](LICE
 - [ ] Full RAG support for custom datasets
 - [ ] Docker-based containerization for cross-platform, OS-agnostic deployment
 - [ ] Additional DeepEval quality metrics
-- [ ] De-couple LLM calculations from JMeter to Python tools. 
+- [X] De-couple LLM calculations from JMeter to Python tools. 
 
 ## 📚 Related Projects
 
