@@ -42,16 +42,16 @@ This framework combines traditional load testing with AI-specific quality metric
 
 - **Python 3.12+**
 - **Apache JMeter 5.6.3+**
-- **Java OpenJDK 22+** (for JMeter)
-- **Ollama** (optional: for local model testing)
-- **OpenAI API Key** (optional: for OpenAI testing)
+- **Java OpenJDK 22+** (*for JMeter*)
+- **Ollama** (*optional: for local model testing*)
+- **OpenAI API Key** (*optional: for OpenAI testing*)
 
 ## 🛠️ Installation
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/llm-perf-studio.git
-   cd llm-perf-testing
+   git clone https://github.com/canyonlabz/llm-perf-studio.git
+   cd llm-perf-studio
    ```
 
 2. **Install Python dependencies:**
@@ -93,7 +93,7 @@ ollama:
    timeout: 30
   
 openai:
-   model: "gpt-3.5-turbo"
+   model: "gpt-5-mini"
    timeout: 30
 
 jmeter:

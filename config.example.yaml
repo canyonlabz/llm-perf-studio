@@ -9,7 +9,7 @@ llm:                        # Language model configuration (NOTE: currently not 
   llm_temperature: 0        # Temperature for randomness in responses
 
 openai:                         # Used for Chatbot and DeepEval quality assessments
-  openai_model: "gpt-4o-mini"   # Default model name for OpenAI
+  openai_model: "gpt-5-mini"   # Default model name for OpenAI
   openai_temperature: 0.1       # Temperature for randomness in responses
 
 ollama:
