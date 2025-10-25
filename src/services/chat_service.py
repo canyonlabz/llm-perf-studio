@@ -6,11 +6,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Initialize client with API key
+# Initialize OpenAI client (optional)
 api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("OpenAI API key is not set. Please set the OPENAI_API_KEY environment variable.")
-client = OpenAI(api_key=api_key)
+openai_available = bool(api_key)
+if openai_available:
+    client = OpenAI(api_key=api_key)
+else:
+    client = None
 
 class ChatService:
     """Service for handling chat interactions with OpenAI or Ollama models.
@@ -35,6 +37,10 @@ class ChatService:
     # Private methods to handle chat interactions with OpenAI and Ollama models.
     # These methods are not intended to be called directly outside this class.
     def _openai_chat(self, messages):
+        # Check if OpenAI is available
+        if not openai_available or client is None:
+            return "OpenAI API key not configured. Please set OPENAI_API_KEY environment variable or switch to Ollama mode."
+        
         # Get AI response
         response = client.chat.completions.create(
             model=self.config['openai']['openai_model'],

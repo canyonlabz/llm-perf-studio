@@ -21,26 +21,9 @@ deepeval>=2.4.8                     # LLM evaluation framework
 langchain-core>=0.1.0               # LangChain core functionality
 openai>=1.65.2                      # OpenAI API client
 
-# Vector Database & Storage
-# ------------------------
-chromadb>=0.6.2                     # Vector database for embeddings
-
 # HTTP & API Communication
 # ------------------------
 requests>=2.32.3                    # HTTP library for API calls
-
-# System & Platform Support
-# -------------------------
-pathlib2>=2.3.7; python_version<"3.4"  # Path utilities for older Python versions
-
-# Logging & Monitoring
-# --------------------
-colorama>=0.4.6                     # Cross-platform colored terminal text
-tqdm>=4.66.0                        # Progress bars for long-running operations
-
-# File Processing & Utilities
-# ---------------------------
-chardet>=5.2.0                      # Character encoding detection
 
 # =============================================================================
 # Development Dependencies (uncomment if needed)

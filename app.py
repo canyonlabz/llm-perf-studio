@@ -22,11 +22,13 @@ warnings.filterwarnings("ignore", message=".*missing ScriptRunContext.*")
 #os.environ["STREAMLIT_SERVER_ENABLE_WATCHER"] = "false"
 os.environ["STREAMLIT_SERVER_FILE_WATCHER_TYPE"] = "poll"
 
-# 1. Ensure the API key is set (either via .env or in your shell env)
-if not os.getenv("OPENAI_API_KEY"):
-    raise ValueError(
-        "Please set OPENAI_API_KEY in your environment or .env file before running this test."
-    )
+# 1. Check if OpenAI API key is available (optional)
+openai_available = bool(os.getenv("OPENAI_API_KEY"))
+if not openai_available:
+    print("INFO: OpenAI API key not found. OpenAI features will be disabled.")
+    print("      You can still use Ollama for local LLM testing.")
+else:
+    print("SUCCESS: OpenAI API key found. OpenAI features are available.")
 
 # 2. Locate the Streamlit UI script
 here = Path(__file__).parent

@@ -116,15 +116,25 @@ def render_chatbot_area():
     with col_right:
         st.button("🧹 Clear Chat", key="clear_chat", on_click=clear_chat)
 
+        # Check if OpenAI is available
+        openai_available = bool(os.getenv("OPENAI_API_KEY"))
+        
         # True if OpenAI is selected, False if Ollama is selected
-        toggle_value = st.session_state.llm_mode == "openai"
+        toggle_value = st.session_state.llm_mode == "openai" and openai_available
+
+        # Disable OpenAI toggle if API key is not available
+        if not openai_available:
+            st.warning("OpenAI API key not found. Only Ollama mode is available.")
+            st.session_state.llm_mode = "ollama"  # Force Ollama mode
 
         on = st.toggle(
             "LLM Mode",
             value=toggle_value,
             key="enable_llm_mode",
-            help="Toggle local LLM mode on or off.",)
-        if on:
+            disabled=not openai_available,
+            help="Toggle between OpenAI and Ollama. OpenAI requires API key." if openai_available else "OpenAI requires API key. Only Ollama is available.")
+        
+        if on and openai_available:
             st.markdown('<div class="chatbot-title">☁️ OpenAI Enabled</div>', unsafe_allow_html=True)
             st.session_state.llm_mode = "openai"    # Set the model to OpenAI
         else:

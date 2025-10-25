@@ -24,7 +24,7 @@ This framework combines traditional load testing with AI-specific quality metric
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Streamlit UI  │    │  JMeter Engine  │    │  LLM Service    │
 │                 │    │                 │    │                 │
-│ • Test Config   │──▶ │ • Load Testing │───▶│ • Ollama/OpenAI │
+│ • Test Config   │──▶│ • Load Testing  │───▶│ • Ollama/OpenAI │
 │ • Monitoring    │    │ • Metrics       │    │ • Local/Cloud   │
 │ • Results       │    │ • Logging       │    │ • RAG Enabled   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
@@ -42,9 +42,9 @@ This framework combines traditional load testing with AI-specific quality metric
 
 - **Python 3.12+**
 - **Apache JMeter 5.6.3+**
-- **Java 9+** (for JMeter)
-- **Ollama** (for local model testing)
-- **OpenAI API Key** (for OpenAI testing)
+- **Java OpenJDK 22+** (for JMeter)
+- **Ollama** (optional: for local model testing)
+- **OpenAI API Key** (optional: for OpenAI testing)
 
 ## 🛠️ Installation
 
