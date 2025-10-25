@@ -6,7 +6,11 @@ from pathlib import Path
 import asyncio
 import logging
 import warnings
+import dotenv
 
+dotenv.load_dotenv()
+
+# On Windows, set the appropriate event loop policy for asyncio
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 

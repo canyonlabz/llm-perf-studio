@@ -2,6 +2,9 @@ from openai import OpenAI
 import requests
 import os
 from src.utils.config import load_config
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Initialize client with API key
 api_key = os.getenv("OPENAI_API_KEY")
