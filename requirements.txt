@@ -1,13 +1,53 @@
-# Core dependencies for LLM Performance Testing Framework
-deepeval>=2.4.8
-streamlit>=1.46.0
-streamlit-autorefresh>=1.0.1
-pyyaml>=6.0.2
-requests>=2.32.3
-pandas>=2.2.2
-numpy>=1.26.4
-chromadb>=0.6.2
-openai>=1.65.2
-python-dotenv>=1.0.1
-altair>=5.0.0
-langchain-core>=0.1.0
+# =============================================================================
+# LLM Performance Testing Framework - Dependencies
+# =============================================================================
+
+# Core Framework Dependencies
+# ---------------------------
+streamlit>=1.46.0                    # Web UI framework
+streamlit-autorefresh>=1.0.1        # Auto-refresh functionality for Streamlit
+pyyaml>=6.0.2                       # YAML configuration file parsing
+python-dotenv>=1.0.1                # Environment variable management
+
+# Data Processing & Analysis
+# --------------------------
+pandas>=2.2.2                       # Data manipulation and analysis
+numpy>=1.26.4                       # Numerical computing
+altair>=5.0.0                       # Statistical visualization
+
+# LLM & AI Evaluation
+# -------------------
+deepeval>=2.4.8                     # LLM evaluation framework
+langchain-core>=0.1.0               # LangChain core functionality
+openai>=1.65.2                      # OpenAI API client
+
+# Vector Database & Storage
+# ------------------------
+chromadb>=0.6.2                     # Vector database for embeddings
+
+# HTTP & API Communication
+# ------------------------
+requests>=2.32.3                    # HTTP library for API calls
+
+# System & Platform Support
+# -------------------------
+pathlib2>=2.3.7; python_version<"3.4"  # Path utilities for older Python versions
+
+# Logging & Monitoring
+# --------------------
+colorama>=0.4.6                     # Cross-platform colored terminal text
+tqdm>=4.66.0                        # Progress bars for long-running operations
+
+# File Processing & Utilities
+# ---------------------------
+chardet>=5.2.0                      # Character encoding detection
+
+# =============================================================================
+# Development Dependencies (uncomment if needed)
+# =============================================================================
+# pytest>=7.0.0                    # Testing framework
+# pytest-asyncio>=0.21.0           # Async testing support
+# black>=23.0.0                     # Code formatter
+# flake8>=6.0.0                     # Linting
+# mypy>=1.0.0                       # Type checking
+# pre-commit>=3.0.0                 # Git hooks for code quality
