@@ -152,12 +152,14 @@ __azurite_db*__.json
 *.sqlite3
 
 # =========================================================
-# Repo: llm-perf-testing
+# Repo: llm-perf-studio
 # Ignore the following files and directories
 # =========================================================
 .env
+
 # Ignore docker data created by the test suite
 docker/data/*
+
 # Ignore JMeter test results & modified/updated test scripts
 jmeter/test_results/*.jtl
 jmeter/test_results/*.jmx
@@ -165,9 +167,14 @@ jmeter/test_results/*.csv
 jmeter/test_results/*.json
 jmeter/llm-ollama-update.jmx
 jmeter/llm-openai-update.jmx
+
 # Ignore DeepEval test results
 src/tools/.deepeval/*
 .deepeval/*
+
 # Ignore config.yaml files for Windows or Mac systems (NOTE: These files are specific to OS, but can be re-enabled by commenting out the following lines)
 config.mac.yaml
 config.windows.yaml
+
+# Ignore GitHub files
+.github/copilot*.md         # Ignore all markdown files with "copilot" prefix in .github/
